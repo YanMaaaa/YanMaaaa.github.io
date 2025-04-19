@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Yan Ma's Homepage</title>
+<style>
+html {
+  font-size: 100%;
+  overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  color: #444;
+  font-family: Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 1em;
+  margin: auto;
+  max-width: 60em;
+  background: #fefefe;
+}
+
+a {
+  color: #0645ad;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #0b0080;
+}
+
+a:hover {
+  color: #06e;
+}
+
+a:active {
+  color: #faa700;
+}
+
+a:focus {
+  outline: thin dotted;
+}
+
+*::-moz-selection {
+  background: rgba(255, 255, 0, 0.3);
+  color: #000;
+}
+
+*::selection {
+  background: rgba(255, 255, 0, 0.3);
+  color: #000;
+}
+
+a::-moz-selection {
+  background: rgba(255, 255, 0, 0.3);
+  color: #0645ad;
+}
+
+a::selection {
+  background: rgba(255, 255, 0, 0.3);
+  color: #0645ad;
+}
+
+p {
+  margin: 1em 0;
+}
+
+img {
+  max-width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #111;
+/*  line-height: 125%;*/
+/*  margin-top: 2em;*/
+  font-weight: normal;
+}
+
+h4, h5, h6 {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 2.5em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+h4 {
+  font-size: 1.2em;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+h6 {
+  font-size: 0.9em;
+}
+
+blockquote {
+  color: #666666;
+  margin: 0;
+  padding-left: 3em;
+  border-left: 0.5em #EEE solid;
+}
+
+hr {
+  display: block;
+  height: 2px;
+  border: 0;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #eee;
+  margin: 1em 0;
+  padding: 0;
+}
+
+pre, code, kbd, samp {
+  color: #000;
+  font-family: monospace, monospace;
+  _font-family: 'courier new', monospace;
+  font-size: 0.98em;
+}
+
+pre {
+  white-space: pre;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+dfn {
+  font-style: italic;
+}
+
+ins {
+  background: #ff9;
+  color: #000;
+  text-decoration: none;
+}
+
+mark {
+  background: #ff0;
+  color: #000;
+  font-style: italic;
+  font-weight: bold;
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+ul, ol {
+  margin: 1em 0;
+  padding: 0 0 0 2em;
+}
+
+li p:last-child {
+  margin-bottom: 0;
+}
+
+ul ul, ol ol {
+  margin: .3em 0;
+}
+
+dl {
+  margin-bottom: 1em;
+}
+
+dt {
+  font-weight: bold;
+  margin-bottom: .8em;
+}
+
+dd {
+  margin: 0 0 .8em 2em;
+}
+
+dd:last-child {
+  margin-bottom: 0;
+}
+
+img {
+  border: 0;
+  -ms-interpolation-mode: bicubic;
+  vertical-align: middle;
+}
+
+figure {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+figure img {
+  border: none;
+  margin: 0 auto;
+}
+
+figcaption {
+  font-size: 0.8em;
+  font-style: italic;
+  margin: 0 0 .8em;
+}
+
+table {
+  margin-bottom: 2em;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+table th {
+  padding: .2em 1em;
+  background-color: #eee;
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+
+table td {
+  padding: .2em 1em;
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.author {
+  font-size: 1.2em;
+  text-align: center;
+}
+
+@media only screen and (min-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+}
+@media only screen and (min-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+}
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter: none !important;
+    -ms-filter: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+
+  a, a:visited {
+    text-decoration: underline;
+  }
+
+  hr {
+    height: 1px;
+    border: 0;
+    border-bottom: 1px solid black;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+    content: "";
+  }
+
+  pre, blockquote {
+    border: 1px solid #999;
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+
+  tr, img {
+    page-break-inside: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  @page :left {
+    margin: 15mm 20mm 15mm 10mm;
+}
+
+  @page :right {
+    margin: 15mm 10mm 15mm 20mm;
+}
+
+  p, h2, h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2, h3 {
+    page-break-after: avoid;
+  }
+}
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: #333;
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.date {
+  color: gray
+} 
+</style>
+
+
+</head>
+<body>
+<div class="topnav">
+  <a href="main.html">Yan Ma's Homepage</a>
+</div>
+
+<div style="width: 65%; margin-bottom: 4px; float: left;">
+<p>I am a second-year Ph.D. student from the Department of Computer 
+Science at Fudan University, advised by Prof. <a href="http://pfliu.com/">
+Pengfei Liu</a> and Prof. <a href="https://mmlab.siat.ac.cn/yuqiao/"> Yu Qiao</a>.
+</p>
+<p>
+My research interests are centered around the
+intersection of reinforcement learning and foundation models. (I am a strong RL believer✊)
+</p>
+<p>
+Currently, I am working on RL-based post-training for vision-language models.
+</p>
+<p>
+I’m fortunate to have valuable internship experiences, including at <a href="http://minimax.io/">MiniMax</a>, 
+where I worked on vision-language reasoning models; at <a href="https://www.shlab.org.cn/">Shanghai AI Laboratory</a>,
+focusing on text generation and multimodal foundation models; at <a href="https://ailab.netease.com/">Netease Games AI Laboratory</a>,
+contributing to Game AI research.
+</p>
+</div>
+
+<div style="width: 34%; float: right;">
+<p><img src="images/Photo.jpg" alt="me"></p>
+</div>
+
+<div>
+<a href="https://x.com/ManTle_Ma" style="text-decoration: none; color: #334; margin-right: 10px;">
+<span>🐦 Twitter</span>
+</a>
+<a href="https://github.com/mantle2048" style="text-decoration: none; color: #333; margin-right: 10px;">
+<span>🐙 GitHub</span>
+</a>
+<a href="https://scholar.google.co.jp/citations?user=tnJyAAoAAAAJ&hl=en" style="text-decoration: none; color: #333; margin-right: 10px;">
+<span>📚 Google Scholar</span>
+</a>
+<a href="https://www.zhihu.com/people/_mantle" style="text-decoration: none; color: #333;">
+<span>💬 Zhihu</span>
+</a>
+</div>
+
+<ul style="margin-top: 18px;">
+<li><a href="#selected_publication" style="text-decoration: none;">Publication</a></li>
+<li><a href="#education" style="text-decoration: none;">Education</a></li>
+<li><a href="#project" style="text-decoration: none;">Project</a></li>
+<li><a href="#misc" style="text-decoration: none;">Misc</a></li>
+</ul>
+
+<h4 id="news" style="clear:both; margin-top: 14px; margin-bottom: 8px;">News</h4>
+<ul style="list-style-type: disc; padding-left: 20px;">
+  <li><strong>Apr 2025</strong> — 📝 My paper <em>"Rethinking RL Scaling for Vision Language Models"</em> is out on arXiv! <a href="https://arxiv.org/abs/2504.02587">[Paper]</a> 🎯</li>
+  <li><strong>Apr 2025</strong> — 🧠 Our ICLR 2025 blog-track paper <em>"Fine-Tuning Token-Based Large Multimodal Models"</em> is accepted!</a></li>
+  <li><strong>Feb 2024</strong> — 💡 <em>"Weak-to-strong reasoning"</em> accepted to EMNLP 2024 Findings. <a href="#">[Paper]</a></li>
+  <li><strong>Feb 2024</strong> — 🐍 We released <em>ANOLE</em>, our open-source autoregressive vision-language model! <a href="https://arxiv.org/abs/2407.06135">[arXiv]</a> / <a href="https://github.com/GAIR-NLP/Anole">[Code]</a> ⭐️700+</li>
+  <li><strong>Jan 2024</strong> — 🧹 My paper<em>"MoPS: Modular Story Premise Synthesis"</em> accepted to ACL 2024! <a href="https://arxiv.org/abs/2406.05690">[Paper]</a></li>
+  <li><strong>Jan 2024</strong> — 🏟 <em>"OlympicArena"</em> accepted to NeurIPS 2024 Dataset & Benchmark Track. <a href="#">[Paper]</a></li>
+  <li><strong>Feb 2023</strong> — ✨ Our AAAI 2023 paper on cross-domain adaptation is out! <a href="#">[Paper]</a></li>
+  <li><strong>Dec 2022</strong> — 🎤 Presented <em>"Evolutionary Action Selection"</em> at ICONIP 2022 (Oral). <a href="https://arxiv.org/abs/2201.04286">[Paper]</a></li>
+</ul>
+
+<h4 id="selected_publication" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Selected Publications</h4>
+<p>The full listing can also be found on my <a
+href="https://scholar.google.co.jp/citations?user=tnJyAAoAAAAJ&hl=en">Google
+Scholar Profile</a>. But here can find links to related
+material like code suites.</p>
+<h5 id="section">2025</h5>
+<ul>
+<li>
+<div class="line-block">
+<strong>
+ Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch
+ Framework and Comprehensive Evaluation Scheme
+</strong>
+<br/>
+<strong>Yan Ma</strong>, Steffi Chern, Xuyang Shen, Yiran Zhong*, Pengfei Liu*  &nbsp;&nbsp;<small>* Denotes joint supervision</small><br/>
+<em>arXiv preprint, arXiv:2504.02587</em><br>
+<a href="https://arxiv.org/abs/2504.02587">Paper (arXiv)</a> / 
+<a href="https://github.com/GAIR-NLP/MAYE"> Code</a> 
+<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/MAYE?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+</div></li></ul>
+<ul><li><div class="line-block">
+<strong>
+Fine-Tuning Token-Based Large Multimodal Models: What Works, What Doesn’t and What's Next
+</strong>
+<br/>
+Zhulin Hu, <strong>Yan Ma</strong>, Jiadi Su, Ethan Chern, Pengfei Liu<br/>
+<em>ICLR 2025 (Blogpost Track)</em><br>
+<a href="https://d2jud02ci9yv69.cloudfront.net/2025-04-28-fine-tuning-token-based-large-multimodal-models-86/blog/fine-tuning-token-based-large-multimodal-models/">Paper (blog)</a> /
+<a href="https://iclr.cc/virtual/2025/poster/31328"> Poster</a>
+</div></li></ul>
+<h5 id="section">2024</h5>
+<ul><li><div class="line-block">
+<strong>
+Weak-to-strong reasoning
+</strong>
+<br/>
+Yuqing Yang, <strong>Yan Ma</strong>, Pengfei Liu<br/>
+<em>EMNLP 2024 Findings</em><br>
+<a href="https://arxiv.org/abs/2407.13647">Paper (arXiv)</a> /
+<a href="https://aclanthology.org/2024.findings-emnlp.490.pdf"> Paper (pdf)</a> /
+<a href="https://github.com/GAIR-NLP/weak-to-strong-reasoning"> Code</a> 
+<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/weak-to-strong-reasoning?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+</div></li></ul>
+<ul><li><div class="line-block">
+<strong>
+ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation
+</strong>
+<br/>
+Ethan Chern†, Jiadi Su†, <strong>Yan Ma†</strong>, Pengfei Liu
+&nbsp;&nbsp;<small>† Denotes joint contribution</small><br/>
+<em>Technical Report</em><br>
+<a href="https://arxiv.org/abs/2407.06135">Paper (arXiv)</a> /
+<a href="https://x.com/stefan_fee/status/1810695036432232576">X Post (300k+ views🔥)</a> /
+<a href="https://github.com/GAIR-NLP/Anole"> Code (700+ stars✨)</a> 
+<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/Anole?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+</div></li></ul>
+<ul><li><div class="line-block">
+<strong>
+MoPS: Modular Story Premise Synthesis for Open-Ended Automatic Story Generation
+</strong>
+<br/>
+<strong>Yan Ma</strong>, Yu Qiao*, Pengfei Liu* &nbsp;&nbsp;<small>* Denotes joint supervision</small><br>
+<em>ACL 2024</em><br>
+<a href="https://arxiv.org/abs/2406.05690">Paper (arXiv)</a> /
+<a href="https://aclanthology.org/2024.acl-long.117.pdf"> Paper (pdf)</a> /
+<a href="https://github.com/GAIR-NLP/MoPS"> Code</a> 
+<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/MoPS?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+</div></li></ul>
+<ul><li><div class="line-block">
+<strong>
+OlympicArena: Benchmarking Multi-discipline Cognitive Reasoning for Superintelligent AI
+</strong>
+<br/>
+Zhen Huang, Zengzhi Wang, Shijie Xia, Xuefeng Li, Haoyang Zou, Ruijie Xu, Run-Ze Fan,
+Lyumanshan Ye, Ethan Chern, Yixin Ye, Yikai Zhang, Yuqing Yang, Ting Wu, Binjie Wang,
+Shichao Sun, Yang Xiao, Yiyuan Li, Fan Zhou, Steffi Chern, Yiwei Qin, <strong>Yan Ma</strong>,
+Jiadi Su, Yixiu Liu, Yuxiang Zheng, Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu<br>
+<em>NeurIPS 2024 Dataset & Benchmark Track</em><br>
+<a href="https://arxiv.org/abs/2406.12753">Paper (arXiv)</a> /
+<a href="https://proceedings.neurips.cc/paper_files/paper/2024/file/222d2eaf24cf8259a35d6c7130d31425-Paper-Datasets_and_Benchmarks_Track.pdf"> Paper (pdf)</a> /
+<a href="https://github.com/GAIR-NLP/OlympicArena"> Code</a> 
+<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/OlympicArena?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+</div></li></ul>
+<h5 id="and-earlier">2023 and earlier</h5>
+<ul><li><div class="line-block">
+<strong>
+Open-ended diverse solution discovery with regulated behavior patterns for cross-domain adaptation
+</strong>
+<br/>
+Kang Xu, <strong>Yan Ma</strong>, Bingsheng Wei, Wei Li<br>
+<em>AAAI 2023</em><br>
+<a href="https://arxiv.org/abs/2209.12029">Paper (arXiv)</a> /
+<a href="http://ojs.aaai.org/index.php/AAAI/article/view/26257"> Paper (pdf)</a>
+</div></li></ul>
+<ul><li><div class="line-block">
+<strong>
+Evolutionary action selection for gradient-based policy learning
+</strong>
+<br/>
+<strong>Yan Ma</strong>, Tianxing Liu, Bingsheng Wei, Yi Liu, Kang Xu, Wei Li<br>
+<em>ICONIP 2022 (Oral)</em><br>
+<a href="https://arxiv.org/abs/2201.04286">Paper (arXiv)</a> /
+<a href="https://link.springer.com/chapter/10.1007/978-3-031-30111-7_49">Paper (pdf)</a>
+</div></li></ul>
+
+<h4 id="education" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Education</h4>
+<ul style="margin-top: 0; padding-top: 0;">
+<li>
+<strong>2023 - Present:</strong> Ph.D. in Computer Science, Fudan University
+<br />
+Advisor: <a href="http://pfliu.com/">Pengfei Liu</a> & <a href="https://mmlab.siat.ac.cn/yuqiao/">Yu Qiao</a>
+</li>
+<li>
+<strong>2020 - 2023:</strong> M.Sc. in Computer Science, Fudan University
+<br />
+Advisor: <a href="https://scholar.google.co.uk/citations?user=AG3OXS0AAAAJ&hl=en">Wei Li</a>
+</li>
+<li>
+<strong>2016 - 2020:</strong> B.Sc. in Computer Science, Dalian University of Technology
+</li>
+</ul>
+
+<h4 id="project" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Project</h4>
+<ul style="list-style-type: disc; padding-left: 20px;">
+<li>
+<a href="https://github.com/mantle2048/.dotfiles">
+<strong>Dotfiles: Configuration files for Linux</strong>
+</a><br />
+My linux configuration dotfiles (including neovim/astronvim, tmux, bash, jupyter, etc).<br />
+<span style="font-style: italic">I am a Vimer (●'◡'●)</span>
+</li>
+<li>
+<a href="https://github.com/mantle2048/rlplot">
+<strong>RL Plot: Reinforcement Learning Plot Library</strong>
+</a>(30+stars✨)<br />
+An easy to use and highly encapsulated RL plot library (including basic error bar lineplot and a wrapper to 
+<a href="https://github.com/google-research/rliable">rliable</a>).
+</li>
+<li>
+<a href="https://github.com/yingpengma/Awesome-Story-Generation">
+<strong>Awesome-Story-Generation</strong>
+</a>(400+stars✨)<br />
+An extensive list of awesome papers about Story Generation / Storytelling, primarily focusing on the era of LLMs.<br />
+<span style="font-style: italic">
+Contributor, mainly maintained by <a href="https://yingpengma.github.io/">Yingpeng Ma</a>.
+</span>
+</li>
+</ul>
+
+<h4 id="misc" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Misc</h4>
+<h5 id="talks" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Invited Talks</h5>
+<ul style="padding-left: 20px;">
+<li>
+<em>ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation</em>. Hosted by ByteDance, 2024.08
+</li>
+</ul>
+<h5 id="talks" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Academic Activities</h5>
+<ul style="padding-left: 20px;">
+<li>
+Conference reviewer of : COLM (2025), NeurIPS (2025)
+</li>
+</ul>
+
+<div>Last Update: April 19, 2025</div>
+<div>
+<a href="https://hits.seeyoufarm.com"><img
+src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FYanMaaaa.github.io&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitor&edge_flat=false"
+/></a>
+</div>
+<p style="font-size: 0.9em; color: gray; margin-top: 20px;">
+Website template adapted from <a href="http://joschu.net/index.html" target="_blank" style="text-decoration: none; color: gray;">joschu.net</a>.
+</p>
+
+
+</body>
+</html>
+
+<!-- <p>Previously, I earned my master's degree from Fudan University -->
+<!-- in 2023, under the guidance of Prof. <a -->
+<!-- href="https://scholar.google.co.uk/citations?user=AG3OXS0AAAAJ&hl=en"> -->
+<!-- Wei Li</a>. Prior to that, I was an undergraduate student of Computer Science -->
+<!-- at Dalian University of Technology from 2016 to 2020. -->
+<!-- </p> -->
