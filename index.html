@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 
 <title>Yan Ma's Homepage</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%86%3C/text%3E%3C/svg%3E">
 <style>
 html {
   font-size: 100%;
@@ -348,6 +349,158 @@ table td {
 .date {
   color: gray
 } 
+
+.intro-text {
+  width: 65%;
+  margin-bottom: 4px;
+  float: left;
+}
+
+.intro-photo {
+  width: 34%;
+  float: right;
+}
+
+.profile-links a {
+  text-decoration: none;
+  color: #333;
+}
+
+.profile-links a + a {
+  margin-left: 0;
+}
+
+.link-spaced {
+  margin-right: 10px;
+}
+
+.twitter-link {
+  color: #334 !important;
+}
+
+.toc-list {
+  margin-top: 18px;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 0;
+}
+
+.toc-list li {
+  margin: 0;
+}
+
+.toc-list li + li::before {
+  content: "•";
+  color: #777;
+  margin: 0 10px;
+}
+
+.disc-list {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.section-heading {
+  clear: both;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.subsection-heading {
+  clear: both;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.education-list {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.indented-list {
+  padding-left: 20px;
+}
+
+.site-credit {
+  font-size: 0.9em;
+  color: gray;
+  margin-top: 10px;
+}
+
+.site-credit a {
+  text-decoration: none;
+  color: gray;
+}
+
+.pub-filters {
+  margin: 10px 0 12px 0;
+}
+
+.pub-filter-btn {
+  margin-right: 8px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.pub-filter-btn.active {
+  font-weight: bold;
+}
+
+.pub-template-store {
+  display: none;
+}
+
+.pub-year-group {
+  margin-top: 0.9em;
+  margin-bottom: 0.3em;
+}
+
+.news-scroll-window {
+  position: relative;
+}
+
+.news-scroll-window.news-scroll-enabled {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  border: 1px solid #eceff3;
+  border-radius: 6px;
+  padding: 4px 8px 4px 2px;
+}
+
+.news-scroll-window.news-scroll-enabled .disc-list {
+  margin: 0;
+}
+
+.news-scroll-window.manual-news-scroll {
+  overflow-y: auto;
+  border: 1px solid #eceff3;
+  border-radius: 6px;
+  padding: 4px 8px 4px 2px;
+}
+
+.news-scroll-window.manual-news-scroll .disc-list {
+  margin: 0;
+}
+
+.current-focus {
+  border-left: 2px solid #d7dbe2;
+  padding-left: 10px;
+  color: #222;
+}
+
+.rl-believer-note {
+  display: inline-block;
+  margin-left: 0.35em;
+  padding: 0.05em 0.45em;
+  font-size: 0.88em;
+  color: #555;
+  border: 1px solid #d9dde3;
+  border-radius: 999px;
+  background: #fafbfc;
+  vertical-align: baseline;
+}
 </style>
 
 
@@ -357,59 +510,60 @@ table td {
   <a href="index.html">Yan Ma's Homepage</a>
 </div>
 
-<div style="width: 65%; margin-bottom: 4px; float: left;">
-<p>I am a second-year Ph.D. student from the Department of Computer 
+<div class="intro-text">
+<p>I am a third-year Ph.D. student in Computer 
 Science at Fudan University, advised by Prof. <a href="http://pfliu.com/">
 Pengfei Liu</a> and Prof. <a href="https://mmlab.siat.ac.cn/yuqiao/"> Yu Qiao</a>.
+My research interests are the intersection of reinforcement learning and multimodal models <span class="rl-believer-note">(I am a strong RL believer✊)</span>.
 </p>
 <p>
-My research interests are centered around the
-intersection of reinforcement learning and foundation models. (I am a strong RL believer✊)
+In 2025, I built substantial experience in RL for vision-language models, with a focus on RL scaling across single-visual tasks (e.g., <a href="#pub-maye">MAYE</a>), multi-visual tasks (e.g., <a href="#pub-one-rl">One-RL-to-See-Them-All</a>), and agentic vision tool use (e.g., <a href="#pub-med">Med</a>). Prior to this, I also worked on unified multimodal models (e.g., <a href="#pub-anole">ANOLE</a>) and text generation (e.g., <a href="#pub-mops">MoPS</a>).
+</p>
+<p class="current-focus">
+My current focus is pre-training for multimodal generative models.
 </p>
 <p>
-Currently, I am working on RL-based post-training for vision-language models.
-</p>
-<p>
-I’m fortunate to have valuable internship experiences, including at <a href="http://minimax.io/">MiniMax</a>, 
-where I worked on vision-language reasoning models; at <a href="https://www.shlab.org.cn/">Shanghai AI Laboratory</a>,
-focusing on text generation and multimodal foundation models; at <a href="https://ailab.netease.com/">Netease Games AI Laboratory</a>,
-contributing to Game AI research.
+I have had valuable internship experiences at <a href="http://minimax.io/">MiniMax</a> and <a href="https://hailuoai.video">HailuoAI</a> (2025.01 - 2026.02),
+where I contributed to the M-series foundation models and Hailuo video generation models; <a href="https://www.shlab.org.cn/">Shanghai AI Laboratory</a> (2023.07 - 2025.01), focusing on text generation and multimodal foundation models; and <a href="https://ailab.netease.com/">Netease Games AI Laboratory</a> (2022.06 - 2022.08), contributing to Game AI research.
 </p>
 </div>
 
-<div style="width: 34%; float: right;">
+<div class="intro-photo">
 <p><img src="images/Photo.jpg" alt="me"></p>
 </div>
 
-<div>
-<a href="https://x.com/ManTle_Ma" style="text-decoration: none; color: #334; margin-right: 10px;">
+<div class="profile-links">
+<a href="https://x.com/ManTle_Ma" class="link-spaced twitter-link">
 <span>🐦 Twitter</span>
 </a>
-<a href="https://github.com/mantle2048" style="text-decoration: none; color: #333; margin-right: 10px;">
+<a href="https://github.com/mantle2048" class="link-spaced">
 <span>🐙 GitHub</span>
 </a>
-<a href="https://scholar.google.co.jp/citations?user=tnJyAAoAAAAJ&hl=en" style="text-decoration: none; color: #333; margin-right: 10px;">
+<a href="https://scholar.google.co.jp/citations?user=tnJyAAoAAAAJ&hl=en" class="link-spaced">
 <span>📚 Google Scholar</span>
 </a>
-<a href="https://www.zhihu.com/people/_mantle" style="text-decoration: none; color: #333;">
+<a href="https://www.zhihu.com/people/_mantle">
 <span>💬 Zhihu</span>
 </a>
 </div>
 
-<ul style="margin-top: 18px;">
-<li><a href="#selected_publication" style="text-decoration: none;">Publication</a></li>
-<li><a href="#education" style="text-decoration: none;">Education</a></li>
-<li><a href="#project" style="text-decoration: none;">Project</a></li>
-<li><a href="#misc" style="text-decoration: none;">Misc</a></li>
+<ul class="toc-list">
+<li><a href="#selected_publication">Publication</a></li>
+<li><a href="#education">Education</a></li>
+<li><a href="#project">Project</a></li>
+<li><a href="#misc">Misc</a></li>
 </ul>
 
-<h4 id="news" style="clear:both; margin-top: 14px; margin-bottom: 8px;">News</h4>
-<ul style="list-style-type: disc; padding-left: 20px;">
+<h4 id="news" class="section-heading">News</h4>
+<div id="news-scroll-window" class="news-scroll-window manual-news-scroll">
+<ul id="news-list" class="disc-list">
+  <li><strong>Feb 2026</strong> — 🔍 My paper <em>"What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom"</em> is out on arXiv! <a href="https://arxiv.org/abs/2602.01334">[Paper]</a> <a href="https://gair-nlp.github.io/Med/">[Homepage]</a> <a href="https://github.com/GAIR-NLP/Med">[Code]</a> <a href="https://huggingface.co/collections/ManTle/med">[Huggingface]</a></li>
+  <li><strong>Jun 2025</strong> — 📘 A collaborative survey <em>"Thinking with images for multimodal reasoning: Foundations, methods, and future frontiers"</em> is out on arXiv! <a href="https://arxiv.org/abs/2506.23918">[Paper]</a></li>
   <li><strong>May 2025</strong> — 🤖 My paper <em>"One RL to See Them All: Visual Triple Unified Reinforcement Learning"</em> is out on arXiv! <a href="https://arxiv.org/abs/2505.18129">[Paper]</a> <a href="https://github.com/MiniMax-AI/One-RL-to-See-Them-All">[Code]</a></li>
   <li><strong>May 2025</strong> — 🖼️ Our work <em>"Thinking with Generated Images"</em> is now available on arXiv! <a href="https://arxiv.org/abs/2505.22525">[Paper]</a> <a href="https://github.com/GAIR-NLP/thinking-with-generated-images">[Code]</a></li>
   <li><strong>Apr 2025</strong> — 🚀 Our new survey <em>"Test Time Scaling Drives Cognition Engineering"</em> is out on arXiv! 🔥 <a href="https://arxiv.org/abs/2504.13828">[Paper]</a></li>
   <li><strong>Apr 2025</strong> — 📝 My paper <em>"Rethinking RL Scaling for Vision Language Models"</em> is out on arXiv! <a href="https://arxiv.org/abs/2504.02587">[Paper]</a> 🎯</li>
-  <li><strong>Jan 2025</strong> — 🧠 Our ICLR 2025 blog-track paper <em>"Fine-Tuning Token-Based Large Multimodal Models"</em> is accepted!</li>
+  <li><strong>Jan 2025</strong> — 🧠 The extended blog version of <em>ANOLE</em> was accepted to the ICLR 2025 Blog Track! <a href="https://d2jud02ci9yv69.cloudfront.net/2025-04-28-fine-tuning-token-based-large-multimodal-models-86/blog/fine-tuning-token-based-large-multimodal-models/">[Blog]</a> <a href="https://iclr.cc/virtual/2025/poster/31328">[Poster]</a></li>
   <li><strong>Sep 2024</strong> — 🏟 <em>"OlympicArena"</em> accepted to NeurIPS 2024 Dataset & Benchmark Track. <a href="#">[Paper]</a></li>
   <li><strong>Sep 2024</strong> — 💡 <em>"Weak-to-strong reasoning"</em> accepted to EMNLP 2024 Findings. <a href="#">[Paper]</a></li>
   <li><strong>Jul 2024</strong> — 🐍 We released <em>ANOLE</em>, our open-source autoregressive vision-language model! <a href="https://arxiv.org/abs/2407.06135">[arXiv]</a> / <a href="https://github.com/GAIR-NLP/Anole">[Code]</a> ⭐️700+</li>
@@ -417,149 +571,399 @@ contributing to Game AI research.
   <li><strong>Feb 2023</strong> — ✨ Our AAAI 2023 paper on cross-domain adaptation is out! <a href="#">[Paper]</a></li>
   <li><strong>Dec 2022</strong> — 🎤 Presented <em>"Evolutionary Action Selection"</em> at ICONIP 2022 (Oral). <a href="https://arxiv.org/abs/2201.04286">[Paper]</a></li>
 </ul>
+</div>
 
-<h4 id="selected_publication" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Selected Publications</h4>
+<script>
+(function () {
+  var scroller = document.getElementById('news-scroll-window');
+  var list = document.getElementById('news-list');
+
+  if (!scroller || !list) {
+    return;
+  }
+
+  var items = Array.prototype.slice.call(list.querySelectorAll('li'));
+  if (items.length <= 3) {
+    return;
+  }
+
+  var visibleCount = 3;
+
+  function computeViewportHeight() {
+    var count = Math.min(visibleCount, items.length);
+    if (count === 0) {
+      return 0;
+    }
+    var firstTop = items[0].offsetTop;
+    var last = items[count - 1];
+    return (last.offsetTop + last.offsetHeight) - firstTop;
+  }
+
+  function refreshLayout() {
+    var height = computeViewportHeight();
+    if (height > 0) {
+      scroller.style.height = String(height) + 'px';
+      scroller.scrollTop = 0;
+    }
+  }
+  window.addEventListener('resize', refreshLayout);
+
+  refreshLayout();
+})();
+</script>
+
+<h4 id="selected_publication" class="section-heading">Selected Publications</h4>
 <p>The full listing can also be found on my <a
 href="https://scholar.google.co.jp/citations?user=tnJyAAoAAAAJ&hl=en">Google
 Scholar Profile</a>. But here can find links to related
 material like code suites.</p>
-<h5 id="section">2025</h5>
-<ul><li>
-<div class="line-block">
-<strong>
-One RL to See Them All: Visual Triple Unified Reinforcement Learning
-</strong>
-<br/>
-<strong>Yan Ma</strong>†, Linge Du†, Xuyang Shen<small>♔</small>, Shaoxiang Chen, Pengfei Li, Qibing Ren, Lizhuang Ma, Yuchao Dai, Pengfei Liu, Junjie Yan &nbsp;&nbsp;<small>† Denotes joint contribution;&nbsp;♔ Denotes project lead</small><br/>
-<em>arXiv preprint, arXiv:2505.18129</em><br>
-<a href="https://arxiv.org/abs/2505.18129">Paper (arXiv)</a> / 
-<a href="https://github.com/MiniMax-AI/One-RL-to-See-Them-All"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/MiniMax-AI/One-RL-to-See-Them-All?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" /> /
-<a href="https://huggingface.co/One-RL-to-See-Them-All">Huggingface😊</a>
-</div></li></ul>
-<ul><li>
-<div class="line-block">
-<strong>
-Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch
-Framework and Comprehensive Evaluation Scheme
-</strong>
-<br/>
-<strong>Yan Ma</strong>, Steffi Chern, Xuyang Shen, Yiran Zhong*, Pengfei Liu*  &nbsp;&nbsp;<small>* Denotes joint supervision</small><br/>
-<em>arXiv preprint, arXiv:2504.02587</em><br>
-<a href="https://arxiv.org/abs/2504.02587">Paper (arXiv)</a> / 
-<a href="https://github.com/GAIR-NLP/MAYE"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/MAYE?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<ul><li>
-<strong>
-Thinking with Generated Images
-</strong>
-<br/>
-Ethan Chern†, Zhulin Hu†, Steffi Chern†, Siqi Kou, Jiadi Su, <strong>Yan Ma</strong>, Zhijie Deng, Pengfei Liu &nbsp;&nbsp;<small>† Denotes joint contribution</small><br/>
-<em>arXiv preprint, arXiv:2505.18129</em><br>
-<a href="https://arxiv.org/abs/2505.22525">Paper (arXiv)</a> / 
-<a href="https://github.com/GAIR-NLP/thinking-with-generated-images"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/thinking-with-generated-images?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<ul><li>
-<div class="line-block">
-<strong>
-Generative AI Act II: Test Time Scaling Drives Cognition Engineering
-</strong>
-<br/>
-Shijie Xia, Yiwei Qin, Xuefeng Li, <strong>Yan Ma</strong>, Run-Ze Fan, Steffi Chern, Haoyang Zou, Fan Zhou, Xiangkun Hu, Jiahe Jin, Yanheng He, Yixin Ye, Yixiu Liu, Pengfei Liu<br/>
-<em>arXiv preprint, arXiv:2504.13828</em><br>
-<a href="https://arxiv.org/abs/2504.13828">Paper (arXiv)</a> / 
-<a href="https://github.com/GAIR-NLP/cognition-engineering"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/cognition-engineering?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<ul><li><div class="line-block">
-<strong>
-Fine-Tuning Token-Based Large Multimodal Models: What Works, What Doesn’t and What's Next
-</strong>
-<br/>
-Zhulin Hu, <strong>Yan Ma</strong>, Jiadi Su, Ethan Chern, Pengfei Liu<br/>
-<em>ICLR 2025 (Blogpost Track)</em><br>
-<a href="https://d2jud02ci9yv69.cloudfront.net/2025-04-28-fine-tuning-token-based-large-multimodal-models-86/blog/fine-tuning-token-based-large-multimodal-models/">Paper (blog)</a> /
-<a href="https://iclr.cc/virtual/2025/poster/31328"> Poster</a>
-</div></li></ul>
-<h5 id="section">2024</h5>
-<ul><li><div class="line-block">
-<strong>
-Weak-to-strong reasoning
-</strong>
-<br/>
-Yuqing Yang, <strong>Yan Ma</strong>, Pengfei Liu<br/>
-<em>EMNLP 2024 Findings</em><br>
-<a href="https://arxiv.org/abs/2407.13647">Paper (arXiv)</a> /
-<a href="https://aclanthology.org/2024.findings-emnlp.490.pdf"> Paper (pdf)</a> /
-<a href="https://github.com/GAIR-NLP/weak-to-strong-reasoning"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/weak-to-strong-reasoning?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<ul><li><div class="line-block">
-<strong>
-ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation
-</strong>
-<br/>
-Ethan Chern†, Jiadi Su†, <strong>Yan Ma†</strong>, Pengfei Liu
-&nbsp;&nbsp;<small>† Denotes joint contribution</small><br/>
-<em>Technical Report</em><br>
-<a href="https://arxiv.org/abs/2407.06135">Paper (arXiv)</a> /
-<a href="https://x.com/stefan_fee/status/1810695036432232576">X Post (300k+ views🔥)</a> /
-<a href="https://github.com/GAIR-NLP/Anole"> Code (700+ stars✨)</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/Anole?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<ul><li><div class="line-block">
-<strong>
-MoPS: Modular Story Premise Synthesis for Open-Ended Automatic Story Generation
-</strong>
-<br/>
-<strong>Yan Ma</strong>, Yu Qiao*, Pengfei Liu* &nbsp;&nbsp;<small>* Denotes joint supervision</small><br>
-<em>ACL 2024</em><br>
-<a href="https://arxiv.org/abs/2406.05690">Paper (arXiv)</a> /
-<a href="https://aclanthology.org/2024.acl-long.117.pdf"> Paper (pdf)</a> /
-<a href="https://github.com/GAIR-NLP/MoPS"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/MoPS?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<ul><li><div class="line-block">
-<strong>
-OlympicArena: Benchmarking Multi-discipline Cognitive Reasoning for Superintelligent AI
-</strong>
-<br/>
-Zhen Huang, Zengzhi Wang, Shijie Xia, Xuefeng Li, Haoyang Zou, Ruijie Xu, Run-Ze Fan,
-Lyumanshan Ye, Ethan Chern, Yixin Ye, Yikai Zhang, Yuqing Yang, Ting Wu, Binjie Wang,
-Shichao Sun, Yang Xiao, Yiyuan Li, Fan Zhou, Steffi Chern, Yiwei Qin, <strong>Yan Ma</strong>,
-Jiadi Su, Yixiu Liu, Yuxiang Zheng, Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu<br>
-<em>NeurIPS 2024 Dataset & Benchmark Track</em><br>
-<a href="https://arxiv.org/abs/2406.12753">Paper (arXiv)</a> /
-<a href="https://proceedings.neurips.cc/paper_files/paper/2024/file/222d2eaf24cf8259a35d6c7130d31425-Paper-Datasets_and_Benchmarks_Track.pdf"> Paper (pdf)</a> /
-<a href="https://github.com/GAIR-NLP/OlympicArena"> Code</a> 
-<img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/OlympicArena?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
-</div></li></ul>
-<h5 id="and-earlier">2023 and earlier</h5>
-<ul><li><div class="line-block">
-<strong>
-Open-ended diverse solution discovery with regulated behavior patterns for cross-domain adaptation
-</strong>
-<br/>
-Kang Xu, <strong>Yan Ma</strong>, Bingsheng Wei, Wei Li<br>
-<em>AAAI 2023</em><br>
-<a href="https://arxiv.org/abs/2209.12029">Paper (arXiv)</a> /
-<a href="http://ojs.aaai.org/index.php/AAAI/article/view/26257"> Paper (pdf)</a>
-</div></li></ul>
-<ul><li><div class="line-block">
-<strong>
-Evolutionary action selection for gradient-based policy learning
-</strong>
-<br/>
-<strong>Yan Ma</strong>, Tianxing Liu, Bingsheng Wei, Yi Liu, Kang Xu, Wei Li<br>
-<em>ICONIP 2022 (Oral)</em><br>
-<a href="https://arxiv.org/abs/2201.04286">Paper (arXiv)</a> /
-<a href="https://link.springer.com/chapter/10.1007/978-3-031-30111-7_49">Paper (pdf)</a>
-</div></li></ul>
+<div class="pub-filters" role="tablist" aria-label="Publication filters">
+  <button id="pub-filter-first" class="pub-filter-btn active" type="button" data-mode="first" aria-pressed="true">First-author / Co-first</button>
+  <button id="pub-filter-all" class="pub-filter-btn" type="button" data-mode="all" aria-pressed="false">All publications</button>
+</div>
+<div id="publications-rendered"></div>
+<div id="publications-templates" class="pub-template-store" aria-hidden="true">
+  <!-- Maintain publications here. Each item is defined once and rendered into both filtered views. -->
+  <!-- data-first-author should be true for first-author and co-first papers. -->
+  <!-- data-sort-date uses YYYY-MM-DD and is used for ordering within each year. -->
+  <template class="pub-template" data-year="2026" data-first-author="true" data-sort-date="2026-02-01">
+    <li><div class="line-block" id="pub-med">
+    <strong>
+    What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom
+    </strong>
+    <br/>
+    <strong>Yan Ma</strong>†, Weiyu Zhang†, Tianle Li, Linge Du, Xuyang Shen*, Pengfei Liu* &nbsp;&nbsp;<small>† Denotes joint contribution;&nbsp;* Denotes joint supervision</small><br/>
+    <em>arXiv preprint, arXiv:2602.01334</em><br>
+    <a href="https://arxiv.org/abs/2602.01334">Paper (arXiv)</a> /
+    <a href="https://gair-nlp.github.io/Med/">Homepage</a> /
+    <a href="https://github.com/GAIR-NLP/Med"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/Med?style=social&amp;label=Stars" style="width: 4.3em; height: 1.15em; margin-bottom: 0.20em" /> /
+    <a href="https://huggingface.co/collections/ManTle/med">Huggingface😊</a>
+    </div></li>
+  </template>
 
-<h4 id="education" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Education</h4>
-<ul style="margin-top: 0; padding-top: 0;">
+  <template class="pub-template" data-year="2025" data-first-author="true" data-sort-date="2025-05-18">
+    <li><div class="line-block" id="pub-one-rl">
+    <strong>
+    One RL to See Them All: Visual Triple Unified Reinforcement Learning
+    </strong>
+    <br/>
+    <strong>Yan Ma</strong>†, Linge Du†, Xuyang Shen<small>♔</small>, Shaoxiang Chen, Pengfei Li, Qibing Ren, Lizhuang Ma, Yuchao Dai, Pengfei Liu, Junjie Yan &nbsp;&nbsp;<small>† Denotes joint contribution;&nbsp;♔ Denotes project lead</small><br/>
+    <em>arXiv preprint, arXiv:2505.18129</em><br>
+    <a href="https://arxiv.org/abs/2505.18129">Paper (arXiv)</a> /
+    <a href="https://github.com/MiniMax-AI/One-RL-to-See-Them-All"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/MiniMax-AI/One-RL-to-See-Them-All?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" /> /
+    <a href="https://huggingface.co/One-RL-to-See-Them-All">Huggingface😊</a>
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="true" data-sort-date="2025-04-02">
+    <li><div class="line-block" id="pub-maye">
+    <strong>
+    Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch
+    Framework and Comprehensive Evaluation Scheme
+    </strong>
+    <br/>
+    <strong>Yan Ma</strong>, Steffi Chern, Xuyang Shen, Yiran Zhong*, Pengfei Liu*  &nbsp;&nbsp;<small>* Denotes joint supervision</small><br/>
+    <em>arXiv preprint, arXiv:2504.02587</em><br>
+    <a href="https://arxiv.org/abs/2504.02587">Paper (arXiv)</a> /
+    <a href="https://github.com/GAIR-NLP/MAYE"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/MAYE?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="false" data-sort-date="2025-07-21">
+    <li><div class="line-block">
+    <strong>
+    Interaction as Intelligence: Deep Research With Human-AI Partnership
+    </strong>
+    <br/>
+    Lyumanshan Ye, Xiaojie Cai, Xinkai Wang, Junfei Wang, Xiangkun Hu, Jiadi Su, Yang Nan, Sihan Wang, Bohan Zhang, Xiaoze Fan, Jinbin Luo, Yuxiang Zheng, Tianze Xu, Dayuan Fu, Yunze Wu, Pengrui Lu, Zengzhi Wang, Yiwei Qin, Zhen Huang, <strong>Yan Ma</strong>, Zhulin Hu, Haoyang Zou, Tiantian Mi, Yixin Ye, Ethan Chern, Pengfei Liu<br/>
+    <em>arXiv preprint, arXiv:2507.15759</em><br>
+    <a href="https://arxiv.org/abs/2507.15759">Paper (arXiv)</a>
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="false" data-sort-date="2025-09-11">
+    <li><div class="line-block">
+    <strong>
+    Visual Programmability: A Guide for Code-as-Thought in Chart Understanding
+    </strong>
+    <br/>
+    Bohao Tang, <strong>Yan Ma</strong>, Fei Zhang, Jiadi Su, Ethan Chern, Zhulin Hu, Zhixin Wang, Pengfei Liu, Ya Zhang<br/>
+    <em>arXiv preprint, arXiv:2509.09286</em><br>
+    <a href="https://arxiv.org/abs/2509.09286">Paper (arXiv)</a>
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="false" data-sort-date="2025-06-16">
+    <li><div class="line-block">
+    <strong>
+    MiniMax-M1: Scaling Test-Time Compute Efficiently with Lightning Attention
+    </strong>
+    <br/>
+    MiniMax AI<br/>
+    <em>Technical Report (Participant), arXiv preprint, arXiv:2506.13585</em><br>
+    <a href="https://arxiv.org/abs/2506.13585">Paper (arXiv)</a>
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="false" data-sort-date="2025-06-30">
+    <li><div class="line-block">
+    <strong>
+    Thinking with images for multimodal reasoning: Foundations, methods, and future frontiers
+    </strong>
+    <br/>
+    Zhaochen Su, Peng Xia, Hangyu Guo, Zhenhua Liu, <strong>Yan Ma</strong>, Xiaoye Qu, Jiaqi Liu, Yanshu Li, Kaide Zeng, Zhengyuan Yang, Linjie Li, Yu Cheng, Heng Ji, Junxian He, Yi R Fung<br/>
+    <em>arXiv preprint, arXiv:2506.23918</em><br>
+    <a href="https://arxiv.org/abs/2506.23918">Paper (arXiv)</a>
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="false" data-sort-date="2025-05-22">
+    <li><div class="line-block">
+    <strong>
+    Thinking with Generated Images
+    </strong>
+    <br/>
+    Ethan Chern†, Zhulin Hu†, Steffi Chern†, Siqi Kou, Jiadi Su, <strong>Yan Ma</strong>, Zhijie Deng, Pengfei Liu &nbsp;&nbsp;<small>† Denotes joint contribution</small><br/>
+    <em>arXiv preprint, arXiv:2505.18129</em><br>
+    <a href="https://arxiv.org/abs/2505.22525">Paper (arXiv)</a> /
+    <a href="https://github.com/GAIR-NLP/thinking-with-generated-images"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/thinking-with-generated-images?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2025" data-first-author="false" data-sort-date="2025-04-13">
+    <li><div class="line-block">
+    <strong>
+    Generative AI Act II: Test Time Scaling Drives Cognition Engineering
+    </strong>
+    <br/>
+    Shijie Xia, Yiwei Qin, Xuefeng Li, <strong>Yan Ma</strong>, Run-Ze Fan, Steffi Chern, Haoyang Zou, Fan Zhou, Xiangkun Hu, Jiahe Jin, Yanheng He, Yixin Ye, Yixiu Liu, Pengfei Liu<br/>
+    <em>arXiv preprint, arXiv:2504.13828</em><br>
+    <a href="https://arxiv.org/abs/2504.13828">Paper (arXiv)</a> /
+    <a href="https://github.com/GAIR-NLP/cognition-engineering"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/cognition-engineering?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2024" data-first-author="false" data-sort-date="2024-07-13">
+    <li><div class="line-block">
+    <strong>
+    Weak-to-strong reasoning
+    </strong>
+    <br/>
+    Yuqing Yang, <strong>Yan Ma</strong>, Pengfei Liu<br/>
+    <em>EMNLP 2024 Findings</em><br>
+    <a href="https://arxiv.org/abs/2407.13647">Paper (arXiv)</a> /
+    <a href="https://aclanthology.org/2024.findings-emnlp.490.pdf"> Paper (pdf)</a> /
+    <a href="https://github.com/GAIR-NLP/weak-to-strong-reasoning"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/weak-to-strong-reasoning?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2024" data-first-author="true" data-sort-date="2024-07-06">
+    <li><div class="line-block" id="pub-anole">
+    <strong>
+    ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation
+    </strong>
+    <br/>
+    Ethan Chern†, Jiadi Su†, <strong>Yan Ma†</strong>, Pengfei Liu
+    &nbsp;&nbsp;<small>† Denotes joint contribution</small><br/>
+    <em>Technical Report; extended blog version accepted to ICLR 2025 (Blog Track)</em><br>
+    <a href="https://arxiv.org/abs/2407.06135">Paper (arXiv)</a> /
+    <a href="https://d2jud02ci9yv69.cloudfront.net/2025-04-28-fine-tuning-token-based-large-multimodal-models-86/blog/fine-tuning-token-based-large-multimodal-models/">ICLR 2025 Blog Version</a> /
+    <a href="https://iclr.cc/virtual/2025/poster/31328">Poster</a> /
+    <a href="https://x.com/stefan_fee/status/1810695036432232576">X Post (300k+ views🔥)</a> /
+    <a href="https://github.com/GAIR-NLP/Anole"> Code (700+ stars✨)</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/Anole?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2024" data-first-author="true" data-sort-date="2024-06-05">
+    <li><div class="line-block" id="pub-mops">
+    <strong>
+    MoPS: Modular Story Premise Synthesis for Open-Ended Automatic Story Generation
+    </strong>
+    <br/>
+    <strong>Yan Ma</strong>, Yu Qiao*, Pengfei Liu* &nbsp;&nbsp;<small>* Denotes joint supervision</small><br>
+    <em>ACL 2024</em><br>
+    <a href="https://arxiv.org/abs/2406.05690">Paper (arXiv)</a> /
+    <a href="https://aclanthology.org/2024.acl-long.117.pdf"> Paper (pdf)</a> /
+    <a href="https://github.com/GAIR-NLP/MoPS"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/MoPS?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2024" data-first-author="false" data-sort-date="2024-06-12">
+    <li><div class="line-block">
+    <strong>
+    OlympicArena: Benchmarking Multi-discipline Cognitive Reasoning for Superintelligent AI
+    </strong>
+    <br/>
+    Zhen Huang, Zengzhi Wang, Shijie Xia, Xuefeng Li, Haoyang Zou, Ruijie Xu, Run-Ze Fan,
+    Lyumanshan Ye, Ethan Chern, Yixin Ye, Yikai Zhang, Yuqing Yang, Ting Wu, Binjie Wang,
+    Shichao Sun, Yang Xiao, Yiyuan Li, Fan Zhou, Steffi Chern, Yiwei Qin, <strong>Yan Ma</strong>,
+    Jiadi Su, Yixiu Liu, Yuxiang Zheng, Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu<br>
+    <em>NeurIPS 2024 Dataset & Benchmark Track</em><br>
+    <a href="https://arxiv.org/abs/2406.12753">Paper (arXiv)</a> /
+    <a href="https://proceedings.neurips.cc/paper_files/paper/2024/file/222d2eaf24cf8259a35d6c7130d31425-Paper-Datasets_and_Benchmarks_Track.pdf"> Paper (pdf)</a> /
+    <a href="https://github.com/GAIR-NLP/OlympicArena"> Code</a>
+    <img alt="" src="https://img.shields.io/github/stars/GAIR-NLP/OlympicArena?style=social&amp;label=Stars" style="width: 5em; height: 1.15em; margin-bottom: 0.20em" />
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2023" data-first-author="false" data-sort-date="2022-09-12">
+    <li><div class="line-block">
+    <strong>
+    Open-ended diverse solution discovery with regulated behavior patterns for cross-domain adaptation
+    </strong>
+    <br/>
+    Kang Xu, <strong>Yan Ma</strong>, Bingsheng Wei, Wei Li<br>
+    <em>AAAI 2023</em><br>
+    <a href="https://arxiv.org/abs/2209.12029">Paper (arXiv)</a> /
+    <a href="http://ojs.aaai.org/index.php/AAAI/article/view/26257"> Paper (pdf)</a>
+    </div></li>
+  </template>
+
+  <template class="pub-template" data-year="2022" data-first-author="true" data-sort-date="2022-01-04">
+    <li><div class="line-block">
+    <strong>
+    Evolutionary action selection for gradient-based policy learning
+    </strong>
+    <br/>
+    <strong>Yan Ma</strong>, Tianxing Liu, Bingsheng Wei, Yi Liu, Kang Xu, Wei Li<br>
+    <em>ICONIP 2022 (Oral)</em><br>
+    <a href="https://arxiv.org/abs/2201.04286">Paper (arXiv)</a> /
+    <a href="https://link.springer.com/chapter/10.1007/978-3-031-30111-7_49">Paper (pdf)</a>
+    </div></li>
+  </template>
+</div>
+<script>
+(function () {
+  var renderRoot = document.getElementById('publications-rendered');
+  var templateRoot = document.getElementById('publications-templates');
+  var firstBtn = document.getElementById('pub-filter-first');
+  var allBtn = document.getElementById('pub-filter-all');
+  var olderCutoffYear = 2023;
+
+  if (!renderRoot || !templateRoot || !firstBtn || !allBtn) {
+    return;
+  }
+
+  var publications = Array.prototype.slice.call(templateRoot.querySelectorAll('template.pub-template')).map(function (template, index) {
+    var sortDate = template.getAttribute('data-sort-date') || '';
+    var sortTime = sortDate ? Date.parse(sortDate + 'T00:00:00Z') : NaN;
+    return {
+      year: Number(template.getAttribute('data-year')),
+      firstAuthor: template.getAttribute('data-first-author') === 'true',
+      sortDate: sortDate,
+      sortTime: sortTime,
+      template: template,
+      index: index
+    };
+  });
+
+  function setButtonState(mode) {
+    var isFirst = mode === 'first';
+    firstBtn.classList.toggle('active', isFirst);
+    allBtn.classList.toggle('active', !isFirst);
+    firstBtn.setAttribute('aria-pressed', isFirst ? 'true' : 'false');
+    allBtn.setAttribute('aria-pressed', isFirst ? 'false' : 'true');
+  }
+
+  function appendYearGroup(container, headingId, headingText, items) {
+    if (!items.length) {
+      return;
+    }
+
+    var heading = document.createElement('h5');
+    heading.id = headingId;
+    heading.className = 'pub-year-group';
+    heading.textContent = headingText;
+    container.appendChild(heading);
+
+    var list = document.createElement('ul');
+    items.forEach(function (item) {
+      list.appendChild(item.template.content.cloneNode(true));
+    });
+    container.appendChild(list);
+  }
+
+  function renderPublications(mode) {
+    var filtered = publications.filter(function (pub) {
+      return mode === 'all' ? true : pub.firstAuthor;
+    }).slice().sort(function (a, b) {
+      if (a.year !== b.year) {
+        return b.year - a.year;
+      }
+
+      var aHasTime = !isNaN(a.sortTime);
+      var bHasTime = !isNaN(b.sortTime);
+      if (aHasTime && bHasTime && a.sortTime !== b.sortTime) {
+        return b.sortTime - a.sortTime;
+      }
+      if (aHasTime !== bHasTime) {
+        return aHasTime ? -1 : 1;
+      }
+
+      return a.index - b.index;
+    });
+
+    renderRoot.innerHTML = '';
+
+    if (!filtered.length) {
+      var empty = document.createElement('p');
+      empty.textContent = 'No publications in this view yet.';
+      renderRoot.appendChild(empty);
+      setButtonState(mode);
+      return;
+    }
+
+    var years = [];
+    filtered.forEach(function (pub) {
+      if (years.indexOf(pub.year) === -1) {
+        years.push(pub.year);
+      }
+    });
+    years.sort(function (a, b) { return b - a; });
+
+    years.forEach(function (year) {
+      if (year <= olderCutoffYear) {
+        return;
+      }
+      appendYearGroup(
+        renderRoot,
+        'publications-' + year,
+        String(year),
+        filtered.filter(function (pub) { return pub.year === year; })
+      );
+    });
+
+    appendYearGroup(
+      renderRoot,
+      'publications-' + olderCutoffYear + '-and-earlier',
+      String(olderCutoffYear) + ' and earlier',
+      filtered.filter(function (pub) { return pub.year <= olderCutoffYear; })
+    );
+
+    setButtonState(mode);
+  }
+
+  firstBtn.addEventListener('click', function () {
+    renderPublications('first');
+  });
+
+  allBtn.addEventListener('click', function () {
+    renderPublications('all');
+  });
+
+  renderPublications('first');
+})();
+</script>
+<h4 id="education" class="section-heading">Education</h4>
+<ul class="education-list">
 <li>
 <strong>2023 - Present:</strong> Ph.D. in Computer Science, Fudan University
 <br />
@@ -575,8 +979,8 @@ Advisor: <a href="https://scholar.google.co.uk/citations?user=AG3OXS0AAAAJ&hl=en
 </li>
 </ul>
 
-<h4 id="project" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Project</h4>
-<ul style="list-style-type: disc; padding-left: 20px;">
+<h4 id="project" class="section-heading">Project</h4>
+<ul class="disc-list">
 <li>
 <a href="https://github.com/mantle2048/.dotfiles">
 <strong>Dotfiles: Configuration files for Linux</strong>
@@ -602,9 +1006,9 @@ Contributor, mainly maintained by <a href="https://yingpengma.github.io/">Yingpe
 </li>
 </ul>
 
-<h4 id="misc" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Misc</h4>
-<h5 id="talks" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Invited Talks</h5>
-<ul style="padding-left: 20px;">
+<h4 id="misc" class="section-heading">Misc</h4>
+<h5 id="invited-talks" class="subsection-heading">Invited Talks</h5>
+<ul class="indented-list">
 <li>
 <em>Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme </em>. Hosted by wisemodel, 2025.04
 </li>
@@ -612,16 +1016,16 @@ Contributor, mainly maintained by <a href="https://yingpengma.github.io/">Yingpe
 <em>ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation</em>. Hosted by ByteDance, 2024.08
 </li>
 </ul>
-<h5 id="talks" style="clear:both; margin-top: 14px; margin-bottom: 8px;">Academic Activities</h5>
-<ul style="padding-left: 20px;">
+<h5 id="academic-activities" class="subsection-heading">Academic Activities</h5>
+<ul class="indented-list">
 <li>
-Conference reviewer of : COLM (2025), NeurIPS (2025)
+Reviewer: AAAI (2025), NeurIPS (2025), COLM (2025, 2026), ICLR (2026), ICML (2026), ACL ARR (2026 January)
 </li>
 </ul>
 
-<div>Last Update: May 31, 2025</div>
-<p style="font-size: 0.9em; color: gray; margin-top: 10px;">
-Website template adapted from <a href="http://joschu.net/index.html" target="_blank" style="text-decoration: none; color: gray;">joschu.net</a>.
+<div>Last Update: February 25, 2026</div>
+<p class="site-credit">
+Website template adapted from <a href="http://joschu.net/index.html" target="_blank">joschu.net</a>.
 </p>
 
 
