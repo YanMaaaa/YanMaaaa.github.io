@@ -1,0 +1,201 @@
+% !TEX program = xelatex
+
+\documentclass{resume}
+\usepackage{zh_CN-Adobefonts_external} % Simplified Chinese Support using external fonts (./fonts/zh_CN-Adobe/)
+% \usepackage{zh_CN-Adobefonts_internal} % Simplified Chinese Support using system fonts
+\usepackage{linespacing_fix} % disable extra space before next section
+\usepackage{cite}
+
+\usepackage{setspace}
+\setstretch{1.1}
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{: #2}
+  }
+}
+\newcommand{\resumeItemSimple}[1]{
+  \item\small{
+    {#1}\vspace{-2pt}
+  }
+}
+\newcommand{\resumeItemSimpleNoBullet}[1]{
+  \vspace{-5pt}\item[]\small{
+    {#1}\vspace{-2pt}
+  }
+}
+
+\newcommand{\Paper}[3]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+    \vspace{-2pt}
+      \textbf{#1} \\ \vspace{-2pt}
+      {#2} \\ \vspace{-2pt}
+      {#3} \\ 
+    \end{tabular*} \vspace{3pt}
+}
+
+\newcommand{\AwardListStart}{
+    \vspace{-1pt}\begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+}
+
+\newcommand{\AwardListEnd}{
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\Award}[2]{
+    $\bullet$ {\small#1} & \textit{\small #2} \\
+}
+
+% Just in case someone needs a heading that does not need to be in a list
+\newcommand{\resumeHeading}[4]{
+    \begin{tabular*}{0.99\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      {#3} & {#4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubheadingSimple}[2]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{1.00\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \large{#1} & \large{#2} \\
+    \end{tabular*}%\vspace{-7pt}
+
+%
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}}
+
+\newcommand{\resumeSubItemSimple}[1]{\resumeItemsimple{#1}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+%
+\begin{document}
+\pagenumbering{gobble} % suppress displaying page number
+
+\name{马琰}
+
+\basicInfo{
+  (+86) 152-6982-9096 $\bullet$
+  \href{mailto:mayan20@fudan.edu.cn}{mayan20@fudan.edu.cn} $\bullet$
+  \href{https://mantle2048.github.io/}{Homepage}
+}
+
+\section{教育}
+\datedsubsection{\textbf{复旦大学}, 上海, 中国}{2020.09 -- 至今}
+计算机应用技术~~硕士, GPA: 3.62/4 (推免)
+\datedsubsection{\textbf{大连理工大学}, 大连, 中国}{2016.09 -- 2020.06}
+计算机科学与技术~~学士, GPA: 4.076/5, 排名: 12/123
+
+\section{研究兴趣}
+  \resumeSubHeadingListStart
+    \resumeSubItem{RL Application in Animation}
+      {控制动画角色在虚拟物理环境中像人一样运动}
+    \resumeSubItem{Diverse Solution Discovery}
+      {搜索具有多样化特征的高性能策略，通过强化学习 (RL), 进化算法 (EA), 模仿学习 (IL) 等方法灵活地解决任务}
+    \resumeSubItem{Evolutionary RL}
+      {结合RL+EA算法以解决特定的挑战性问题 (e.g.稀疏奖励)}
+   \resumeSubHeadingListEnd
+%
+\section{项目}
+\resumeSubHeadingListStart
+\resumeSubheadingSimple{
+      \href{https://github.com/mantle2048/diverse_openloop}{\textbf{Soccer AI Imitation}}: 特定进球风格的足球AI模仿(网易互娱AI Lab实习)}{2022.07 -- 2022.09}
+    \begin{itemize}
+        \item 模仿\href{http://www.jidiai.cn/cog_2022/}{COG 2022 足球比赛}中具有特定进球风格的对手策略，提升面对特定对手时的对抗能力
+        \item 采用生成对抗模仿学习(GAIL)针对少量的比赛数据(30+场)模仿球场上的每个球员
+        \item
+        设计“传球式得分”进球风格的状态表示，实现有效的模仿
+    \end{itemize}
+\resumeSubheadingSimple{
+      \href{https://github.com/mantle2048/diverse_openloop}{\textbf{Diverse Open Loop Control}}: 基于动作序列隐空间的多样开环运动控制}{2022.06 -- 2022.07}
+      \begin{itemize}
+      \item 从生成任务的角度审视基于多样性的运动控制问题，尝试学习控制器的隐空间表示
+      \item 构造动作序列 (开环控制器) 的先验分布，并通过变分自编码器捕捉隐空间
+      \item 生成具有不同核心特征 (e.g. 方向和速度) 的开环控制器, 实现了精细可控的多样性
+    \end{itemize}
+%
+\resumeSubheadingSimple{
+    \href{https://github.com/mantle2048/reRLs}{\textbf{reRLs}}: 主流强化学习算法的复现}{2022.02 -- 2022.02}
+      \begin{itemize}
+      \item 强化学习算法复现。目前已经实现的算法:
+          VPG,
+          A2C,
+          NPG,
+          TRPO, 
+          PPO
+      \item 支持基于Ray的并行采样和基于EnvPool的向量环境， 以及基于\href{https://github.com/aimhubio/aim}{Aim}的实验记录
+    \end{itemize}
+\resumeSubHeadingListEnd
+
+%
+\section{论文}
+  \resumeSubHeadingListStart
+  \Paper
+  {Evolutionary Action Selection for Gradient based Policy Learning \small \href{https://arxiv.org/abs/2201.04286}{[PDF]}}
+  {\textit{International Conference on Neural Information Processing (ICONIP) 2022}}
+  {\underline{Yan Ma}, Tianxing Liu, Bingsheng Wei, Yi Liu, Kang Xu, Wei Li}
+  \begin{itemize}
+    \item 关注演化强化学习中由于利用进化算法直接优化策略网络的高维参数空间而导致的低效性和脆弱性%，从而影响方法的整体性
+    \item
+    提出了Evolutinoary Action Selection (EAS), 核心思想是将混合方法中进化部分的优化目标从高维难优化的参数空间转移到低维易优化的动作空间
+    \item 组合EAS和RL算法为EAS-RL，    其在密集和稀疏奖励的运动控制任务中均有更好的表现
+    %RL策略根据当前状态输出动作，EAS将动作进化以促进RL策略学习。
+    \end{itemize}
+  \Paper
+  {Open-ended Diverse Solution Discovery with Regulated Behavior Patterns for Cross-Domain Adaptation \small \href{https://arxiv.org/abs/2209.12029}{[PDF]}}
+  {\textit{Association for the Advancement of Artificial Intelligence (AAAI) 2023}}
+  {Kang Xu, \underline{Yan Ma}, Wei Li, Bingsheng Wei}
+  \begin{itemize}
+    \item 关注多样性强化学习中特定行为模式的发掘，这可以促进策略跨领域的迁移
+    %多样性强化学习(Diversity-driven Reinforcement Learning)的方法在训练多样化的策略时通常没有任何的行为约束，这会导致策略在跨域迁移(Cross-Domain Adaptation)中的低效性
+    \item 提出了Diversity in Regulation (DiR)，利用具有掩码状态输入的逆动力学模型$\mathcal{T}(a|f(s),f(s'))$作为内在的多样性激励，以发现规范化的多样性策略
+    \item DiR在电机故障、传感器故障、动力学参数偏移等跨域测试环境中均展现出了良好的迁移效果
+    \end{itemize}
+  \resumeSubHeadingListEnd
+
+
+\section{获奖}
+\begin{itemize}
+    \item 复旦大学硕士生优秀学业奖学金 \hfill 2021
+    \item 大连理工大学优秀毕业生\hfill 2020
+    % \item 大连理工大学学习一等奖学金 \hfill 2019
+\end{itemize}
+
+
+\section{技能}
+{
+  \textbf{编程语言}{: Python, C/C++, Bash}
+  \hfill
+  \textbf{工具}{: Pytorch, Numpy, NeoVim, Tmux, Ray, Git, \LaTeX}
+}
+%
+
+% \datedsubsection{\href{https://github.com/mantle2048/reRLs/blob/master/reRLs/agents/es_agent.py}{\textbf{OpenAI Evolution Strategy}}: 自然进化策略 (OpenAI 版本) 的复现}{05/2022 -- 05/2022}
+% \begin{itemize}
+%   \item 复现论文 \href{https://arxiv.org/abs/1703.03864}{Evolution Strategies as a Scalable Alternative to Reinforcement Learning}
+%   \item 基于Ray的并行化实现，worker之间仅传递随机种子和rollout的奖励值等标量。相比于强化学习的方法，进化策略具有更高的并行化能力
+% \end{itemize}
+
+\end{document}
