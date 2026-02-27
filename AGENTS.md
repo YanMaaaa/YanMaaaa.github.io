@@ -6,8 +6,9 @@ This file records project-specific conventions for maintaining `yan`'s homepage.
 
 - This repo is a simple static homepage.
 - Main file: `index.html`
+- CV file: `cv.tex`
 - Image asset: `images/Photo.jpg`
-- Most edits happen directly in `index.html` (single-file style).
+- Most homepage edits happen directly in `index.html` (single-file style).
 
 ## Owner Profile (for content edits)
 
@@ -111,3 +112,47 @@ Do not re-split this into two separate publication entries unless the user asks.
 - Prefer minimal changes outside the target section.
 - Keep the page single-file unless the user explicitly requests a refactor.
 - Preserve current behavior of the publication filter JS unless intentionally modifying it.
+
+## CV (`cv.tex`) Maintenance Conventions
+
+- `cv.tex` should stay aligned with the homepage profile and publication updates.
+- When updating the CV publication list, prioritize:
+  - first-author / co-first papers
+  - accepted papers (including accepted blog-track items)
+- CV publications should be ordered by time (newest first), following the same project-specific sorting preference used on the homepage:
+  - if exact dates are available, use them
+  - otherwise, infer an approximate date from the arXiv identifier using the local `YYMM.xx -> YYYY-MM-DD` convention (with `xx` mapped to day)
+- When homepage publication metadata changes (new papers, updated acceptance status, merged entries like ANOLE + ICLR Blog Track), check whether `cv.tex` should be updated in the same turn.
+
+### CV Publication Formatting (Current Style)
+
+- Keep publication entries in paragraph-style auto-wrap format (not rigid 3-line tabular blocks), to improve one-page density and readability.
+- Current macro convention:
+  - `\Paper{title+links}{venue_or_arxiv}{authors}`
+  - `\PaperTLDR{title+links}{venue_or_arxiv}{authors}{tldr}`
+- Author line should be on a separate line in smaller font.
+- `\PaperTLDR` should hide the TLDR line when the 4th argument is empty (`{}`), i.e., no dangling `TLDR:` label.
+- Use icon links in titles where applicable (e.g., `[\faFilePdf]`, `[\faGithub]`, `[\faGlobe]`) instead of plain `[PDF]` text.
+
+### CV Publication Content Policy
+
+- For preprint/technical-report style entries, show only arXiv ID style info (e.g., `arXiv:2602.01334`) without redundant year text.
+- For accepted conference/journal entries, do not append arXiv ID in the venue line unless explicitly requested.
+- Keep author lists consistent with `index.html`; fix discrepancies against homepage source of truth when conflicts appear.
+- Underline `Yan Ma` where the user explicitly requests it on specific papers; do not globally enforce underlining on all entries unless requested.
+
+### CV Sections and Length
+
+- Keep CV concise (target one page unless user asks otherwise).
+- When space is tight, prefer:
+  - keeping key first/co-first papers
+  - keeping concise experience bullets
+  - reducing/removing optional TLDR lines on lower-priority entries
+
+### Chinese CV (`cv_CN.tex`) Conventions
+
+- `cv_CN.tex` should be kept in sync with `cv.tex` structure and key content unless user asks for divergence.
+- Keep paper titles and author names in original English by default; translate narrative text (research interests, experience descriptions, TLDR text) to Chinese.
+- If using class/template that already loads `hyperref`, avoid option clashes by passing options before class load:
+  - use `\PassOptionsToPackage{hidelinks}{hyperref}` before `\documentclass`
+  - avoid re-loading `hyperref` with conflicting options later.

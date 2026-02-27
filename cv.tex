@@ -1,0 +1,249 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{awesomebox}
+\usepackage{fontawesome5}
+
+\usepackage{comment}
+
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item\small{
+    \textbf{#1}{: #2 \vspace{-2pt}}
+  }
+}
+\newcommand{\resumeItemSimple}[1]{
+  \item\small{
+    {#1}\vspace{-2pt}
+  }
+}
+\newcommand{\resumeItemSimpleNoBullet}[1]{
+  \vspace{-5pt}\item[]\small{
+    {#1}\vspace{-2pt}
+  }
+}
+
+\newcommand{\Paper}[3]{
+  \vspace{-1pt}\item \small
+    \hangindent=1.4em \hangafter=1
+    \textbf{#1}. #2
+    \par{\footnotesize #3}
+  \vspace{-4pt}
+}
+
+\newcommand{\PaperTLDR}[4]{
+  \vspace{-1pt}\item \small
+    \hangindent=1.4em \hangafter=1
+    \textbf{#1}. #2
+    \par{\footnotesize #3}
+    \if\relax\detokenize{#4}\relax\else
+      \par{\scriptsize \emph{TLDR: #4}}
+    \fi
+  \vspace{-4pt}
+}
+
+\newcommand{\Thesis}[2]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \small\textbf{#1} \\
+      {\small #2} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\ExperienceListStart}{
+    \vspace{-1pt}\begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+}
+
+\newcommand{\ExperienceListEnd}{
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\Experience}[2]{
+    $\bullet$ {\small#1} & \textit{\small #2} \\
+}
+
+\newcommand{\AwardListStart}{
+    \vspace{-1pt}\begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+}
+
+\newcommand{\AwardListEnd}{
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\Award}[2]{
+    $\bullet$ {\small#1} & \textit{\small #2} \\
+}
+
+% Just in case someone needs a heading that does not need to be in a list
+\newcommand{\resumeHeading}[4]{
+    \begin{tabular*}{0.99\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \small\textbf{#1} & \small#2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubheadingSimple}[2]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \small\textbf{#1} & \small\textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
+
+\newcommand{\resumeSubItemSimple}[1]{\resumeItemsimple{#1}\vspace{-4pt}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  CV STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING-----------------
+\begin{center}
+{\LARGE \scshape \bfseries Yan Ma} \\ \vspace{2pt}
+(+86) 152-6982-9096 $\bullet$ 
+\href{mailto:yanma23@m.fudan.edu.cn}{yanma23@m.fudan.edu.cn} $\bullet$
+\href{https://yanmaaaa.github.io}{Homepage} $\bullet$
+\href{https://scholar.google.com/citations?user=tnJyAAoAAAAJ\&hl=en}{Google Scholar}
+\end{center}
+
+
+%-----------Projects-----------------
+\section{Research Interests}
+    My research interests lie at the intersection of reinforcement learning and multimodal models. In 2025, I built substantial experience in RL for vision-language models, especially RL scaling across single-visual tasks, multi-visual tasks, and agentic vision tool use. Prior to this, I also worked on unified multimodal models and text generation. My current focus is pre-training for multimodal generative models.
+
+
+%-----------EDUCATION-----------------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Ph.D. Student in Computer Science, Fudan University}{\textbf{Shanghai, China}}
+      {Advisor: Prof. \href{https://scholar.google.co.jp/citations?user=oIz_CYEAAAAJ\&hl=en}{Pengfei Liu} \& Prof. \href{https://mmlab.siat.ac.cn/yuqiao}{Yu Qiao}}{2023.09 -- 2027.06 (expected)}
+    \resumeSubheading
+      {Master in Computer Application Technology, Fudan University}{\textbf{Shanghai, China}}
+      {Advisor: Prof. \href{https://scholar.google.co.uk/citations?user=AG3OXS0AAAAJ\&hl=en}{Wei Li}}{2020.09 -- 2023.06}
+    \resumeSubheading
+      {Bachelor in Computer Science and Technology, Dalian University of Technology}{\textbf{Dalian, China}}
+      {GPA: 4.076/5, Rank: 12/123}{2016.09 -- 2020.06}
+  \resumeSubHeadingListEnd
+
+%-----------Experience-----------------
+\section{Experience}
+  \ExperienceListStart
+    \Experience{\textbf{MiniMax \& HailuoAI} - Intern; contributed to M-series models and Hailuo video models}{2025.01 -- 2026.02}
+    \Experience{\textbf{Shanghai AI Laboratory} - Intern; text generation and unified multimodal models}{2023.07 -- 2025.01}
+  \ExperienceListEnd
+
+%-----------Publications-----------------
+\section{Publications}
+  \resumeSubHeadingListStart
+  \PaperTLDR
+  {What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom \href{https://arxiv.org/abs/2602.01334}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/Med}{[\faGithub]}}
+  {\textit{arXiv:2602.01334}}
+  {\underline{Yan Ma}$^\dagger$, Weiyu Zhang$^\dagger$, Tianle Li, Linge Du, Xuyang Shen, Pengfei Liu}
+  {We show current vision tool-use RL gains are driven mainly by intrinsic capability improvement and reduced tool-induced harm, not true tool-based correction.}
+  \PaperTLDR
+  {One RL to See Them All: Visual Triple Unified Reinforcement Learning \href{https://arxiv.org/abs/2505.18129}{[\faFilePdf]}\href{https://github.com/MiniMax-AI/One-RL-to-See-Them-All}{[\faGithub]}}
+  {\textit{arXiv:2505.18129}}
+  {\underline{Yan Ma}$^\dagger$, Linge Du$^\dagger$, Xuyang Shen$^\dagger$, Shaoxiang Chen, Pengfei Li, Qibing Ren, Lizhuang Ma, Yuchao Dai, Pengfei Liu, Junjie Yan}
+  {We build a unified RL system (V-Triune) for jointly training visual reasoning and perception in VLMs, yielding broad gains across both task types.}
+  \PaperTLDR
+  {Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme \href{https://arxiv.org/abs/2504.02587}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/MAYE}{[\faGithub]}}
+  {\textit{arXiv:2504.02587}}
+  {\underline{Yan Ma}, Steffi Chern, Xuyang Shen, Yiran Zhong, Pengfei Liu}
+  {We introduce a transparent, reproducible RL pipeline and evaluation scheme for VLMs, and show RL consistently improves generalization over SFT with key training-dynamics findings.}
+  \PaperTLDR
+  {ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation \href{https://arxiv.org/abs/2407.06135}{[\faFilePdf]}\href{https://iclr-blogposts.github.io/2025/blog/fine-tuning-token-based-large-multimodal-models/}{[\faGlobe]}\href{https://github.com/GAIR-NLP/Anole}{[\faGithub]}}
+  {\textit{arXiv:2407.06135; extended version accepted to ICLR 2025 Blog Track}}
+  {Ethan Chern*, Jiadi Su*, \underline{Yan Ma*}, Pengfei Liu}
+  % {We present an open native autoregressive multimodal model for coherent interleaved image-text generation, with efficient fine-tuning from Chameleon.}
+  {}
+  \PaperTLDR
+  {MoPS: Modular Story Premise Synthesis for Open-Ended Automatic Story Generation \href{https://arxiv.org/abs/2406.05690}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/MoPS}{[\faGithub]}}
+  {\textit{ACL 2024}}
+  {\underline{Yan Ma}, Yu Qiao, Pengfei Liu}
+  {}
+  % {We modularize story-premise synthesis into structured design and integration steps, producing more diverse and higher-quality premises for downstream story generation.}
+  \Paper
+  {Weak-to-Strong Reasoning \small \href{https://arxiv.org/abs/2407.13647}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/weak-to-strong-reasoning}{[\faGithub]}}
+  {\textit{EMNLP Findings 2024}}
+  {Yuqing Yang, \underline{Yan Ma}, Pengfei Liu}
+  \Paper
+  {OlympicArena: Benchmarking Multi-discipline Cognitive Reasoning for Superintelligent AI \href{https://arxiv.org/abs/2406.12753}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/OlympicArena}{[\faGithub]}}
+  {\textit{NeurIPS Dataset \& Benchmark Track 2024}}
+  {Zhen Huang, Zengzhi Wang, Shijie Xia, ..., \underline{Yan Ma}, ..., Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu}
+  \resumeSubHeadingListEnd
+
+\section{Programming Skills}
+    \resumeSubHeadingListStart
+    \item{
+      \textbf{Languages}{: Python, Bash, Markdown, Latex}
+      \hfill
+      \textbf{Technologies}{: Verl, FSDP, VLLM/SGLang, NeoVim, Tmux}
+    }
+  \resumeSubHeadingListEnd
+
+%-------------------------------------------
+\end{document}
