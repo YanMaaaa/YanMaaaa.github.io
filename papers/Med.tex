@@ -1,0 +1,678 @@
+\icmltitlerunning{What Does Vision Tool-use Reinforcement Learning Really Learn?}
+
+\begin{document}
+
+\twocolumn[
+  \icmltitle{What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom}
+
+  % It is OKAY to include author information, even for blind submissions: the
+  % style file will automatically remove it for you unless you've provided
+  % the [accepted] option to the icml2026 package.
+
+  % List of affiliations: The first argument should be a (short) identifier you
+  % will use later to specify author affiliations Academic affiliations
+  % should list Department, University, City, Region, Country Industry
+  % affiliations should list Company, City, Region, Country
+
+  % You can specify symbols, otherwise they are numbered in order. Ideally, you
+  % should not use this facility. Affiliations will be numbered in order of
+  % appearance and this is the preferred way.
+  \icmlsetsymbol{equal}{*}
+  \icmlsetsymbol{eq}{†}
+  \icmlsetsymbol{uni1}{1}
+  \icmlsetsymbol{uni2}{2}
+  \icmlsetsymbol{uni3}{3}
+  \begin{icmlauthorlist}
+    \icmlauthor{Yan Ma}{equal,fudan}
+    \icmlauthor{Weiyu Zhang}{equal,mm}
+    \icmlauthor{Tianle Li}{mm}
+    \icmlauthor{Linge Du}{mm}
+    \icmlauthor{Xuyang Shen}{eq,mm}
+    \icmlauthor{Pengfei Liu}{eq,sjtu,sii}
+    % \icmlauthor{Firstname3 Lastname3}{comp}
+    % \icmlauthor{Firstname4 Lastname4}{sch}
+    % \icmlauthor{Firstname5 Lastname5}{yyy}
+    % \icmlauthor{Firstname6 Lastname6}{sch,yyy,comp}
+    % \icmlauthor{Firstname7 Lastname7}{comp}
+    % %\icmlauthor{}{sch}
+    % \icmlauthor{Firstname8 Lastname8}{sch}
+    % \icmlauthor{Firstname8 Lastname8}{yyy,comp}
+    %\icmlauthor{}{sch}
+  \end{icmlauthorlist}
+
+  %\icmlaffiliation{yyy}{Department of XXX, University of YYY, Location, Country}
+  % \icmlaffiliation{comp}{Company Name, Location, Country}
+  \icmlaffiliation{sjtu}{Shanghai Jiao Tong University}
+  \icmlaffiliation{mm}{MiniMax}
+  \icmlaffiliation{fudan}{Fudan University}
+  \icmlaffiliation{sii}{SII}
+% 
+  \icmlcorrespondingauthor{Xuyang Shen}{shenxuyang@minimaxi.com}
+  \icmlcorrespondingauthor{Pengfei Liu}{pengfei@sjtu.edu.cn}
+
+  % You may provide any keywords that you find helpful for describing your
+  % paper; these are used to populate the "keywords" metadata in the PDF but
+  % will not be shown in the document
+  \icmlkeywords{Vision Tool-use Reinforcement Learning, Tool-Calling Behavior Analysis, Crop-and-Zoom Vision Tools}
+
+  \vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+% This command actually creates the footnote in the first column listing the
+% affiliations and the copyright notice. The command takes one argument, which
+% is text to display at the start of the footnote. The \icmlEqualContribution
+% command is standard text for equal contribution. Remove it (just {}) if you
+% do not need this facility.
+
+% Use ONE of the following lines. DO NOT remove the command.
+% If you have no special notice, KEEP empty braces:
+\printAffiliationsAndNotice{}  % no special notice (required even if empty)
+% Or, if applicable, use the standard equal contribution text:
+% \printAffiliationsAndNotice{\icmlEqualContribution}
+
+\begin{abstract}
+Vision tool-use reinforcement learning (RL) can equip vision--language models with visual operators such as crop-and-zoom and achieves strong performance gains, yet it remains unclear whether these gains are driven by improvements in tool use or evolving intrinsic capabilities.
+%
+We introduce \textbf{MED} (Measure--Explain--Diagnose), a coarse-to-fine framework that disentangles intrinsic capability changes from tool-induced effects, decomposes the tool-induced performance difference into gain and harm terms, and probes the mechanisms driving their evolution.
+%
+Across checkpoint-level analyses on two VLMs with different tool priors and six benchmarks, we find that improvements are dominated by intrinsic learning, while tool-use RL mainly reduces tool-induced harm (e.g., fewer call-induced errors and weaker tool schema interference) and yields limited progress in tool-based correction of intrinsic failures.
+%
+Overall, current vision tool-use RL learns to coexist safely with tools rather than master them.
+%
+Code: \url{https://github.com/GAIR-NLP/Med}
+%
+\end{abstract}
+
+
+\begin{figure*}[htb]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/Figure1-v3.pdf}
+\caption{
+\textbf{The MED (Measure--Explain--Diagnose) framework for vision tool-use RL.}
+\textbf{(a)} We train a VLM with vision tool-use RL and evaluate each checkpoint under two protocols:
+\emph{tool-free} accuracy $Acc_{\mathrm{wo}}$ (intrinsic capability) and \emph{tool-available} accuracy $Acc_{\mathrm{w}}$.
+\textbf{(b) Measure:} separate intrinsic drift $f_{\mathrm{wo}}(t)=Acc_{\mathrm{wo}}(t)-Acc_{\mathrm{wo}}(0)$ from tool-induced drift $\Delta_{\mathrm{tool}}(t)$ by tracking the evolution of the gap $G(t)=Acc_{\mathrm{w}}(t)-Acc_{\mathrm{wo}}(t)$.
+\textbf{(c) Explain:} decompose $G(t)$ into Gains on intrinsic failures $\mathcal D_{\mathrm{fail}}(t)$ and Harms on intrinsic successes $\mathcal D_{\mathrm{succ}}(t)$, further distinguishing tool-call effects from schema-only effects (four terms to the right of the equal sign).
+\textbf{(d) Diagnose:} probe the underlying mechanisms behind each term's evolution to identify what changes in tool use drive gains or harms over training.
+}
+
+    \label{fig:framework}
+\end{figure*}
+
+%
+\section{Introduction}
+%
+Reinforcement learning (RL)--based post-training has become a central paradigm for improving large language models (e.g., DeepSeek-R1)~\cite{guo2025deepseek}, and recent efforts extend it to multimodal settings to boost visual and video reasoning performance~\cite{liEditThinkerIterativeReasoning2025,wangFixingReasoningPathFailures2025,yuanMMEReasoningBenchmark2025,wangVideoRFTVideoReasoning2025}.
+Yet, even strong vision-language models (VLMs) often treat the image as a static context: once an input is encoded, the model typically reasons without further visual interaction, relying on a single-pass perceptual snapshot.
+%
+This creates a mismatch between how humans solve visually grounded problems and how current models do so.
+Humans routinely \emph{interact} with visual evidence, zooming into regions, re-checking details, and verifying uncertain cues, especially when the correct decision hinges on fine-grained perception.
+
+Vision tool-use RL aims to bridge this gap by equipping VLMs with explicit visual operators (e.g., crop-and-zoom) and training them to invoke tools during decoding~\cite{openaiThinkingWithImages2025,zhangSkyworkR1V4AgenticMultimodal2025,zhouReinforcedVisualPerception2025}.
+Empirically, this paradigm yields sizeable gains on a wide range of multimodal benchmarks~\cite{openaiThinkingWithImages2025,zhangSkyworkR1V4AgenticMultimodal2025,zhouReinforcedVisualPerception2025}, suggesting that interactive perception can complement intrinsic reasoning.
+A prominent instance is crop-and-zoom tool use~\cite{suPixelReasonerPixelSpace2025,zhengDeepEyesIncentivizingThinking2025,laiMinio3ScalingUp2025,liuHiDeRethinkingZoomIN2025}, while other lines explore synthesizing and executing vision-related code~\cite{zhangThymeThinkBeyond2025,zhao2025pyvisionagenticvisiondynamic}.
+However, a growing body of evidence also reveals a less flattering side: models may invoke tools redundantly or irrelevantly, and tool-use traces can be unfaithful or weakly grounded~\cite{yuVFaithLargeMultimodal2025,liuFaithfulnessVisualThinking2025,duRevisitingNecessityLengthy2025}.
+This has motivated work that regulates tool usage via reward shaping or call-level supervision, treating \emph{rational} tool calling as a proxy for improved capability~\cite{wangAdaToolerVAdaptiveToolUse2025,wangIllusionIntentionVisual2025,liuFaithfulnessVisualThinking2025}.
+
+Despite this progress, a central question remains insufficiently understood:
+\emph{what does vision tool-use RL actually learn?}
+Performance improvements observed under tool-available evaluation may arise from different sources.
+First, RL may strengthen the model's \emph{intrinsic} capability, improving perception and reasoning even when tools are absent.
+Second, RL may improve \emph{tool use itself}, improving when-to-call decisions and execution quality.
+%
+Third, RL may primarily reduce \emph{tool-induced side effects}: lowering harms from tool availability (e.g., fewer harmful calls and less sensitivity to the tool schema), without materially improving the ability to correct tool-free failures.
+%
+Existing evaluations typically report end-to-end tool-available accuracy, thereby hindering a mechanistic attribution of the gains.
+
+In this paper, we argue that answering the above question requires a training-dynamics view and attribution of performance changes.
+We therefore introduce a coarse-to-fine analysis framework, MED (Measure--Explain--Diagnose), designed to disentangle tool-free capability changes from tool-induced effects over RL training.
+MED first quantifies how much of the tool-available performance change can be explained by intrinsic improvement alone; it then decomposes the tool-induced performance difference into interpretable gain and harm components; finally, it diagnoses the underlying mechanisms behind these components to distinguish changes in tool-use potential, calling behavior, and tool-use quality.
+This analysis is complementary to call-level faithfulness studies~\cite{yuVFaithLargeMultimodal2025,liuFaithfulnessVisualThinking2025,duRevisitingNecessityLengthy2025}: rather than asking only whether a tool call looks reasonable, we ask \emph{why} tool availability helps or hurts, and \emph{which} learning signals dominate the observed improvements.
+
+We instantiate our study in a widely used minimal setting, \textit{crop-and-zoom}~\cite{suPixelReasonerPixelSpace2025,zhengDeepEyesIncentivizingThinking2025,liuHiDeRethinkingZoomIN2025}, and conduct checkpoint-level analyses across two representative VLM backbones and six standard benchmarks~\cite{laiMinio3ScalingUp2025,vstar,hrbench}.
+Importantly, the two backbones differ not only in strength but also in prior exposure to the target tool: one is tool-naive (not explicitly trained on crop-and-zoom), whereas the other is tool-native (trained with this tool upon release), enabling us to probe whether the same training dynamics hold across distinct tool-familiarity regimes~\cite{qwen25vl,qwen3vl}.
+Together, our results provide a mechanistic and attribution-grounded answer to the titular question.
+
+%
+Our work makes three contributions:
+1) We propose MED (Measure--Explain--Diagnose), a coarse-to-fine framework that disentangles tool-induced effects from intrinsic capability drift in vision tool-use RL.
+%
+2) We derive an interpretable decomposition of the tool-induced performance gap into Gross Gain/Harm and further factorize each effect to enable mechanism-level diagnosis of when vision tools help, when they hurt, and why.
+%
+3) Through extensive checkpoint-level analyses on two VLMs and six benchmarks, we find that vision tool-use RL mainly reduces tool-induced harm (lower breakage on intrinsic successes) but shows limited improvement in tool-based correction of intrinsic failures.
+
+% \section{Related Work} % Building on reinforcement learning–based post-training paradigms such as DeepSeek-R1~\cite{guo2025deepseek}, a growing body of work extends this paradigm to multimodal large language models~\cite{liEditThinkerIterativeReasoning2025,wangFixingReasoningPathFailures2025,yuanMMEReasoningBenchmark2025,wangVideoRFTVideoReasoning2025}, improving reasoning performance across a wide range of visual and video-based tasks. These approaches typically treat visual inputs as passive context and focus on optimizing textual reasoning trajectories, which restricts the model's capacity to adaptively query, refine, or verify visual information during reasoning. To overcome this limitation, vision tool-use RL~\cite{openaiThinkingWithImages2025} has been proposed to enable models to actively interact with visual inputs during reasoning~\cite{openaiThinkingWithImages2025,zhangSkyworkR1V4AgenticMultimodal2025,zhouReinforcedVisualPerception2025}, through operations such as calling crop-and-zoom tools~\cite{suPixelReasonerPixelSpace2025,zhengDeepEyesIncentivizingThinking2025,laiMinio3ScalingUp2025,liuHiDeRethinkingZoomIN2025}, synthesizing and executing vision-related code~\cite{zhangThymeThinkBeyond2025,zhao2025pyvisionagenticvisiondynamic}. While vision tool-use RL have achieved performance gains across a range of multimodal benchmarks, recent studies show that such models may invoke visual tools redundantly or irrelevantly, leading to unfaithful reasoning traces~\cite{yuVFaithLargeMultimodal2025,liuFaithfulnessVisualThinking2025,duRevisitingNecessityLengthy2025}. % To mitigate this issue, several works attempt to regulate visual tool usage by modifying or augmenting training rewards, using signals based on utility estimation\cite{wangAdaToolerVAdaptiveToolUse2025}, alignment with human-annotated rationales~\cite{wangIllusionIntentionVisual2025}, or causal relevance~\cite{liuFaithfulnessVisualThinking2025}. % These approaches focus on assessing whether individual tool calls are appropriate, implicitly treating rational tool usage as an indicator of improved model capability. % However, rational tool usage is not sufficient to explain capability improvement, leaving unclear what is actually learned through vision tool-use RL training. % Moreover, most existing studies are conducted on Qwen2.5-VL models, which limits the generality of conclusions. In this work, we investigate the training dynamics of Think with Image to understand how capability improvement emerges in a more general manner, including on the more advanced Qwen3-VL models.
+
+%
+\section{Related Work}
+%
+Recent RL--based post-training paradigms (e.g., DeepSeek-R1~\cite{guo2025deepseek}) have been extended to multimodal LLMs~\cite{liEditThinkerIterativeReasoning2025,wangFixingReasoningPathFailures2025,yuanMMEReasoningBenchmark2025,wangVideoRFTVideoReasoning2025}, yielding broad gains on visual and video reasoning benchmarks.
+However, these methods typically optimize textual reasoning trajectories without explicit mechanisms to \emph{adaptively interrogate} visual inputs during inference (e.g., querying regions, verifying evidence, or refining observations), limiting interactive visual reasoning.
+
+To enable such interaction, \emph{vision tool-use RL}~\cite{openaiThinkingWithImages2025} equips models with visual operators and trains them to invoke tools during decoding~\cite{openaiThinkingWithImages2025,zhangSkyworkR1V4AgenticMultimodal2025,zhouReinforcedVisualPerception2025}.
+A prominent instance is crop-and-zoom tool use~\cite{suPixelReasonerPixelSpace2025,zhengDeepEyesIncentivizingThinking2025,laiMinio3ScalingUp2025,liuHiDeRethinkingZoomIN2025}, while other lines explore synthesizing and executing vision-related code~\cite{zhangThymeThinkBeyond2025,zhao2025pyvisionagenticvisiondynamic}.
+These approaches report strong benchmark improvements, but emerging evidence suggests that models may call tools redundantly or irrelevantly, producing unfaithful or ungrounded tool-use traces~\cite{yuVFaithLargeMultimodal2025,liuFaithfulnessVisualThinking2025,duRevisitingNecessityLengthy2025}.
+
+To improve the faithfulness of tool-use, several works regulate visual tool usage by augmenting rewards with signals such as utility estimation~\cite{wangAdaToolerVAdaptiveToolUse2025}, alignment with human rationales~\cite{wangIllusionIntentionVisual2025}, or causal relevance~\cite{liuFaithfulnessVisualThinking2025}.
+These studies primarily operate at the level of \emph{call appropriateness}, asking whether a tool invocation is necessary or aligned with human reasoning.
+In contrast, fewer works explicitly attribute \emph{overall performance changes} in tool-use RL to intrinsic capability drift versus tool-induced effects, or analyze the mechanisms through which gains and harms evolve during training.
+Moreover, existing analyses are often conducted under a single backbone and a single tool-familiarity regime.
+In our study, we analyze training dynamics across two representative VLMs that differ not only in backbone strength but also in prior exposure to crop-and-zoom: Qwen2.5VL has not been explicitly trained with this tool, whereas Qwen3VL has been.
+
+
+%a
+\section{Methodology}
+
+\paragraph{Preliminaries and Problem Formulation}
+%
+We study a VLM, denoted as $\Phi$, trained with RL to solve a set of visual tasks. We focus on the \textit{Vision Tool-Use RL} setting, where $\Phi$ may invoke visual tools (e.g., crop-and-zoom) during decoding to assist prediction.
+
+To track learning over training time $t \in [0, T]$, we evaluate each checkpoint under two inference protocols (\cref{fig:framework}a):
+%
+\paragraph{Tool-free:} The model is not given any external tools, answers using only its intrinsic capability. Let $Acc_{\mathrm{wo}}(t)$ denote the task accuracy at checkpoint $t$ under this protocol.
+%
+\paragraph{Tool-available:} The model is provided with the tool schema and may invoke the tool during decoding. Let $Acc_{\mathrm{w}}(t)$ denote the task accuracy at checkpoint $t$ under this protocol.
+
+We measure progress as the change in accuracy from the initial checkpoint ($t=0$), and define the tool-free and tool-available drifts as
+\begin{equation}
+    f_{\mathrm{wo}}(t) = Acc_{\mathrm{wo}}(t) - Acc_{\mathrm{wo}}(0),~ f_{\mathrm{w}}(t) = Acc_{\mathrm{w}}(t) - Acc_{\mathrm{w}}(0)
+\label{eq:drift_def}
+\end{equation}
+%
+Here, $f_{\mathrm{wo}}(t)$ measures the change in tool-free accuracy (intrinsic capability), whereas $f_{\mathrm{w}}(t)$ measures the end-to-end accuracy change when tool use is available.
+%
+Our goal is to decompose $f_{\mathrm{w}}(t)$ into an intrinsic component (captured by $f_{\mathrm{wo}}(t)$) and a tool-induced component. Specifically, we test whether gains in $Acc_{\mathrm{w}}(t)$ arise from improved tool use (e.g., when/how to call) or from the same intrinsic improvements reflected in $Acc_{\mathrm{wo}}(t)$.
+%
+To this end, we develop a coarse-to-fine analysis framework, termed MED (Measure-Explain-Diagnose), to attribute performance changes to intrinsic drift versus tool-induced effects. 
+
+\subsection{Measure: Quantifying Tool-Induced Drift}
+
+We define \textit{tool-induced performance gap} at checkpoint $t$:
+%
+\begin{equation}
+    G(t) \triangleq Acc_{\mathrm{w}}(t) - Acc_{\mathrm{wo}}(t)
+\end{equation}
+%
+$G(t)$ represents the instantaneous performance difference induced by tool access relative to the tool-free protocol.
+%
+We then track the evolution of this performance gap over training by defining \( \Delta_{\mathrm{tool}}(t) \triangleq G(t) - G(0) \), which captures the \textit{tool-induced drift}—the performance shift resulting from the model’s evolving use of the tool.
+%
+Using~\cref{eq:drift_def}, we obtain an additive decomposition of the tool-available drift:
+%
+\begin{equation}
+    \underbrace{f_{\mathrm{w}}(t)}_{\text{Tool-available drift}}
+    =
+    \underbrace{f_{\mathrm{wo}}(t)}_{\text{Intrinsic drift (tool-free)}}
+    +
+    \underbrace{\Delta_{\mathrm{tool}}(t)}_{\text{Tool-induced  drift}}
+    \label{eq:total_drift}
+\end{equation}
+%
+\cref{eq:total_drift} expresses the tool-available drift as the sum of intrinsic drift (measured under tool-free performance) and the change in tool-induced performance gap over training.
+
+To summarize contributions over the training horizon $t\in[0,T]$, we measure the cumulative \textit{magnitude} of each drift component by integrating their absolute values (\cref{fig:framework}b):
+\begin{equation}
+    |B_{\mathrm{wo}}| \triangleq \int_{0}^{T} \big| f_{\mathrm{wo}}(t) \big|\,dt,
+    \quad
+    |B_{\Delta \mathrm{tool}}| \triangleq \int_{0}^{T} \big| \Delta_{\mathrm{tool}}(t) \big|\,dt
+\end{equation}
+
+Finally, we define the \textit{tool contribution ratio} as the fraction of total drift magnitude attributed to tool-induced drift:
+%
+\begin{equation}
+    S_{\mathrm{tool}} = \frac{|B_{\Delta \mathrm{tool}}|}{|B_{\mathrm{wo}}| + |B_{\Delta \mathrm{tool}}|}
+\end{equation}
+%
+When $|B_{\mathrm{wo}}| + |B_{\Delta \mathrm{tool}}|$ is non-negligible, $S_{\mathrm{tool}}\approx 0$ indicates dominance by intrinsic drift magnitude,
+whereas $S_{\mathrm{tool}}\approx 1$ indicates dominance by the magnitude of tool-induced drift.
+%
+\Cref{fig:framework}b illustrates these quantities as the total area traced by \( f_{\mathrm{wo}}(t) \) (shaded in dark grey, representing intrinsic drift) and the area between \( f_{\mathrm{w}}(t) \) and \( f_{\mathrm{wo}}(t) \) (filled in light grey, representing the tool-induced drift) over time.
+
+\subsection{Explain: Decomposing Tool-induced Drift}
+\label{subec:explain}
+%
+While \( S_{\text{tool}} \) quantifies the overall tool-induced drift, it reflects only the magnitude of this drift relative to the total drift.  
+However, it does not explain the underlying dynamics, such as how tool-induced effects (gains and harms) evolve over training.  
+To gain a deeper understanding of training dynamics, we need to decompose \( \Delta_{\mathrm{tool}}(t) = G(t) - G(0) \) further.  
+Since \( G(t) \) measures the performance gap between \( Acc_{\mathrm{w}}(t) \) and \( Acc_{\mathrm{wo}}(t) \), we can further decompose it based on the model's intrinsic performance.
+
+
+\textbf{Partitioning via Intrinsic Capability.}
+At each checkpoint \( t \), the model's intrinsic performance partitions the task set $\Omega$ into two disjoint subsets: the \textit{failure set} $\mathcal{D}_{\text{fail}}(t)$, where the model fails without tools, and the \textit{success set} $\mathcal{D}_{\text{succ}}(t)$, where it succeeds.
+%
+This partition defines the potential for improvement: improvement is possible on $\mathcal{D}_{\text{fail}}$, while regression can occur on $\mathcal{D}_{\text{succ}}$.
+
+\textbf{Probabilistic Decomposition of $G(t)$.}
+We analyze the tool available accuracy \( Acc_{\mathrm{w}}(t) \) by conditioning on tool usage. Let $c$ denote the event of calling the tool, and $\checkmark$ (or $\times$) denote a correct (or incorrect) prediction under the tool-available protocol. By the law of total probability:
+%
+\begin{equation}
+    Acc_{\mathrm{w}}(t) = P(\checkmark \mid \mathcal{D}_{\text{fail}}) P(\mathcal{D}_{\text{fail}}) + P(\checkmark \mid \mathcal{D}_{\text{succ}}) P(\mathcal{D}_{\text{succ}})
+    \label{eq:acc_expansion}
+\end{equation}
+%
+Moreover, conditioning on tool usage gives, for any subset $\mathcal D \subseteq \Omega$,
+$
+P(\checkmark\mid \mathcal D)=P(c\mid \mathcal D)P(\checkmark\mid c,\mathcal D)+P(\neg c\mid \mathcal D)P(\checkmark\mid \neg c,\mathcal D).
+$
+Subtracting the intrinsic baseline $Acc_{\mathrm{wo}}(t)=P(\mathcal D_{\mathrm{succ}})$ from \cref{eq:acc_expansion}, we rewrite the success-side term via
+$P(\checkmark\mid \mathcal D_{\mathrm{succ}})=1-P(\times\mid \mathcal D_{\mathrm{succ}})$,
+and further expand $P(\times\mid \mathcal D_{\mathrm{succ}})$ by $c/\neg c$ analogously.
+This yields the four-term decomposition of the tool-induced gap $G(t)$ (see illustration in~\cref{fig:framework}c and full derivation in \S \ref{appx:derivation}):
+%
+\begin{equation}
+\begin{aligned}
+G(t) = & \underbrace{P(\mathcal D_{\text{fail}}) P(c \mid \mathcal D_{\text{fail}}) P(\checkmark \mid c, \mathcal D_{\text{fail}})}_{\text{Term 1: Call Gain}} \\
+& + \underbrace{P(\mathcal D_{\text{fail}}) P(\neg c \mid \mathcal D_{\text{fail}}) P(\checkmark \mid \neg c, \mathcal D_{\text{fail}})}_{\text{Term 2: Schema Gain}} \\
+& - \underbrace{P(\mathcal D_{\text{succ}}) P(c \mid \mathcal D_{\text{succ}}) P(\times \mid c, \mathcal D_{\text{succ}})}_{\text{Term 3: Call Harm}} \\
+& - \underbrace{P(\mathcal D_{\text{succ}}) P(\neg c \mid \mathcal D_{\text{succ}}) P(\times \mid \neg c, \mathcal D_{\text{succ}})}_{\text{Term 4: Schema Harm}}
+\end{aligned}
+\label{eq:decomposition}
+\end{equation}
+
+\textbf{Term Interpretation.}  
+Each term represents a specific tool-induced change in probability relative to the intrinsic baseline:
+%
+    \paragraph{Term 1 (Call Gain):} Intrinsic failures \textit{corrected} by tool execution. This quantifies the tool execution contribution.
+    \paragraph{Term 2 (Schema Gain):} Intrinsic failures \textit{recovered} under the tool schema without invocation. This reflects beneficial side-effects of the tool prompt independent of tool use.
+    \paragraph{Term 3 (Call Harm):} Intrinsic successes \textit{lost} due to tool calls. This characterizes the harm caused by invoking tools.
+    \paragraph{Term 4 (Schema Harm):} Intrinsic successes \textit{lost} under the tool schema without invocation. This reflects harmful side-effects of the tool prompt.
+
+%
+\cref{eq:decomposition} makes the changes in \( G (t) \) explainable.
+%
+By isolating \textit{Gross Gain} (Terms 1+2) from \textit{Gross Harm} (Terms 3+4), and contrasting genuine tool utility (Term 1) against schema effects (Term 2), we can distinguish skill acquisition from spurious shifts.
+%
+Unlike $ S_{\text{tool}} $, which provides a \textit{quantitative} measure of the drift's magnitude, this decomposition offers a \textit{qualitative explanation} of its evolution.
+%
+By resolving $ G(t) $ into its components, we can identify the specific drivers of $\Delta_{\mathrm{tool}}(t)$, determining whether the observed drift is dominated by emerging utility (\textit{Gain-dominant}) or suppressed by interference (\textit{Harm-dominant}).
+%
+This explains how the tool impacts learning dynamics beyond the aggregate statistics.
+%
+\subsection{Diagnose: Fine-grained Factor Analysis}
+
+While \cref{eq:decomposition} decomposes the performance gap $G(t)$ into distinct \textit{tool-induced terms}, each term is the product of three probabilities.
+%
+As a result, the specific cause of a temporal shift remains unclear.
+%
+For instance, a decline in Call Gain could result from three mechanisms: a shrinking failure set ($P(\mathcal D_{\text{fail}})\downarrow$), a lower calling probability ($P(c \mid \mathcal D_{\text{fail}})\downarrow$), or degraded execution ($P(\checkmark \mid c, \mathcal D_{\text{fail}})\downarrow$).
+
+To pinpoint the root cause, we decompose the problem into finer components.
+%
+Each term is the product of three variables: \textit{Mass}, \textit{Policy}, and \textit{Quality}.
+
+\textbf{Factor Definition.}
+%
+For each term in~\cref{eq:decomposition}, defined by a tuple of domain $\mathcal{D} \in \{\mathcal{D}_{\text{fail}}, \mathcal{D}_{\text{succ}}\}$, action $a \in \{c, \neg c\}$, and outcome $o \in \{\checkmark, \times\}$, we decompose it as:
+%
+\begin{equation}
+    \text{Term}(\mathcal{D}, a, o) = \underbrace{P(\mathcal{D})}_{\text{Mass}} \cdot \underbrace{P(a \mid \mathcal{D})}_{\text{Policy}} \cdot \underbrace{P(o \mid a, \mathcal{D})}_{\text{Quality}}
+\label{eq:mass_policy_quality}
+\end{equation}
+%
+\textit{Mass ($M$)}: The size of the domain (e.g., $P(\mathcal{D}_{\text{fail}})$). This represents the \textit{capacity} available for the tool to generate gain or harm.
+%
+\textit{Policy ($\pi$)}: The conditional probability of taking action $a$ (e.g., $P(c \mid \mathcal{D}_{\text{fail}})$). This reflects the model's \textit{decision-making strategy} (``When to call").
+%
+\textit{Quality ($Q$)}: The conditional probability of outcome $o$ given action $a$ and domain $\mathcal D$ (e.g., $P(\checkmark \mid c, \mathcal{D}_{\text{fail}})$), reflecting the model's \textit{execution capability} (``How to use'') within that domain.
+
+
+\textbf{Diagnostic Insights.}
+\cref{eq:mass_policy_quality} uncovers two critical training dynamics hidden by aggregate metrics.
+1) The Intrinsic-Tool Trade-off (Mass Dynamics): As the model's intrinsic capability improves, the failure set $\mathcal{D}_{\text{fail}}$ shrinks.
+%
+This reduction in Mass limits the upper bound of Call Gain, potentially causing $G(t)$ to plateau even if the tool execution quality $(Q)$ improves.
+%
+2) Policy-Quality Decoupling: We can distinguish between learning \textit{to attempt} and learning \textit{to succeed}.
+%
+An increase in tool usage (Policy) without accuracy improvement (Quality) may indicate a bias to invoke tools rather than true tool proficiency.
+
+\paragraph{Implementation.} We estimate these probabilistic factors using empirical frequencies over evaluation benchmarks at each checkpoint. This enables us to trace the \textit{temporal evolution} of Mass, Policy, and Quality, visualizing the underlying learning dynamics across different tasks.
+
+
+\begin{figure}[tb]
+    \centering    \includegraphics[width=0.98\linewidth]{figures/exp1.pdf}
+
+\caption{
+\textbf{Quantifying Intrinsic and Tool-Induced Drift.}
+%
+We aggregate learning dynamics across six benchmarks (VStar, HR-Bench 4k/8k, VisualProbe Easy/Medium/Hard), evaluated every 80 gradient steps (21 checkpoints).
+%
+\textbf{Left:} Tool-free and tool-available drifts.
+%
+We normalize per-benchmark $\Delta$ accuracy to $[-1,1]$ and then average across benchmarks to compute curves.
+%
+The grey area ($|B_{\mathrm{wo}}|$) quantifies the cumulative magnitude of intrinsic drift ($f_\mathrm{wo}$).
+%
+The colored area represents the magnitude of tool-induced drift ($\Delta_{\mathrm{tool}}$),
+%
+\textcolor{green}{Green} indicates positive relative gain ($f_w > f_{wo}$), while \textcolor{red}{red} indicates negative relative drift ($f_w < f_{wo}$).
+%
+\textit{Color intensity} corresponds to the tool call rate.
+%
+The \textit{top progress bar} displays the tool contribution ratio ($S_{tool}$), i.e., the proportion of total drift magnitude attributed to tool effects.
+%
+\textbf{Right:} Absolute accuracy ($Acc_w$ and $Acc_{wo}$) is averaged directly across all benchmarks.
+%
+All curves are smoothed for visualization only.
+%
+Full details on area calculation, normalization, aggregation and smoothing are provided in \S\ref{app:normalize_drift_agg}.
+}
+    \label{fig:exp1}
+\end{figure}
+
+\section{Experiment}
+\label{sec:exp}
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.80\linewidth]{figures/exp2.pdf}
+\caption{
+\textbf{Decomposition of Tool-Induced Performance Gap $G(t)$.}
+%
+Averaged across six benchmarks.
+%
+\Cref{eq:decomposition} breaks down the net gap $G(t)$ (yellow diamonds) into \textit{Gross Gain} (green; T1+T2) and \textit{Gross Harm} (red; T3+T4).
+%
+\textit{Gross Gain} consists of \textcolor[RGB]{34,139,34}{Call Gain} (T1; intrinsic failures corrected via tool execution) and \textcolor[RGB]{144,238,144}{Schema Gain} (T2; schema-only recovery without tool calls).
+%
+\textit{Gross Harm} consists of \textcolor[RGB]{255,0,0}{Call Harm} (T3; intrinsic successes flipped to errors after tool calls) and \textcolor[RGB]{255,182,193}{Schema Harm} (errors induced by the tool schema without calls).
+%
+(a) Qwen2.5-VL: Call Gain (T1) quickly reverses the initial negative gap, then plateaus and slightly declines.
+%
+(b) Qwen3-VL: Gross Gain shrinks mainly due to declining Call Gain.
+%
+Both models show concurrent reductions in Gross Gain and Gross Harm at later stages.
+%
+Overall, the dynamics are consistent with harm reduction (suppressed detrimental usage) rather than continued gain maximization.
+}
+    \label{fig:exp2}
+\end{figure}
+
+\subsection{Experimental Setup}
+\label{sec:setup}
+%
+We summarize our setup below. See \S\ref{app:exp_details} for details of the visual tool, models, data, decontamination, training, inference and evaluation.
+
+\paragraph{Vision Tool.}
+%
+We study vision tool-use RL with a single visual tool,
+\textit{Crop-and-Zoom}, which extracts high-resolution details from image regions.
+The tool schema is injected into the system prompt during training and inference.
+
+\paragraph{\textbf{Models.}}
+%
+We experiment with two VLMs, Qwen2.5-VL-Instruct-7B and Qwen3-VL-Instruct-8B.
+Both models support function calling but differ in prior tool familiarity:
+Qwen2.5-VL has not been explicitly trained with Crop-and-Zoom,
+whereas Qwen3-VL has been trained with it.
+During all RL experiments, we fine-tune the LLM backbone while keeping the vision encoder frozen.
+
+\paragraph{Data.}
+%
+RL training is conducted on a composite dataset of approximately 15k samples,
+each consisting of an image, a question, and a verifiable answer.
+%
+The dataset consists primarily of high-resolution VQA from Thyme~\cite{zhangThymeThinkBeyond2025} and Mini-O3~\cite{laiMinio3ScalingUp2025} ($\sim$80\%),
+to encourage active tool usage, and is complemented by a diverse long tail ($\sim$20\%)
+to improve robustness across domains.
+%
+We apply visual decontamination by excluding training images
+with pHash Hamming distance $<5$ from any evaluation image.
+
+\paragraph{Training and Evaluation.}
+%
+We train models with Group Relative Policy Optimization (GRPO)
+and a binary outcome-based reward defined solely by final-answer correctness,
+without tool reward or curriculum learning.
+%
+We evaluate models under both tool-available and tool-free protocols
+on six benchmarks (VStar, HR-Bench 4k/8k, VisualProbe Easy/Medium/Harm),
+with greedy decoding (temperature $=0$) at regular checkpoints throughout training.
+
+\subsection{[Exp-I] Measure: The Dominance of Intrinsic Drift}
+\label{sec:exp_measure}
+%
+We begin by applying the \textit{Measure} component to quantify intrinsic versus tool-induced sources of performance change.
+%
+\Cref{fig:exp1} illustrates the evolution of intrinsic drift ($f_{wo}$) and tool-available drift ($f_{w}$), aggregated across all six evaluation benchmarks.
+%
+There are \textbf{three key observations}:
+%
+\paragraph{Intrinsic drift dominates overall performance change.}
+%
+Contrary to the common intuition that vision tool-use RL primarily optimizes tool handling, we find that most performance gains are driven by improvements in intrinsic capability.
+%
+The grey area ($B_\mathrm{wo}$) dominates the drift curves for both models.
+%
+The tool contribution ratio $S_{tool}$ remains low ($0.30$ for Qwen2.5-VL and $0.22$ for Qwen3-VL), indicating that over $70\%$ of learning progress stems from intrinsic capability, independent of tool access.
+%
+This suggests that vision tool-use RL primarily functions as a generic capability enhancer rather than a specialized tool optimizer.
+
+\paragraph{Relative drift diverges across initialization regimes.}
+%
+We observe a distinct divergence in how tool-induced drift evolves between two models.
+%
+For Qwen2.5VL (no prior crop-and-zoom training), the tool-available drift exceeds intrinsic drift ($f_w > f_{wo}$), resulting in a \textit{positive} gain (green area).
+%
+In contrast, Qwen3VL (has prior
+crop-and-zoom training) exhibits a \textit{negative} relative drift ($f_{wo} > f_w$).
+%
+While absolute accuracy continues to improve, intrinsic capability improves \textit{faster} than tool-assisted performance.
+%
+
+\paragraph{Absolute performance improves monotonically.}
+%
+The right column of \Cref{fig:exp1} provides a sanity check.
+%
+Despite the negative relative drift in Qwen3-VL, the absolute accuracy for both $Acc_{w}$ (solid line) and $Acc_{wo}$ (dashed line) increases monotonically.
+%
+The right plots highlight the initialization gap: Qwen3-VL starts with a significantly higher baseline and a larger initial tool gap ($Acc_w > Acc_{wo}$), whereas Qwen2.5-VL starts lower with a negligible gap.
+%
+Thus, the ``red area'' in Qwen3-VL does not imply forgetting of tool skills, but rather a shift in reliance: the tool becomes less critical as intrinsic capabilities expand.
+
+\begin{figure*}[tb]
+    \centering
+    \includegraphics[width=0.94\linewidth]{figures/exp3-v1.pdf}
+\caption{\textbf{Factor Decomposition of Tool-Induced Effects.}
+We show the temporal evolution of the four terms, factorized into Mass, Policy, and Quality, for (a) Qwen2.5-VL-Instruct and (b) Qwen3-VL-Instruct.
+%
+In each subplot, the thick line shows the term value (left axis), and thin lines show its factors (right axis): \textit{Mass} (grey, $P(\mathcal{D})$), \textit{Policy} (blue, $P(a\mid\mathcal{D})$), and \textit{Quality} (orange, $P(o\mid a,\mathcal{D})$).
+}
+    \label{fig:exp3}
+\end{figure*}
+
+\subsection{[Exp-II] Explain: Mitigating Harm Rather Than Maximizing Gain}
+\label{sec:exp_explain}
+
+In \S\ref{sec:exp_measure}, we found that tool-induced effects account for only a small fraction of overall drift.
+%
+To explain this constraint, we decompose the tool-induced gap $G(t)$ (\cref{eq:decomposition}) into \textit{Gross Gain} (green; T1+T2) and \textit{Gross Harm} (red; T3+T4).
+%
+\Cref{fig:exp2} shows two concurrent trends: Gross Gain stagnates while Gross Harm decreases, jointly limiting the net gap.
+
+\paragraph{The Stagnation of Gross Gain.}
+%
+The main constraint on further widening $G(t)$ is the trajectory of \textit{Gross Gain} (green bars).
+%
+Specifically, Term 1 (Call Gain)—intrinsic failures corrected via tool calls—does not keep increasing.
+%
+Instead of steadily increasing, Term 1 plateaus after an early rise (Qwen2.5-VL) or declines monotonically (Qwen3-VL).
+%
+This indicates saturation in the model’s ability to extract additional tool-based gains.
+
+\paragraph{The Consistent Reduction of Gross Harm.}
+%
+In contrast, Gross Harm (red bars) decreases consistently across both models.
+%
+We observe a steady decline in tool-induced penalties:
+%
+Qwen2.5-VL mainly reduces Schema Harm (T4), whereas Qwen3-VL mainly reduces Call Harm (T3). This points to improved robustness to schema interference versus fewer harmful calls.
+%
+In both cases, the aggregate effect is a continued reduction in tool-induced harm.
+%
+This indicates effective interference management: tools become progressively less detrimental to intrinsic inference.
+
+\paragraph{The counterbalancing of Gain and Harm.}
+%
+Combining these observations explains the stagnation of the net performance gap $G(t)$ (black curve in \Cref{fig:exp2}).
+%
+This plateau reflects a counterbalance: reduced Gross Harm is offset by saturated/declining Gross Gain.
+%
+In short, harm decreases but gain does not increase, keeping $G(t)$ roughly constant.
+%
+However, this decomposition represents the \textit{outcome}, not the \textit{root cause}.
+%
+For Call Gain (T1), is the stagnation driven by reduced calling policy or lower execution success?
+%
+To decouple policy ($P(c\mid \mathcal D)$) from execution quality ($P(\checkmark\mid c,\mathcal D)$), we factorize each term into its probability components in the next section.
+
+\subsection{[Exp-III] Diagnose: Suppressing Conditional Errors Rather Than Enhancing Correction} \label{sec:exp_diagnose}
+%
+To pinpoint the root causes of Exp-II, we factorize each term into Mass ($P(\mathcal{D})$), Policy ($P(a\mid\mathcal{D})$), and Quality ($P(o\mid a,\mathcal{D})$), as defined in \cref{eq:mass_policy_quality}.
+%
+\Cref{fig:exp3} traces the temporal evolution of these factors.
+
+\paragraph{Limited failure correction, but reduced breakage on successes.}
+We analyze execution quality in \Cref{fig:exp3}.
+For Call Gain (T1), the correction success rate on intrinsic failures,
+$P(\checkmark\mid c,\mathcal D_{\mathrm{fail}}(t))$,
+is flat for Qwen3-VL and rises early then declines for Qwen2.5-VL.
+Because $\mathcal D_{\mathrm{fail}}$ shrinks and becomes increasingly difficult over training, this trend must be interpreted with care; we control for this moving-target effect in \S\ref{sec:moving_failure}.
+In contrast, for Call Harm (T3), the breakage rate on intrinsic successes,
+$P(\times\mid c,\mathcal D_{\mathrm{succ}}(t))$,
+decreases consistently.
+Overall, RL primarily suppresses tool-induced errors on already-solved instances rather than strengthening tool-based failure correction.
+
+
+
+\paragraph{RL Mitigates the Interference of Tool Schema.}
+%
+Beyond execution quality, training suppresses schema-induced effects.
+%
+The schema effect depends on prior exposure: Qwen3VL shows minimal Schema Gain/Harm (both $\approx0.01$).
+%
+Conversely, Qwen2.5VL is initially sensitive to schema effects.
+%
+However, over the course of training, RL drives down both Schema Gain and Schema Harm.
+%
+This suggests a common optimization direction: reducing sensitivity to the tool schema so that its presence does not distract intrinsic inference.
+
+
+\subsection{Sanity Checks and Analysis}
+%
+\paragraph{Justification of Intrinsic Baseline.}
+%
+We define the model's intrinsic capability ($Acc_{\text{wo}}$) as its performance without introducing the tool.
+%
+While one might argue for using $Acc_{\text{schema}}$ (where the schema is provided but execution is forbidden) as the baseline to maintain prompt consistency with RL training, we consider both the provision of the schema and the actual tool execution as integral parts of the tool-induced effects.
+%
+In~\cref{tab:schema_interference_summary}, forcing a schema-only protocol (schema provided but tool execution disallowed) substantially reduces accuracy (5.8\% for Qwen2.5VL and 13.0\% for Qwen3VL), suggesting that this protocol is an unnatural intervention that changes the inference regime.
+%
+Using $Acc_{\text{schema}}$ as the baseline would therefore overstate tool gains by treating recovery from this artificial constraint as improvement.
+%
+Therefore, to strictly measure the net utility, $Acc_{\text{wo}}$ serves as a reasonable reference.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/exp4.pdf}
+\caption{
+\textbf{Robustness to the Moving Failure Set.}
+The Call-Gain quality $P(\checkmark \mid c, \mathcal D_{\mathrm{fail}})$ evaluated under different failure-set definitions:
+the current failure set $\mathcal D_{\mathrm{fail}}(t)$ (Dynamic),
+the fixed initial cohort $\mathcal D_{\mathrm{fail}}(0)$ (Fixed),
+and persistent failures $\mathcal D_{\mathrm{fail}}(0)\cap \mathcal D_{\mathrm{fail}}(t)$.
+Improvement is observed on the fixed cohort but remains limited on the current and persistent failure sets.
+}
+    \label{fig:exp4}
+\end{figure}
+
+
+\paragraph{Alignment of Tool Call Gains with Human Logic.}
+\label{sec:human_alignment}While the metric $P(\checkmark \mid c, \mathcal D_{\text{fail}})$ (in Term 1) captures the contribution of tool calls, it does not reveal whether the underlying mechanism aligns with human logic.
+%
+A statistical gain could arise from explicit alignment (e.g., cropping the target as a human would) or from implicit shortcuts (e.g., latent distribution shifts irrelevant to the visual content).
+%
+We investigate whether the learned tool-use behavior is interpretable and aligned with human expectations.
+
+To quantify this, we collect all ``Call Gain'' samples ($N=269$) from the evaluation results of all benchmarks at the final checkpoint.
+%
+Two PhD students and Gemini-3-Pro independently evaluate each sample using the multi-turn response and visual context (see the prompt in \S\ref{app:human_align}).
+%
+We report the intersection ($\text{Human} \cap \text{AI}$) of their positive judgments as human-aligned gains to ensure reliability.
+%
+In~\cref{tab:gain_validity}, both models demonstrate greate alignment with human ($>60\%$).
+%
+Specifically, Qwen3-VL, having prior training to this tool, achieves near-perfect interpretability (93.0\%), whereas Qwen2.5-VL, with no prior tool tuning, exhibits a bit of shortcut-driven behaviors.
+%
+This verification confirms that the \textit{quality} of the gains is largely aligned with human.
+
+\paragraph{Robustness to the Moving Failure Set.}
+\label{sec:moving_failure}
+Because $\mathcal D_{\mathrm{fail}}(t)$ is defined by the tool-free model at checkpoint $t$, it shrinks and shifts in difficulty over training.
+As a result, $P(\checkmark\mid c,\mathcal D_{\mathrm{fail}})$ alone may conflate improvements in execution quality with the increasing difficulty of the failure set over training.
+To control for this, we additionally evaluate $P(\checkmark\mid c,\cdot)$ on
+(i) a fixed initial failure cohort $\mathcal D_{\mathrm{fail}}(0)$ and
+(ii) persistent failures $\mathcal D_{\mathrm{fail}}(0)\cap \mathcal D_{\mathrm{fail}}(t)$ (fail at initialization and remain unsolved without tools at checkpoint $t$).
+In~\cref{fig:exp4}, we find that $P(\checkmark\mid c,\mathcal D_{\mathrm{fail}}(0))$ increases substantially,
+whereas the current and persistent-failure estimates show little improvement,
+suggesting that quality gains do not extend to the remaining hardest failures. 
+
+
+\subsection{What Does Vision Tool-Use RL Really Learn?}
+%
+Synthesizing Exp-I–III and sanity checks, we answer the central question.
+%
+Contrary to the ideal of tool mastery, current vision tool-use RL learns a more conservative policy:
+%
+\begin{enumerate}
+    \item \textbf{Limited Contribution:} Tool-induced effects remain a minor component of overall improvement. While tool access contributes to performance, its effect is limited compared to intrinsic improvements.
+    \item \textbf{Interference Management:} The model reduces Gross Harm by suppressing execution errors ($P(\times \mid c, \mathcal{D}_{\text{succ}}) \downarrow$) and mitigating schema distraction.
+    \item \textbf{Limited Failure Correction on Hard Cases:}
+Call-Gain quality $P(\checkmark \mid c,\mathcal D_{\mathrm{fail}})$ shows little improvement on the current failure set and on persistent failures
+$\mathcal D_{\mathrm{fail}}(0)\cap \mathcal D_{\mathrm{fail}}(t)$, indicating no strengthening of tool-based correction on instances that remain unsolved without tools, even though $P(\checkmark \mid c,\mathcal D_{\mathrm{fail}}(0))$ can increase on the fixed initial-failure cohort.
+%
+\end{enumerate}
+%
+Ultimately, the model learns to \textbf{safely coexist} with the tool rather than \textbf{master} it.
+%
+To verify our aggregated curves are not driven by a single benchmark, we report per-benchmark results for Exp-I--III in~\S\ref{app:per_benchmark}.
+We find consistent qualitative behavior across mostly benchmarks and both models, supporting the conclusions drawn from the previous analysis.
+%
+In addition, we calculate the 95\% confidence intervals (CI) for the aggregated results in ~\S\ref{app:ci_results} and confirm the stability of the observed results across benchmarks.
+
+
+\input{tables/force_no_call}
+
+\input{tables/validation}
+\vspace{-5px}
+%
+\section{Conclusion and Limitations}
+
+In this work, we present a systematic analysis of what vision tool-use RL actually learns.
+%
+By disentangling intrinsic capability drift from tool-induced effects, and further decomposing tool utility into gain, harm, and their underlying mechanisms, we show that performance improvements are dominated by intrinsic learning rather than by tool-induced effects.
+%
+Across models and benchmarks, vision tool-use RL mainly reduces tool-induced harm, while showing limited improvement in tool contribution.
+%
+Overall, vision tool-use RL learns a conservative policy for VLMs that makes tool availability less harmful, but does not reliably extend tool utility beyond the intrinsic hard core.
+
+Limitations include:
+%
+First, the analysis focuses on a single vision tool (crop-and-zoom); more complex tools or multi-tool settings may exhibit different dynamics.
+%
+Second, we analyze outcome-only RL with sparse rewards; tool-aware reward shaping or additional supervision may produce stronger execution learning.
+%
+Finally, we focus on accuracy; future work could incorporate efficiency, tool-use traces, and more interpretability metrics.
+
+%
+\clearpage
+
+\newpage
+\section*{Impact Statement}
+This paper presents work whose goal is to advance the field of Large Language Models, specifically in understanding the training dynamics of Vision Tool-Use RL systems. Our analysis contributes to the development of more reliable and interpretable multimodal agents. We do not foresee any immediate negative societal consequences or ethical issues that must be specifically highlighted here.
+\bibliography{example_paper}
+\bibliographystyle{icml2026}
+
+\end{document}

@@ -1,0 +1,581 @@
+
+\documentclass{article} % For LaTeX2e 
+\usepackage[submission]{colm2025_conference} 
+% \usepackage[preprint]{colm2025_conference} \usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+
+\usepackage{lineno}
+
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true, citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+\usepackage{amsmath} 
+\usepackage{cleveref}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{wrapfig}
+\usepackage{multirow}
+% \usepackage[table,xcdraw,dvipsnames,svgnames,x11names]{xcolor}%<<< added \usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins}
+% \usepackage{geometry} 该死的包
+\usepackage{multicol}
+\usepackage{adjustbox}
+\usepackage{colortbl}
+\usepackage{xspace}
+
+\crefname{figure}{Fig.}{Figs.}
+\Crefname{figure}{Fig.}{Figs.}
+\crefname{appendix}{Appx.}{Appx.}
+\crefname{table}{Tab.}{Tables}
+\Crefname{table}{Tab.}{Tables}
+\crefname{section}{Sec.}{Sec.}
+\Crefname{section}{Sec.}{Sec.}
+\crefname{equation}{Eq.}{Eqs.}
+\Crefname{equation}{Eq.}{Eqs.}
+\crefformat{equation}{Eq.~#2#1#3}
+\Crefformat{equation}{Eq.~#2#1#3}
+
+\newcommand{\yan}[1]{\textcolor[RGB]{149,212,12}{[#1 - yan]}}
+\newcommand{\steffi}[1]{\textcolor[RGB]{255,0,144}{[#1 - steffi]}}
+
+\newcommand{\titlename}{\textsc{Maye}\xspace}
+
+\title{Rethinking RL Scaling for Vision Language Models: \\A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}
+
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \colmfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{Antiquus S.~Hippocampus, Natalia Cerebro \& Amelie P. Amygdale \thanks{ Use footnote for providing further information
+about author (webpage, alternative address)---\emph{not} for acknowledging
+funding agencies.  Funding acknowledgements go at the end of the paper.} \\
+Department of Computer Science\\
+Cranberry-Lemon University\\
+Pittsburgh, PA 15213, USA \\
+\texttt{\{hippo,brain,jen\}@cs.cranberry-lemon.edu} \\
+\And
+Ji Q. Ren \& Yevgeny LeNet \\
+Department of Computational Neuroscience \\
+University of the Witwatersrand \\
+Joburg, South Africa \\
+\texttt{\{robot,net\}@wits.ac.za} \\
+\AND
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email}
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+
+\begin{document}
+
+\ifcolmsubmission
+\linenumbers
+\fi
+
+\maketitle
+\begin{abstract}
+Reinforcement learning (RL) has recently shown strong potential in improving the reasoning capabilities of large language models and is now being actively extended to vision-language models (VLMs). However, existing RL applications in VLMs often rely on heavily engineered frameworks that hinder reproducibility and accessibility, while lacking standardized evaluation protocols, making it difficult to compare results or interpret training dynamics. This work introduces a transparent, from-scratch framework for RL in VLMs, offering a minimal yet functional four-step pipeline validated across multiple models and datasets. In addition, a standardized evaluation scheme is proposed to assess training dynamics and reflective behaviors. Extensive experiments on visual reasoning tasks uncover key empirical findings: response length is sensitive to random seeds, reflection correlates with output length, and RL consistently outperforms supervised fine-tuning (SFT) in generalization—even with high-quality data. These findings, together with the proposed framework, aim to establish a reproducible baseline and support broader engagement in RL-based VLM research. Code is public and available at: \url{https://anonymous.4open.science/r/MAYE-4216}.
+\end{abstract}
+
+
+\section{Introduction}
+Reinforcement learning (RL) has recently demonstrated remarkable success in enhancing reasoning capabilities of LLMs, particularly on tasks with verifiable answers such as mathematical problem solving~\citep{guo2025deepseekR1,rl_survey}. Inspired by this progress, growing efforts have extended RL to VLMs, aiming to replicate the so-called “R1 moment”~\citep{wang2025multimodal,qwen2025qvqmax}. 
+%
+These studies have primarily concentrated on enhancing performance and pushing the state-of-the-art. However, many of these works rely heavily on highly engineered and encapsulated codebases, such as TRL \citep{vonwerra2022trl}, OpenRLHF \citep{hu2024openrlhf}, and verl \citep{sheng2024hybridflow}, making it difficult for newcomers to understand, replicate, or modify the underlying processes. This has led to a gap in the field, particularly for researchers who are not already deeply familiar with both RL and VLMs. As a result, the learning curve for those entering this area remains steep.
+
+We address this gap by introducing a reproducible standard framework for RL in VLMs, which serves as a transparent and accessible foundation for training RL-based VLMs. Unlike prior works that rely on complex, pre-packaged RL libraries, the proposed framework is implemented entirely from scratch, using only standard libraries such as Transformers \citep{wolf-etal-2020-transformers}, FSDP2 \citep{zhao2023pytorch} for distributed training, and vLLM \citep{kwon2023efficient} for inference. This minimal yet functional implementation allows for a clearer understanding of the RL training process and ensures that the core logic is fully transparent, enabling easy customization and experimentation.
+
+By building the framework from the ground up, this work provides a solid foundation for further improvements and extensions in RL for VLMs. It also serves as a crucial resource for beginners, offering a simplified entry point to understanding how RL can be applied to VLMs. This framework, while not aiming to be the most performant or highly optimized, acts as an essential entry into the mechanism of RL in VLMs, much like OpenAI's SpinningUp \citep{SpinningUp2018} for RL, providing significant value to the research community. It can be used both as a base for future RL innovations and as an educational tool for fostering broader engagement with RL-based VLM research.
+
+Besides, while the proposed framework addresses the need for a reproducible RL training process, the evaluation of RL remains a challenging task. Currently, there is no unified or standardized approach to assess RL training in the context of LLMs/VLMs, leaving a significant gap in the field.
+%
+To address this, a comprehensive evaluation scheme is introduced, offering a structured framework for assessing RL training effectiveness. Unlike instruction-tuning~\citep{zhang2023instruction} or DPO \citep{rafailov2023DPO}, where a single performance score is often deemed sufficient, RL training involves dynamic, fluctuating performance that is sensitive to several factors such as initialization and random seed variation~\citep{henderson2018deep,andrychowicz2020matters}. Reporting a single final score can overfit to incidental fluctuations, compromising the reproducibility and generalization of results.
+%
+The proposed evaluation scheme, detailed in~\cref{sec:evaluation_scheme}, emphasizes capturing the training dynamics across multiple stages. Key performance metrics include accuracy curves under different generation settings, as well as behavioral indicators such as response length and reflection ratio. By incorporating fine-grained reflective behavior metrics, the scheme ensures a more nuanced and transparent evaluation of RL’s effectiveness.
+
+Based on the proposed framework, RL experiments are conducted on multiple VLMs across diverse visual reasoning datasets. Each experiment is independently repeated to account for training variance and ensure reproducibility—consistent with best practices in the RL community~\citep{colas2018many,agarwal2021deep}. By applying the evaluation scheme, several notable findings emerge: response length is highly sensitive to random seeds; reflective behaviors strongly correlate with length dynamics; and RL consistently demonstrates superior generalization compared to SFT, even when the latter is trained with high-quality supervision. These findings are detailed in~\cref{sec:experiment}.
+
+In this work, three core contributions are made: 1) A reproducible and from-scratch RL framework for VLMs.  
+A transparent four-step pipeline is implemented without relying on existing RL toolkits, validated across multiple VLMs and datasets.
+%
+2) A standardized evaluation scheme tailored for RL training.  
+The scheme captures training dynamics and reflective behavior, offering robust and reproducible benchmarks for future studies.
+%
+3) Empirical insights into length, reflection, and generalization.  
+Analysis reveals the coupling between reflection and response length, and highlights RL’s superior generalization over SFT, even with high-quality supervision.
+
+\section{Preparation} \label{sec:preparation}
+
+This section outlines the foundational setup for RL in VLMs, covering data, algorithm, reward function, and model, to ensure a coherent and reproducible training process. For further details, see~\cref{secappen:preparation}.
+%
+For data, we select two datasets used for training and evaluation: \textit{mm\_math5k}~\citep{sun2024mmmath} and \textit{geometry3k} \citep{zheng2025easyr1}. These datasets are categorized based on the dominance of text or vision in the tasks, with \textit{mm\_math5k} being text-dominant and \textit{geometry3k} vision-dominant. The approach also includes assessing out-of-distribution generalization using MathVerse~\citep{zhang2024mathverse} as the test set for \textit{mm\_math5k}, and ensuring robust RL performance through problem design that avoids reward hacking by focusing on numerical computation tasks.
+
+For algorithm, we focus on exploring the potential of Reinforce++~\citep{hu2025reinforce++} instead of the widely used Group Relative Policy Optimization (GRPO)~\citep{shao2024deepseekmath}, incorporating a KL divergence penalty to guide training~\citep{xie2025logicrlunleashingllmreasoning}.
+%
+The reward function guides the training process by providing a 0-1 accuracy-based reward and a secondary language penalty, while format rewards are excluded to prevent constraining the model’s output patterns.
+%
+For model,
+We use the Qwen2/2.5-VL \citep{wang2024Qwen2-VL, bai2025Qwen2.5-VL} series, chosen for their test-time scaling potential and integration with Transformers, to leverage their cognitive abilities for effective RL training.
+
+\section{\titlename Framework: A Transparent, From-Scratch RL Framework for VLM}
+\label{sec:methodology}
+%
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.98\textwidth]{figures/main_framework.pdf}
+    \caption{Overview of \titlename framework. The process is divided into four steps. Each step integrates various components, including text and vision data, policy models, and reward signals.}
+    \label{fig:framework}
+\end{figure}
+
+This section presents the \textbf{\titlename framework}, a transparent, from-scratch RL training pipeline for VLMs, designed as a \textit{reproducible and standardized baseline}. Rather than introducing yet another training system, the framework distills RL into four components—\textit{data flow}, \textit{response collection}, \textit{trajectory generation}, and \textit{policy update}—each made explicit and modular.
+%
+% \titlename is intended not to compete with existing toolkits in scale or complexity, but to offer a minimal working implementation that exposes the underlying training logic with maximal clarity. It serves as both an educational reference for newcomers and a practical diagnostic foundation for future algorithmic development.
+%
+\paragraph{Setup}
+
+From a high-level perspective, Hydra \citep{Yadan2019Hydra} is used to manage experiment configurations, Transformers~\citep{wolf-etal-2020-transformers} for modeling VLMs, FSDP2~\citep{zhao2023pytorch} for distributed training, and vLLM \citep{kwon2023efficient} for collecting responses for multimodal queries.
+%
+Training and inference are conducted on separate GPU devices.  
+%
+% Before training begins, configurations are loaded from a YAML file, followed by the instantiation of the models (policy and reference), dataloaders for training, validation, and test sets, the optimizer, training parameters, the learning rate scheduler, and the vLLM engine.  
+Before training begins, the system loads configurations from a YAML file and then initializes the policy and reference models, dataloaders for the training, validation, and test sets, the optimizer, training parameters, the learning rate scheduler, and the vLLM engine.
+
+% For model setup, both the policy and reference models are first instantiated on meta device~\yan{citation} to enable faster loading.
+%
+% Since the reference model remains fixed, all its parameters are frozen.
+%
+% FSDP2 is then applied to shard the model, after which checkpoint weights loaded on the CPU are assigned to model shards, activation offloading is configured, and the model is compiled using \texttt{torch.compile} for optimized execution.
+%
+It is worth noting that VLMs typically consist of a ViT encoder, an MLP connector, and a LLM backend.
+%
+Thus, selecting which components to freeze or train is crucial.
+%
+Based on preliminary experiments, training the connector and ViT on several thousands samples does not yield significant performance improvements but slows down training speed.
+%
+Since the lower layers of the LLM also participate in processing visual inputs~\citep{zhu2025remedy}, there is no concern that the model's visual capabilities will be left untuned. Therefore, all experiments solely train the LLM backend.
+
+
+The RL process involves a variety of parameters and configurations, some of which are easily confused due to overlapping terminology. In particular, commonly used terms such as \textit{batch}, \textit{epoch}, and \textit{step} may refer to different concepts depending on context. \cref{tab:batch_step_terms} provides a concise reference to clarify these definitions.
+%
+A complete list of training and hyperparameters is provided in~\cref{sec:parameters}.
+%
+%The training process involves two types of parameters: hyperparameters, which are predefined before training, and training parameters, which are derived from the hyperparameters.
+%
+%A complete list and description of both types are provided in the appendix~\yan{add table in appendix}. Among these, several training-related terms such as ``batch'', ``epoch'', and ``step'' are frequently used but often lead to confusion. To address this, their definitions are clarified in~\cref{tab:batch_step_terms}.
+%
+For rollout inference, vLLM \citep{kwon2023efficient} is used to accelerate sampling.
+%
+To keep the implementation simple, we do not introduce Ray~\citep{moritz2017ray} for managing training or inference task scheduling.
+%
+% Instead, vLLM is integrated following the approach in TRL \citep{vonwerra2022trl}, utilizing \texttt{world\_size\_patch} and \texttt{profiling\_patch}.
+%Details can be found in this URL \footnote{\url{https://github.com/huggingface/trl/blob/main/trl/trainer/grpo_trainer.py\#L477-L483}}. 
+%
+% The current implementation does not support cases where \textit{tensor\_parallel\_size} is greater than 1, which is left for future work.
+%
+After completing these setup steps, the subsequent implementation follows a four-step iterative process.
+
+\paragraph{Step I: Data Flow}
+
+Under a multimodal setting, each query contains both vision and text data.
+%
+As shown in the top-left of~\cref{fig:framework}, the query batch is first processed by a processor provided by Transformers. This step converts raw data into model-compatible inputs, consisting of both textual and visual modalities. The textual input includes token ids sequences—where image slots are padded using special tokens such as \texttt{<image\_pad>}—along with the corresponding attention masks. The visual input is transformed into pixel values and auxiliary features. Additionally, the query token ids will be used to concatenate with the generated response tokens in Step II.
+% The raw data batch are converted into a numerical representation that the model can process, referred to as \textit{encodings}.
+%
+% These encodings are later used in Step III and IV.
+%
+%Specifically, visual images are transformed into \textit{pixel\_values} along with some auxiliary features, while textual queries are padded with \texttt{<image\_pad>} and tokenized into token\_id sequences and attention masks.  
+%
+% \textit{Inputs} refer to the structured representation (usually a dictionary containing pairs of question and image) of the raw data formatted for the inference engine, which is used in response collection.
+
+\paragraph{Step II: Response Collection}
+%
+This step (top-right of~\cref{fig:framework}) involves collecting responses to queries, which can be accelerated using the inference engine.  
+%
+First, the sharded parameters are gathered on the CPU and synchronized to the inference engine.
+%
+Then, the processed inputs from all training GPUs are gathered to the inference device, collecting a response for each query, including both response text and token ids. 
+%
+After inference, the responses are broadcast back to their corresponding GPUs. Since response lengths vary, padding is applied to ensure an aligned length.
+
+\paragraph{Step III: Trajectory Generation}
+
+A trajectory can be considered as an essential input for model learning.
+%
+It is fundamentally a \textit{namedtuple} that contains both the components required for loss computation and the metrics that need to be recorded.
+
+As illustrated in the middle-left of~\cref{fig:framework}, the text and vision input are forwarded through both the policy and reference models to compute log probabilities (logprobs), with the batch being chunked to prevent out-of-memory.
+%
+It is important to note that only the logprobs of the response are retained, as RL is a post-training procedure.
+%
+Meanwhile, the center of~\cref{fig:framework} depicts how the token ids of queries and responses are concatenated, from which the corresponding \textit{attention\_masks} and \textit{position\_ids} are derived and stored in the trajectory, as they are needed to recompute the logprobs of the updated policy model during Step IV.
+%
+Another crucial target is calculating multiple rule-based rewards based on the response texts.
+%
+These rule-based rewards, along with their summed scores, are also stored in the trajectory. 
+%
+Finally, response length, an important factor in evaluating reasoning capability \citep{guo2025deepseekR1}, is recorded in the trajectory. See~\cref{sec:evaluation_scheme} for detailed evaluation metrics.
+
+\paragraph{Step IV: Policy Update}
+
+Once trajectories required for updates are prepared, the first is to estimate the token-level KL divergence between current policy and reference model, scaled by a coefficient $\beta_{rew}$ as the KL reward.  
+%
+The summed scores, which are then appended to the last valid position (i.e., \texttt{<EOS>}) of the KL reward as total rewards.  
+%
+Next, following the iterative formula in~\cref{eq:ppo_loss}, total rewards are accumulated token by token in a recursive manner to estimate advantages. %
+The policy logprobs are updated during each parameter update. These probabilities are calculated in chunks, with the chunk size potentially differing from that used in Step III. Consequently, the vision input must be re-collected and re-processed, which is key to ensuring the correct flow of visual data throughout the pipeline.
+%
+The updated policy logprobs, along with the old logprobs stored in trajectories, are used to compute the clipped ratio for policy loss calculation, as shown in~\cref{eq:ppo_loss}.
+%
+Besides, the KL divergence between the current policy and reference model is then estimated and weighted by a coefficient $\beta_{\text{loss}}$ to compute the KL loss.  
+%
+Finally, the total loss is computed using~\cref{eq:ppo_loss}, and policy parameters are updated. 
+%
+In total, updates are performed \textit{N} = \((\text{batch\_size} \,//\, \text{ppo\_batch\_size}) \times \text{ppo\_epochs}\) times.  
+
+At this point, a single iteration of VLM-RL training is completed. The process is then repeated across all four parts while observing key metrics and evaluating performance.
+
+\section{\titlename Scheme: Tracking Training Dynamics in RL for LLMs/VLMs}
+\label{sec:evaluation_scheme}
+%
+\begin{figure}[tb!]
+    \centering
+    \includegraphics[width=0.78\textwidth,height=3.7cm]{figures/eval_scheme.png}
+\caption{Overview of evaluation metrics.}
+    \label{fig:evaluation_scheme}
+\end{figure}
+
+Reliable evaluation has long been a challenge in RL research~\citep{agarwal2021deep}.  
+Despite the growth of RL-based post-training for LLMs/VLMs, a unified and standardized evaluation scheme remains lacking.  
+Here outlines the evaluation scheme used in the experiments, as shown in~\cref{fig:evaluation_scheme}.  
+It categorizes evaluation metrics into three aspects: \textit{Train Set Metrics}, \textit{Validation/Test Set Metrics}, and \textit{Reflection Metrics}, aiming to establish a more rigorous and reliable assessment scheme.
+
+\paragraph{General settings}
+%
+In RL evaluation, learning curves are commonly used to visualize training dynamics, with the y-axis representing key metrics such as cumulative rewards or accuracy.
+%
+The x-axis often represents two types of steps: \textit{generation steps} and \textit{gradient steps}, with \textit{generation steps} being preferred for clearer sample efficiency measurement and allow for fairer comparisons, as response generation typically takes longer than gradient updates.
+%
+Here, for accuracy learning curves, we advocate using \textit{epochs} as the x-axis label for improved interpretability, facilitating comparisons akin to those in SFT, where progress is tracked over dataset passes.
+
+Additionally, due to the inherent fragility of RL algorithms
+~\citep{henderson2018deep, andrychowicz2020matters}, factors such as different random seeds and initialization states can significantly impact training outcomes~\citep{colas2018many}. In traditional RL research, multiple runs (e.g., five, ten, or even dozens) are typically conducted, with the mean and error bars reported in learning curves to ensure statistical reliability.
+%
+In the context of LLMs/VLMs training, to balance computational cost and result stability, the mean learning curve from three independent runs should be reported.
+
+\subsection{Training Set Metrics}
+\paragraph{Accuracy curves} 
+%
+Training set accuracy reflects the correctness and effectiveness of both the algorithm and data preparation. Accuracy is recorded cumulatively per batch and logged per epoch. The main purpose is to illustrate training dynamics, while true performance should be assessed on the validation and test sets.
+%
+A typical training accuracy curve initially rises and then stabilizes. The stabilization phase, or \textit{bottleneck period}, indicates convergence and helps decide when to halt training.
+%
+Ideally, evaluation should include accuracy up to the bottleneck period for a comprehensive understanding of training dynamics.
+
+\paragraph{Response length}
+%
+It reflects the model’s output pattern, including its level of detail and reasoning depth, can be shaped by RL training. 
+%
+Empirical results (~\cref{sec:training_results}) show that as responses become longer, models exhibit more reflective behaviors, contributing to improved generalization \citep{chu2025RLgeneral}.
+%
+Hence, response length serves as a crucial metric for monitoring the training process.
+
+\subsection{Validation \& Test Set Metrics}
+%
+\paragraph{Accuracy curves}
+%
+Evaluation on the validation and test sets is critical for accurately assessing the model's capability and generalization.
+%
+Therefore, accurate accuracy measurements are essential, with online evaluation for small datasets and offline evaluation for larger ones.
+
+Three sets of inference parameters are used to provide a comprehensive view of the model's performance: 1) pass@8, temperature=1.0, top\_p=1.0; 2) pass@1, temperature=0.6, top\_p=1.0; 3) pass@1, temperature=0.01, top\_p=0.001.
+%
+The first set evaluates the model's upper bound, while the second and third assess true performance, with the second preventing endless repetitions or incoherent outputs~\citep{deepseek_r1}, and the third following the VLM benchmark setting \citep{bai2023Qwen-VL}.
+%
+In practice, longer CoT models benefit from setting 2), while shorter response models are better reflected by setting 3).
+%
+These three settings ensure a balanced assessment of the model, highlighting both its maximum potential and true capabilities.
+%
+\paragraph{Accuracy tabs}
+In addition to using curves to dynamically visualize and compare performance, static numerical tables are required to provide a clear summary of performance changes.
+%
+Since accuracy fluctuates throughout the training process, both the mean and maximum accuracy over all epochs are reported. These values are averaged across multiple runs to ensure statistical reliability.
+
+\subsection{Reflection Metrics}
+%
+\paragraph{Words count}
+%
+Reflective behavior (or "aha moments") in models signals the effectiveness of RL training. However, the challenge lies in designing a mechanism to observe changes in this behavior over time.
+%
+Tracking the frequency of reflective words directly measures the model's reflective reasoning, revealing patterns in self-correction and problem-solving strategies.
+%
+A curated list of 15 reflective words: [`\textit{``re-check}'', ``\textit{re-evaluate}'', ``\textit{re-examine}'', ``\textit{re-think}'', ``\textit{recheck}'', ``\textit{reevaluate}'', ``\textit{reexamine}'', ``\textit{reevaluation}'', ``\textit{rethink}'', ``\textit{check again}'', ``\textit{think again}'', ``\textit{try again}'', ``\textit{verify}'', ``\textit{wait}'', ``\textit{yet}''] is tracked by counting their frequency during each \textit{generation\_steps}, as inspired by \cite{deepscaler2025} and \cite{xie2025logicrlunleashingllmreasoning}.
+
+\paragraph{Ratio curves}
+%
+%
+\begin{wraptable}{r}{0.50\textwidth}
+\centering
+\resizebox{0.50\textwidth}{!}{
+\vspace{-2mm}
+\begin{tabular}{c|c}
+\hline
+\textbf{Ratio Name} & \textbf{Formula} \\
+\hline
+reflection\_ratio & $\frac{\mathcal{N}_{ref}}{\mathcal{N}}$ \\
+reflection\_ratio\_in\_correct\_answers & $\frac{\mathcal{N}_{ref+}}{\mathcal{N}_{+}}$ \\
+reflection\_ratio\_in\_incorrect\_answers & $\frac{\mathcal{N}_{ref} - \mathcal{N}_{ref+}}{\mathcal{N} - \mathcal{N}_{+}}$ \\
+correct\_ratio\_in\_reflection\_texts & $\frac{\mathcal{N}_{ref+}}{\mathcal{N}_{ref}}$ \\
+correct\_ratio\_in\_no\_reflection\_texts & $\frac{\mathcal{N}_{+} - \mathcal{N}_{ref+}}{\mathcal{N} - \mathcal{N}_{ref}}$ \\
+\hline
+\end{tabular}
+}
+%
+\caption{Definition of Ratio ratios.}
+\label{tab:reflection_ratios}
+\end{wraptable}
+%
+Simply tracking word frequency is insufficient; it is also essential to observe how the proportion of reflective behavior changes and whether it contributes to accuracy improvement. To achieve this, five ratio metrics are designed, and the corresponding formulas are provided in~\cref{tab:reflection_ratios}, where $\mathcal{N}$ is the number of responses per batch, $\mathcal{N}_{ref}$ is the number of responses with reflection words, $\mathcal{N}_{+}$ is the number of correct responses per batch, and $\mathcal{N}_{ref+}$ is the number of correct responses with reflection words. These metrics quantify different aspects of reflection: the overall proportion of reflective responses, their distribution among correct and incorrect answers, and the accuracy differences between responses with and without reflection.
+
+\section{Experiment}
+\label{sec:experiment}
+This section presents an evaluation of RL for VLMs, focusing on training and generalization aspects.
+%
+First, the correctness of the proposed framework is validated by evaluating performance across different VLMs and datasets, including \textit{mm\_math5k} \citep{sun2024mmmath} and \textit{geometry3k} \citep{lu2021inter}.
+%
+Performance improvements on validation and test sets are measured, as discussed in~\cref{sec:valid_test_results}.
+%
+Second, key RL training metrics are analyzed according to the scheme in~\cref{sec:evaluation_scheme}, covering epoch-wise accuracy and insights into the relationship between response length, reflection word ratio, and aha moments.
+%
+Finally, RL’s generalization ability is assessed, especially in comparison to SFT on high-quality data, as detailed in~\cref{sec:rl_sft_generalization}.
+%
+\begin{figure}[tb!]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/exps/qwen2_mmmath_training_metrics.pdf}
+        \caption{Qwen2-VL-Instruct-7B@\textit{mm\_math5k}}
+        \label{fig:qwen2_mmmath_training}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/exps/qwen2.5_mmmath_training_metrics.pdf}
+        \caption{Qwen2.5-VL-Instruct-7B@\textit{mm\_math5k}}
+        \label{fig:qwen2_5_mmmath_training}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/exps/qwen2_geo3k_training_metrics.pdf}
+        \caption{Qwen2-VL-Instruct-7B@\textit{geometry3k}}
+        \label{fig:qwen2_geo3k_training}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/exps/qwen2.5_geo3k_training_metrics.pdf}
+        \caption{Qwen2.5-VL-Instruct-7B@\textit{geometry3k}}
+        \label{fig:qwen2_5_geo3k_training}
+    \end{subfigure}
+    \caption{Training set metrics across models and datasets. 
+    Red curves show training accuracy (per epoch) and response length (per generation step). 
+    Blue curves depict key reflection ratios from~\cref{sec:evaluation_scheme}, and green curves illustrate the usage trends of the two most frequent and dynamic reflection words per experiment. 
+    Shaded regions represent standard deviation across three runs.}
+    \label{fig:training_metrics}
+\end{figure}
+\subsection{Setup}
+
+\paragraph{Settings} In this work, only the LLM backend of VLM is trained, with the ViT encoder and connector frozen. For answer pattern extraction, the model is instructed to reason step by step, and the final answer is enclosed in \texttt{\textbackslash boxed{}}. Only accuracy and language rewards are applied, omitting format and token-level KL rewards.
+%
+Format reward is easily learned and may limit exploration space~\cite{zeng2025simplerlzooinvestigatingtamingzero}.
+%
+Token-level KL rewards are excluded to avoid reference model influence on advantage estimation, as recommended in \cite{xie2025logicrlunleashingllmreasoning}.
+%
+All experiments are conducted independently three times to ensure robustness, with the average of each evaluation metric reported across runs.
+
+
+\paragraph{Parameters} The learning rate is set to $5.0\times10^{-6}$ with a warmup and cosine decay scheduler. \textit{Batch\_size} is $128$, and \textit{forward\_batch\_size} is $16$. Training is conducted for 1 \textit{ppo\_epochs} and batch is divided into $32$ minibatches, resulting in $32$ off-policy updates per batch. Generation settings include temperature and top\_p both set to $1.0$ and max length $2048$ tokens. All experiments are run on 8×H800 GPUs, with 7 allocated for training and 1 for inference. The total batch size for response collection is 896. The same hyperparameter settings are shared across experiments.
+%
+\textit{mm\_math5k} is trained for 30 epochs, corresponding to 150 generation steps, while \textit{geometry3k} is trained for 50 epochs, resulting in 100 generation steps.
+%
+\subsection{Training Set Results and Analysis}
+\label{sec:training_results}
+\cref{fig:training_metrics}
+presents key training metrics across four experimental settings. The red lines represent the epoch-wise accuracy on the training set (top-left) and the response length trend over generation steps (bottom-left).
+%
+Training accuracy consistently increases, indicating that RL optimization is functioning as expected.
+%
+Response length serves as a useful diagnostic signal, reflecting the model’s generation pattern and output richness. Its variation is influenced by model architecture (see~\cref{fig:qwen2_mmmath_training,fig:qwen2_5_mmmath_training}), data distribution (see~\cref{fig:qwen2_5_mmmath_training,fig:qwen2_5_geo3k_training}), and even random seed (see the widening shaded area in late training stages).
+%
+Notably, a steady increase in response length is observed in Qwen2.5-VL-Instruct-7B trained on \textit{mm\_math5k}, suggesting that the model adopts a more elaborate reasoning style as training progresses.
+
+\subsection{Reflection Metrics and Analysis}
+\label{sec:reflection_results}
+\cref{fig:training_metrics} presents key statistics on reflective behavior during training. The blue curves show \textit{reflection\_ratio} and \textit{correct\_ratio\_in\_reflection\_texts}, which capture how often reflection appears and whether it aids in correct reasoning. A full overview of all five ratios is in \cref{fig:reflection_ratios}.
+%
+The green curves show two representative reflection words per experiment, selected based on frequency and variation. Full trends are in \cref{fig:reflection_counts1,fig:reflection_counts2}.
+%
+Qwen2.5-VL consistently shows higher reflection and correct-in-reflection ratios than Qwen2-VL, suggesting reflective reasoning may be embedded in its pretraining corpus.
+%
+Still, reflection remains a minority behavior, and performance gains are primarily driven by improvements in non-reflective reasoning.
+%
+A key analytical focus is the relationship between \textit{response length}, \textit{reflection\_ratio}, and specific reflection words. Across all experiments, reflection ratio strongly correlates with response length, suggesting reflection contributes significantly to output length variation.
+%
+However, length and reflection variation do not always track accuracy. In (a) and (c), length decreases while accuracy improves; in (b), reflection ratio rises but correct reflection ratio remains stable (20–30\%).
+%
+In Qwen2-VL, \textit{verify} spikes early then fluctuates; in Qwen2.5-VL, richer expressions like \textit{re-evaluate} and \textit{re-examine} rise steadily, suggesting stylistic and behavioral differences.
+%
+In summary, while reflection and length reveal aspects of reasoning, performance remains the ultimate indicator.
+%
+\paragraph{``Aha Moments''}
+\label{sec:valid_test_results}
+An "aha moment" refers to the model’s ability to identify and correct its own reasoning errors during rollout \citep{guo2025deepseekR1}. 
+%
+As illustrated in~\cref{sec:aha_moments}, examples are provided in which different VLMs generate reflective reasoning chains that successfully lead to correct answers.
+%
+It is important to note that instances of such behavior can already be observed in base models~\citep{DrGRPO}. RL training amplifies this behavior, enhancing it rather than creating it from scratch.
+%
+Even after reflection, minor perceptual errors may persist, indicating that RL could further enhance perceptual grounding to improve overall model capacity.
+%
+While capturing “aha moments” is valuable, the main focus should be on improvements in validation and test accuracy, as discussed in the next section.
+%
+\begin{table}[tb!]
+    \centering
+    \renewcommand{\arraystretch}{1.2} % 调整行高
+    \begin{adjustbox}{max width=\textwidth}
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{c c c c c c c c c c c c c}
+        \specialrule{1.0pt}{0pt}{0pt}
+        \multirow{2}{*}{\textbf{Dataset}} & \multirow{2}{*}{\textbf{Model}} & \multirow{2}{*}{\shortstack{\textbf{Generation} \\ \textbf{Config}}} & \multicolumn{5}{c}{\textbf{Validation Set}} & \multicolumn{5}{c}{\textbf{Test Set}} \\
+        \cmidrule(lr){4-8} \cmidrule(lr){9-13}
+        & & & \textbf{Vanilla} & \textbf{SFT (Mean)} & \textbf{RL (Mean)} & \textbf{SFT (Max)} & \textbf{RL (Max)} & \textbf{Vanilla} & \textbf{SFT (Mean)} & \textbf{RL (Mean)} & \textbf{SFT (Max)} & \textbf{RL (Max)} \\
+        \midrule
+        \multirow{6}{*}{\textit{mm\_math5k}}
+        & \multirow{3}{*}{\shortstack{Qwen2-VL-\\Instruct-7B}}
+            & pass@8 temp=1.0  & 36.0 & \cellcolor[HTML]{F1B4B4}46.8 & \cellcolor[HTML]{EDA3A3}48.5 & \cellcolor[HTML]{E47171}53.0 & \cellcolor[HTML]{DE4949}55.7 & 29.0 & \cellcolor[HTML]{B7DFB7}25.2 & \cellcolor[HTML]{F4C7C7}35.2 & \cellcolor[HTML]{FADFDF}32.0 & \cellcolor[HTML]{E16060}42.7 \\
+        &   & pass@1 temp=0.6  & 16.0 & \cellcolor[HTML]{F8DADA}19.9 & \cellcolor[HTML]{EFA9A9}23.4 & \cellcolor[HTML]{E47070}29.0 & \cellcolor[HTML]{DB3B3B}31.0 & 11.0 & \cellcolor[HTML]{C8E7C8}8.7  & \cellcolor[HTML]{F3C1C1}14.1 & \cellcolor[HTML]{FADFDF}12.0 & \cellcolor[HTML]{E36868}19.7 \\
+        &   & ~~pass@1 temp=0.01 & 16.0 & \cellcolor[HTML]{F9E1E1}18.8 & \cellcolor[HTML]{EEA4A4}24.1 & \cellcolor[HTML]{EB9696}25.0 & \cellcolor[HTML]{DB3B3B}31.0 & 11.0 & \cellcolor[HTML]{C2E4C2}9.6  & \cellcolor[HTML]{F3C0C0}14.1 & \cellcolor[HTML]{EC9898}16.0 & \cellcolor[HTML]{E16060}20.7 \\
+        \cmidrule(lr){2-13}
+        & \multirow{3}{*}{\shortstack{Qwen2.5-VL-\\Instruct-7B}}
+            & pass@8 temp=1.0  & 65.0 & \cellcolor[HTML]{D2ECD2}60.6 & \cellcolor[HTML]{FEF4F4}64.8 & \cellcolor[HTML]{FDF0F0}66.0 & \cellcolor[HTML]{F1B5B5}70.0 & 54.0 & \cellcolor[HTML]{64BC64}35.2 & \cellcolor[HTML]{FDF2F2}54.6 & \cellcolor[HTML]{8ECC8E}44.0 & \cellcolor[HTML]{E98989}61.8 \\
+        &   & pass@1 temp=0.6  & 36.0 & \cellcolor[HTML]{BFE3BF}30.8 & \cellcolor[HTML]{F7D6D6}39.8 & \cellcolor[HTML]{F7D5D5}39.0 & \cellcolor[HTML]{E67A7A}47.2 & 28.0 & \cellcolor[HTML]{4CB14C}13.3 & \cellcolor[HTML]{FBE9E9}29.0 & \cellcolor[HTML]{B4DEB4}20.0 & \cellcolor[HTML]{EB9595}35.2 \\
+        &   & ~~pass@1 temp=0.01 & 35.0 & \cellcolor[HTML]{BADFBA}31.2 & \cellcolor[HTML]{F3C1C1}40.3 & \cellcolor[HTML]{F8DADA}37.0 & \cellcolor[HTML]{E67A7A}46.2 & 28.0 & \cellcolor[HTML]{58B758}15.0 & \cellcolor[HTML]{F3C1C1}31.8 & \cellcolor[HTML]{A8D9A8}20.0 & \cellcolor[HTML]{E88484}38.3 \\
+        \midrule
+        \multirow{6}{*}{\textit{geometry3k}}
+        & \multirow{3}{*}{\shortstack{Qwen2-VL-\\Instruct-7B}}
+            & pass@8 temp=1.0  & 41.7 & - & \cellcolor[HTML]{E98989}52.5 & - & \cellcolor[HTML]{DE4949}57.0 & 46.6 & - & \cellcolor[HTML]{E98A8A}58.0 & - & \cellcolor[HTML]{DE4949}62.1 \\
+        &   & pass@1 temp=0.6  & 18.3 & - & \cellcolor[HTML]{EFA9A9}25.2 & - & \cellcolor[HTML]{DB3B3B}30.3 & 20.3 & - & \cellcolor[HTML]{EA8C8C}30.3 & - & \cellcolor[HTML]{E16060}34.3 \\
+        &   & ~~pass@1 temp=0.01 & 18.7 & - & \cellcolor[HTML]{EEA6A6}26.7 & - & \cellcolor[HTML]{DB3B3B}31.1 & 23.1 & - & \cellcolor[HTML]{E57676}31.1 & - & \cellcolor[HTML]{E05C5C}34.1 \\
+        \cmidrule(lr){2-13}
+        & \multirow{3}{*}{\shortstack{Qwen2.5-VL-\\Instruct-7B}}
+            & pass@8 temp=1.0  & 63.0 & - & \cellcolor[HTML]{E5F5E5}60.8 & - & \cellcolor[HTML]{FDF1F1}64.4 & 69.4 & - & \cellcolor[HTML]{FEFCFC}69.3 & - & \cellcolor[HTML]{FDF0F0}71.8 \\
+        &   & pass@1 temp=0.6  & 31.3 & - & \cellcolor[HTML]{FADFDF}33.4 & - & \cellcolor[HTML]{EC9999}37.9 & 38.6 & - & \cellcolor[HTML]{F7D6D6}41.5 & - & \cellcolor[HTML]{E98989}44.6 \\
+        &   & ~~pass@1 temp=0.01 & 35.3 & - & \cellcolor[HTML]{F5FAF5}34.6 & - & \cellcolor[HTML]{FADFDF}37.7 & 40.6 & - & \cellcolor[HTML]{FBE5E5}42.0 & - & \cellcolor[HTML]{EC9898}45.0 \\
+        \specialrule{1.0pt}{0pt}{0pt}
+    \end{tabular}
+    \end{adjustbox}
+    % 结束 resizebox
+    \vspace{2mm}
+    \caption{Mean and maximum accuracy on validation \& test sets averaged across 3 runs. RL consistently outperforms the untrained (Vanilla) baseline across all settings. Cell colors indicate relative improvement: deeper red denotes larger gains over Vanilla, while green indicates degradation.}
+    \vspace{-2mm}
+    \label{tab:results1}
+\end{table}
+
+\subsection{Validation \& Test set Results and Analysis}
+\cref{fig:training_metrics} shows the accuracy dynamics, with red curves for RL-trained VLMs, blue for SFT (discussed in~\cref{sec:rl_sft_generalization}), and green dashed lines for the untrained (Vanilla) model.
+%
+Each curve shows the mean over 3 independent runs, with shaded regions indicating standard deviation.
+%
+\cref{tab:results1} summarizes the mean and maximum accuracy for all epochs on the validation and test sets across different generation settings.
+%
+Color intensity reflects improvement relative to Vanilla: darker red indicates higher gains, while green represents underperformance.
+
+Notable performance improvements are observed on both validation and test sets. RL consistently yields significant gains across all generation settings.
+%
+On \textit{mm\_math5k}, RL achieves a 1.35× average increase in accuracy, peaking at 1.76×. Similarly, on geometry3k, RL brings an average gain of 1.36×, with a maximum of 1.51×.
+%
+Even for Qwen2.5-VL-Instruct-7B, already among the strongest VLMs of its size, RL continues to enhance generalization, improving pass@1 test accuracy on \textit{mm\_math5k} by 3.5\%, with a peak gain of 10\%. For geometry3k, RL improves by 1.4\%, up to 4.8\%.
+%
+These results demonstrate that RL can effectively enhance both in-distribution and out-of-distribution performance of strong vision-language models, even when baseline capabilities are already very high.
+
+\subsection{Generalization on visual mathematical tasks: RL versus SFT}
+\label{sec:rl_sft_generalization}
+Since the \textit{mm\_math} dataset \citep{sun2024mmmath} provides CoT solutions from textbooks, these high-quality responses can serve as supervision signals.
+%
+A key objective is to compare the generalization ability of RL and SFT, a topic of ongoing debate in the research community \citep{chu2025RLgeneral, ye2025limo}.
+%
+SFT is performed on Qwen2/2.5-VL-Instruct-7B for the same number of epochs as RL, using the \textit{mm\_math5k} dataset with golden CoT solutions.
+%
+The learning rate follows a warm-up cosine decay schedule with an initial value of $1 \times 10^{-5}$, and the batch size is set to 16.
+%
+Performance is evaluated on the validation and test sets after each epoch, as shown in~\cref{fig:rl_valid_test}.
+
+Our findings are summarized as follows:
+%
+1) RL outperforms SFT across all configurations and models, with the gap widening as training progresses.
+%
+2) On the test set (OOD queries), SFT occasionally underperforms the untrained baseline, indicating overfitting to the training distribution. In contrast, RL achieves higher accuracy than both SFT and the baseline, demonstrating stronger generalization.
+
+In summary, the advantages of RL for VLMs are threefold: 1) It does not require high-quality responses, often scarce in multimodal scenarios \citep{guo2024mammothvl}. 2) Queries can be reused multiple times, improving sample efficiency. 3) RL maintains strong generalization in vision mathematical tasks, while SFT is limited by poor out-of-distribution performance.
+
+\section{Related Work}
+Recent efforts in RL for VLMs focus on enhancing reasoning for visual mathematics~\citep{meng2025mm, Huang2025VisionR1IR, Peng2025LMMR1E3, chen2025r1v} and extending RL to broader visual tasks such as grounding, detection, and classification~\citep{liu2025visual, shen2025vlmr1}.
+%
+While these works advance the frontier, this report addresses two foundational gaps: 1) the absence of a concise framework outlining RL training for VLMs, and 2) the lack of a structured evaluation framework tailored for RL training.
+%
+%Verifiable reasoning tasks are used to validate the proposed framework and evaluation scheme.
+%
+Unlike feature-rich RL toolkits like TRL~\citep{vonwerra2022trl}, verl~\citep{sheng2024hybridflow}, and OpenRLHF~\citep{hu2024openrlhf}, which prioritize performance and complexity, our framework offers a minimalist, from-scratch implementation focused on transparency and ease of customization, without competing on performance.
+%
+Evaluation practices for RL-based LLM/VLM training are still under-standardized, making comparison difficult.
+%
+This report introduces a unified evaluation scheme with metrics covering both performance and behavioral aspects of RL training.
+%
+A concurrent effort, SimpleRL-Zoo \citep{zeng2025simplerlzooinvestigatingtamingzero}, also highlights the importance of robust evaluation in LLMs under zero-settings.
+%
+Compared to this, this work offers finer-grained analysis of reflective behavior and more comprehensive tracking of accuracy dynamics.
+
+\section{Conclusion and Future Work}
+This work introduces a minimalist and reproducible RL framework for VLMs, built entirely from scratch, alongside a standardized evaluation scheme for tracking performance dynamics and reflective behaviors.
+%
+Empirical findings offer significant insights into the interplay between reflection, response length, and generalization, showing RL’s superior performance over SFT.
+%
+In future work, the framework will be refined for better usability, simplicity, and extensibility, while the evaluation scheme will be enhanced to offer more comprehensive insights into model behavior.
+
+% This work introduces a minimalist and reproducible framework for applying RL in VLMs, built entirely from scratch. Alongside this, a standardized evaluation scheme is proposed to track performance dynamics and reflective behaviors throughout training. Empirical findings highlight significant insights into the interplay between reflection, response length, and generalization, showing RL’s superior performance compared to SFT.
+%
+% In future work, the framework will be further refined to improve usability, simplicity, and extensibility, making it even more user-friendly and accessible for researchers. The evaluation scheme will continue to be enhanced to provide more detailed and comprehensive insights into model behavior, ensuring that it remains aligned with the latest advancements in RL-based VLM research.
+
+
+\bibliography{colm2025_conference}
+\bibliographystyle{colm2025_conference}
+
+\appendix
+\end{document}

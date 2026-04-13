@@ -1,158 +1,110 @@
 # AGENTS.md
 
-This file records project-specific conventions for maintaining `yan`'s homepage.
+This file records project-specific conventions for the current `visiting` branch.
 
-## Project Overview
+# 当前进度
 
-- This repo is a simple static homepage.
-- Main file: `index.html`
-- CV file: `cv.tex`
-- Image asset: `images/Photo.jpg`
-- Most homepage edits happen directly in `index.html` (single-file style).
+  你现在的进度已经比较清楚了。压缩上下文前，建议你保留这几个最关键的结论，下一轮直接从这里继续：
 
-## Owner Profile (for content edits)
+  - 当前有效稿子在 research_statement_v4.md
+  - 这版只保留英文，前三段已经成形
+  - 第三段主轴已经定成：
+      - 不是论文罗列
+      - 而是 RL 如何改变 multimodal models
+      - 三个 scientific takeaways：
+          - Rethinking: RL 改变训练动态与泛化，不只是分数
+          - One RL: RL 可以在统一框架下同时塑造 reasoning 与 perception
+          - Tool-Use: 当前收益更多来自 intrinsic improvement 和 harm reduction，而不是真正 tool mastery
+  - 第三段结尾已经改成 necessity statement：
+      - 对 long-horizon multimodal tasks，单靠当前观测下的 perceive/reason/act 往往不够
+      - 需要预测后续状态演化和行动后果
 
-- Homepage owner: **Yan Ma**
-- Research focus: reinforcement learning and foundation models, especially RL-based post-training for vision-language models.
-- Affiliation context on homepage: Ph.D. student at Fudan University.
+  你下一段要写的是：
 
-When editing profile text, preserve the existing academic/personal tone unless the user asks for a rewrite.
+  - 我现在正在做什么
+  - 并把它自然接到 predictive modeling
 
-## Publications Section Architecture (Important)
+  我建议你下一轮继续时，先围绕这两个问题展开：
 
-`Selected Publications` has been refactored into:
+  1. 你“现在正在做的事情”更准确的上位描述是什么
+      - audio-video pretraining
+      - multimodal generative modeling
+      - future-state prediction
+      - world modeling
+        这几个词的层级要先理顺
+  2. 这一段是要写成
+      - current work paragraph
+      - 还是 future agenda paragraph
+        这会决定语气强弱
 
-- Filter buttons:
-  - `First-author / Co-first` (default)
-  - `All publications`
-- A rendered container:
-  - `#publications-rendered`
-- A hidden single source of truth:
-  - `#publications-templates`
-  - each paper is a `<template class="pub-template" ...>`
+  如果你回来继续，我建议我们直接从 research_statement_v4.md 往下写第四段
 
-Do **not** maintain two separate publication lists. Add/update each publication **once** in the template store.
+## Current Scope
 
-## Publication Template Fields (Required)
+- Active work on this branch is centered on:
+  - `visiting/`
+  - `cv.tex`
+  - `cv_CN.tex`
+- Do not treat homepage-source conventions for `index.html`, publication filters, news items, or footer updates as active requirements on this branch unless the user explicitly asks.
 
-Each publication template should include:
+## `visiting/` Folder Purpose
 
-- `data-year="YYYY"`
-- `data-first-author="true|false"`
-  - `true` includes first-author and co-first papers
-- `data-sort-date="YYYY-MM-DD"`
-  - used for ordering within year (descending)
+- `visiting/` stores planning and preparation materials for Yan's visiting-student applications.
+- Typical contents include:
+  - target school / professor lists
+  - application material notes
+  - progress tracking
+  - research statement drafts
+  - outreach-related drafts
 
-Example:
+## Owner Context
 
-```html
-<template class="pub-template" data-year="2025" data-first-author="true" data-sort-date="2025-05-18">
-  ...
-</template>
-```
+- Owner: **Yan Ma**
+- Current context: Ph.D. student at Fudan University
+- Main research focus: reinforcement learning and foundation models, especially RL-based post-training for vision-language / multimodal models
 
-## Publication Sorting Rule (User Preference)
+When editing research or application materials, preserve a direct academic tone unless the user asks for a rewrite.
 
-The user wants publication ordering to follow a date inferred from arXiv identifiers in a custom way.
+## CV (`cv.tex`) Conventions
 
-For arXiv IDs like:
-
-- `arXiv:2505.18129`
-
-Use:
-
-- `2025-05-18` as `data-sort-date`
-
-That is, interpret:
-
-- `YYMM` -> year/month
-- the first two digits after the dot (`NNNNN`) -> approximate day
-
-Notes:
-
-- This is a **project-specific convention** for sorting, not the official arXiv date encoding.
-- If the user provides an exact publication date, prefer that exact date.
-- For non-arXiv items (conference/blog/tech report), use a user-provided exact date when available.
-
-## Author Marking Conventions
-
-Follow per-paper conventions exactly as provided by the user.
-
-Examples already used:
-
-- `†` for joint contribution (co-first)
-- `*` for joint supervision
-- In some papers, other symbols may be used (e.g. `♔` project lead)
-
-Do not normalize symbols across all papers unless the user explicitly requests it.
-
-## ANOLE / ICLR 2025 Blog Track Convention
-
-The publication list treats:
-
-- `ANOLE: ...`
-
-as the primary entry, and folds the ICLR 2025 Blog Track item into the ANOLE entry as an extended blog version.
-
-Do not re-split this into two separate publication entries unless the user asks.
-
-## News Section Conventions
-
-- News items are plain HTML list items under the `News` section.
-- New entries should usually be inserted at the top (most recent first).
-- Keep the existing tone/style and emoji usage unless the user requests a style change.
-
-## Last Update
-
-- Update the footer `Last Update:` line whenever substantive homepage changes are made, if the user asks for it.
-- Use a human-readable English date format (e.g., `February 25, 2026`) to match the current page style.
-
-## Editing Guidance
-
-- Prefer minimal changes outside the target section.
-- Keep the page single-file unless the user explicitly requests a refactor.
-- Preserve current behavior of the publication filter JS unless intentionally modifying it.
-
-## CV (`cv.tex`) Maintenance Conventions
-
-- `cv.tex` should stay aligned with the homepage profile and publication updates.
-- When updating the CV publication list, prioritize:
+- `cv.tex` is an active document on this branch and should stay aligned with current visiting-application materials.
+- Keep the CV concise; default target is one page unless the user asks otherwise.
+- Prioritize:
   - first-author / co-first papers
-  - accepted papers (including accepted blog-track items)
-- CV publications should be ordered by time (newest first), following the same project-specific sorting preference used on the homepage:
-  - if exact dates are available, use them
-  - otherwise, infer an approximate date from the arXiv identifier using the local `YYMM.xx -> YYYY-MM-DD` convention (with `xx` mapped to day)
-- When homepage publication metadata changes (new papers, updated acceptance status, merged entries like ANOLE + ICLR Blog Track), check whether `cv.tex` should be updated in the same turn.
+  - accepted papers
+  - representative ongoing works when relevant for visiting applications
 
-### CV Publication Formatting (Current Style)
+### CV Publication Formatting
 
-- Keep publication entries in paragraph-style auto-wrap format (not rigid 3-line tabular blocks), to improve one-page density and readability.
+- Keep publication entries in paragraph-style auto-wrap format, not rigid multi-line tabular blocks.
 - Current macro convention:
   - `\Paper{title+links}{venue_or_arxiv}{authors}`
   - `\PaperTLDR{title+links}{venue_or_arxiv}{authors}{tldr}`
-- Author line should be on a separate line in smaller font.
-- `\PaperTLDR` should hide the TLDR line when the 4th argument is empty (`{}`), i.e., no dangling `TLDR:` label.
-- Use icon links in titles where applicable (e.g., `[\faFilePdf]`, `[\faGithub]`, `[\faGlobe]`) instead of plain `[PDF]` text.
+- Author line should stay on a separate line in smaller font.
+- `\PaperTLDR` should hide the TLDR line when the 4th argument is empty (`{}`).
+- Use icon links in titles where applicable (e.g. `[\faFilePdf]`, `[\faGithub]`, `[\faGlobe]`).
 
-### CV Publication Content Policy
+### CV Content Policy
 
-- For preprint/technical-report style entries, show only arXiv ID style info (e.g., `arXiv:2602.01334`) without redundant year text.
-- For accepted conference/journal entries, do not append arXiv ID in the venue line unless explicitly requested.
-- Keep author lists consistent with `index.html`; fix discrepancies against homepage source of truth when conflicts appear.
-- Underline `Yan Ma` where the user explicitly requests it on specific papers; do not globally enforce underlining on all entries unless requested.
-
-### CV Sections and Length
-
-- Keep CV concise (target one page unless user asks otherwise).
-- When space is tight, prefer:
-  - keeping key first/co-first papers
-  - keeping concise experience bullets
-  - reducing/removing optional TLDR lines on lower-priority entries
+- For preprint / technical-report style entries, use concise arXiv-style venue lines without redundant year text unless the user asks otherwise.
+- For accepted conference / journal entries, do not append arXiv IDs in the venue line unless explicitly requested.
+- Underline `Yan Ma` only when the user explicitly requests it on specific entries; do not globally enforce underlining.
 
 ### Chinese CV (`cv_CN.tex`) Conventions
 
-- `cv_CN.tex` should be kept in sync with `cv.tex` structure and key content unless user asks for divergence.
-- Keep paper titles and author names in original English by default; translate narrative text (research interests, experience descriptions, TLDR text) to Chinese.
-- If using class/template that already loads `hyperref`, avoid option clashes by passing options before class load:
+- `cv_CN.tex` should generally stay aligned with `cv.tex` in structure and key content unless the user asks for divergence.
+- Keep paper titles and author names in original English by default; translate narrative text to Chinese.
+- If the class/template already loads `hyperref`, avoid option clashes by passing options before class load:
   - use `\PassOptionsToPackage{hidelinks}{hyperref}` before `\documentclass`
   - avoid re-loading `hyperref` with conflicting options later.
+
+## Writing Guidance for Visiting Materials
+
+- Favor clear, direct academic prose over polished but vague language.
+- Prefer defensible claims over broad or fashionable wording.
+- When drafting research statements, avoid turning paragraphs into paper lists; organize them around research questions and scientific takeaways.
+- Keep terminology consistent across drafts, especially around:
+  - multimodal agents
+  - multimodal foundation models
+  - prediction / world modeling
+  - RL / post-training

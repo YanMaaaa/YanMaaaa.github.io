@@ -1,0 +1,660 @@
+\begin{document}
+
+\ifcolmsubmission
+\linenumbers
+\fi
+
+\maketitle
+
+\begin{abstract}
+Reinforcement learning (RL) is becoming an important direction for post-training vision-language models (VLMs), but public training methodologies for unified multimodal RL remain much less mature, especially for heterogeneous reasoning and perception-heavy tasks.
+%
+We propose \textbf{V-Triune}, a \textbf{V}isual \textbf{Tri}ple \textbf{U}nified Rei\textbf{n}forcement L\textbf{e}arning methodology for unified multimodal RL.
+%
+It organizes training around three coordinated abstractions: \textit{Sample-Level Reward Routing}, \textit{Verifier-Level Outcome Verification}, and \textit{Source-Level Diagnostics}.
+%
+Within this methodology, Dynamic IoU provides localization-specific reward shaping that avoids reward ambiguity under loose thresholds and reward sparsity under strict ones.
+%
+Built on V-Triune, we develop Orsta (7B, 32B), a family of models jointly trained on eight reasoning and perception tasks.
+%
+Under matched budgets, unified training matches or outperforms specialist mixtures.
+%
+The final Orsta models improve over their backbones on MEGA-Bench, compare favorably with strong multi-task RL-VLM baselines, and transfer these gains to a broad set of downstream benchmarks.
+%
+These results show that unified RL can improve both reasoning and perception within a single VLM RL pipeline.
+
+\end{abstract}
+
+
+\section{Introduction}
+\label{sec:intro}
+
+Reinforcement learning (RL) is becoming an important direction for post-training foundation models~\citep{liu2025deepseek,xiao2026mimo}.
+%
+Compared with text-only settings, however, public and reproducible training methodologies for multimodal RL remain much less mature~\citep{qwen3.5,team2026kimi}.
+%
+Although more works have begun to explore RL post-training in visual settings~\citep{liu2025visual,ma2025deepperception,tan2025reason,liu2025othink,shen2025vlm,wang2025vl,yu2025perception,liu2025visionreasoner}, a stable methodology for scaling RL across heterogeneous visual tasks remains an important open problem for vision-language models (VLMs).
+
+For VLMs, this challenge lies in handling both capability heterogeneity and verification heterogeneity within one pipeline.
+%
+Post-training must cover both reasoning-heavy and perception-heavy tasks, while their outcomes may require symbolic checking or continuous spatial feedback such as IoU.
+%
+A unified multimodal RL methodology must therefore support heterogeneous reward structures and verification regimes within the same optimization loop.
+%
+We study unified RL post-training for visual tasks with verifiable outcomes spanning both reasoning-heavy and perception-heavy settings.
+
+Existing work usually addresses only part of this problem, focusing either on visual reasoning~\citep{huang2025vision,yang2025r1,meng2025mm,vl_rethinker} or on perception tasks such as detection and grounding~\citep{liu2025visual,ma2025deepperception,tan2025reason,liu2025othink,shen2025vlm,wang2025vl,yu2025perception,liu2025visionreasoner}.
+%
+A clear and stable RL framework for jointly improving a single VLM on both high-level reasoning and fine-grained perception remains missing.
+
+In practice, unified multimodal RL breaks down for three concrete reasons.
+%
+First, different tasks, and even different samples, can require different reward compositions and verifiers, so hard-coding this logic into the trainer quickly becomes brittle and difficult to scale.
+%
+Second, for localization tasks such as detection and grounding, fixed IoU thresholds create two failure modes: loose thresholds blur reward differences between coarse predictions, whereas strict thresholds make rewards too sparse for stable learning.
+%
+Third, in joint training, aggregate metrics often hide source-specific instability, reward degradation, or other failures, making them difficult to detect and diagnose in time.
+
+To address these blockers, we introduce \textbf{V}isual \textbf{Tri}ple \textbf{U}nified Rei\textbf{n}forcement L\textbf{e}arning (V-Triune), a training methodology for unified multimodal RL over heterogeneous visual tasks.
+%
+V-Triune organizes unified training around three coordinated abstractions: sample-level reward routing (\S\ref{subsec:sample_level_formatting}), which decouples reward composition and verifier choice from the trainer core; verifier-level outcome verification (\S\ref{subsec:verifier_level_reward_computation}), which provides a common interface for heterogeneous rewarding; and source-level diagnostics (\S\ref{subsec:metric_monitoring}), which expose source-specific failures hidden by aggregated metrics.
+%
+Within this methodology, Dynamic IoU Reward (\S\ref{subsec:dynamic_iou}) serves as a localization-specific reward-shaping mechanism by progressively increasing the IoU requirement, avoiding both reward ambiguity under loose thresholds and reward sparsity under strict ones.
+
+Built on V-Triune, we develop the Orsta (\textbf{O}ne \textbf{R}L to \textbf{S}ee \textbf{T}hem \textbf{A}ll) model family at both 7B and 32B scales and jointly train these models on eight representative tasks under a single RL pipeline, including reasoning tasks such as mathematics, science, chart, and puzzle, as well as perception tasks such as detection, grounding, OCR, and counting.
+%
+Under matched budgets, unified training matches or outperforms specialist mixtures while remaining strong across both reasoning and perception within a single RL pipeline.
+%
+Orsta improves over its base models on MEGA-Bench~\citep{chen2024mega}, a comprehensive benchmark spanning over 440 diverse visual tasks, and these gains further transfer to downstream benchmarks.
+%
+Taken together, these results suggest that V-Triune provides an effective and practical training methodology for joint RL post-training of reasoning and perception in open VLMs.
+
+Our main contributions are threefold.
+%
+First, we formulate unified VLM post-training as a heterogeneous multimodal RL problem and identify three practical blockers: rigid reward interfaces, the ambiguity-versus-sparsity trade-off in localization rewards, and lack of source-level observability during joint training.
+%
+Second, we propose V-Triune, a training methodology built on sample-level reward routing, verifier-level outcome verification, and source-level diagnostics, together with Dynamic IoU reward shaping for localization tasks.
+%
+Third, we instantiate this methodology in the Orsta family and validate it through eight-task unified training, matched-budget specialist comparisons, MEGA-Bench evaluation, broader reasoning and perception benchmarks, and extension to a new GUI task domain.
+
+\section{Related Work}
+
+RL post-training is becoming important for foundation models and is extending from language models to multimodal models~\citep{liu2025deepseek,qwen3.5,team2026kimi,team2025longcat,xiao2026mimo}.
+%
+However, public multimodal RL recipes remain much less mature than their text-only counterparts, especially for setups that span heterogeneous tasks and reward regimes.
+%
+As a result, most existing VLM-RL work is still organized around particular capability families or relatively homogeneous task settings, rather than a unified recipe for jointly training reasoning-heavy and perception-heavy tasks.
+
+One major line of work focuses on multimodal reasoning.
+%
+Vision-R1~\citep{huang2025vision}, R1-OneVision~\citep{yang2025r1}, MM-Eureka~\citep{meng2025mm}, VL-Rethinker~\citep{vl_rethinker}, and GThinker~\citep{zhan2025gthinker} mainly target mathematics, science, and related reasoning tasks, typically using rule-based rewards and R1-style post-training to improve reasoning.
+%
+These works have substantially advanced multimodal reasoning RL, but their task composition and reward design remain centered on reasoning-heavy problems.
+%
+Another line focuses on perception-heavy or relatively homogeneous visual tasks.
+%
+Visual-RFT~\citep{liu2025visual}, DeepPerception~\citep{ma2025deepperception}, Reason-RFT~\citep{tan2025reason}, Perception-R1~\citep{yu2025perception}, VLM-R1~\citep{shen2025vlm}, and VisionReasoner~\citep{liu2025visionreasoner} show that RL can be effective for detection, grounding, OCR, counting, segmentation, and related tasks, often with task-specific rewards such as IoU or mAP.
+%
+Taken together, these two lines do not directly address how reasoning-heavy and perception-heavy tasks can stably coexist within the same RL training framework.
+
+A smaller set of recent work moves toward broader multimodal RL settings.
+%
+Mixed-R1~\citep{xu2025mixedr1} studies multimodal RL with mixed answer types and reward forms, including open-ended text rewards, while OneThinker~\citep{feng2025onethinker} addresses heterogeneous image-video training through optimizer-side reward normalization and a GRPO~\citep{shao2024deepseekmath} variant.
+%
+These works move toward broader multimodal RL settings, but they address different problems from ours.
+%
+Our work instead studies a public training methodology for open VLMs that jointly train reasoning-heavy and perception-heavy tasks, where capability heterogeneity, verifier heterogeneity, localization-specific reward shaping, and source-level observability must all be handled within one pipeline.
+
+%
+\begin{figure}[tb!]
+    \centering
+    \includegraphics[width=0.90\linewidth]{images/figure2_v15.pdf}
+    \caption{\textbf{Overview of V-Triune.} The methodology organizes unified multimodal RL around three training abstractions: sample-level reward routing, verifier-level outcome verification, and source-level diagnostics. They address rigid reward interfaces, localization reward ambiguity versus sparsity, and lack of source-level observability in mixed-task training.}
+    \label{fig:framework}
+    \vspace{-10px}
+\end{figure}
+%
+\section{V-Triune: Visual Triple Unified Reinforcement Learning}
+\label{sec:method}
+
+This section presents V-Triune, our training methodology for unified multimodal RL in vision-language models.
+%
+The central problem is how to stably train reasoning-heavy and perception-heavy tasks within a single RL pipeline despite their different reward interfaces, outcome verification regimes, and observability requirements.
+
+In practice, this setting breaks down in three recurring ways.
+%
+First, heterogeneous tasks do not fit a rigid shared reward interface, hard-coded task-specific reward branches make the trainer brittle and difficult to extend.
+%
+Second, localization-centric tasks face an ambiguity-versus-sparsity trade-off under fixed IoU thresholds.
+%
+Third, aggregate-only monitoring can hide source-specific failure modes, making training problems difficult to localize.
+
+V-Triune addresses these issues through three coordinated abstractions, shown in~\cref{fig:framework}.
+%
+Sample-level reward routing defines a clean boundary between the trainer and task-specific reward logic.
+%
+Verifier-level outcome verification provides a common interface for heterogeneous reward computation and incorporates Dynamic IoU for localization tasks.
+%
+Source-level diagnostics restore the observability that aggregate-only monitoring cannot provide.
+%
+Together, these abstractions make heterogeneous rewards, verification, and failure signals manageable within one pipeline, supporting stable unified training.
+%
+\subsection{Sample-Level Reward Routing}
+\label{subsec:sample_level_formatting}
+
+Unified multimodal RL needs an extensibility boundary between the trainer and task-specific reward logic.
+%
+Without such a boundary, adding new task families means inserting special-case reward branches into the training loop, which quickly becomes brittle and hard to maintain.
+%
+V-Triune makes this boundary explicit through sample-level reward routing.
+
+Each sample carries a compact routing specification that determines which reward components should be used, how they are weighted, and which verifier should evaluate the rollout.
+%
+The trainer consumes only this shared routing interface, while task-specific verification logic stays outside the update loop.
+%
+This turns heterogeneous reward handling from trainer-side branching into a unified sample-side interface.
+
+In practice, the routing metadata includes component weights, a verifier key, and the source identifier later used for diagnostics.
+%
+In this work, sample-level routing makes standard mixed-task RL explicit rather than introducing per-sample reward tuning.
+%
+The metadata only selects among a small set of verifier-defined reward templates, making explicit the routing that heterogeneous verifiable-reward training already requires.
+%
+The full schema is shown in~\cref{fig:data_format}.
+%
+What matters methodologically is that the trainer no longer needs task-specific reward code paths in order to mix reasoning and perception tasks in one run.
+
+This design defines a clean extensibility boundary: adding a new task requires preparing data that matches an existing verification regime, or registering a new verifier, without rewriting the trainer itself.
+%
+The same routing metadata also supports source-aware diagnosis by allowing rewards and behaviors to be regrouped by source after verification.
+
+\subsection{Verifier-Level Outcome Verification}
+\label{subsec:verifier_level_reward_computation}
+
+Sample-level routing determines which verification path a rollout should follow, but unified training still needs a common interface for heterogeneous outcome evaluation.
+%
+Some tasks can be checked with deterministic rules after parsing the model output, whereas others require continuous spatial scoring.
+%
+V-Triune handles this at the verifier level: the trainer sends predictions and references to the designated verifier, which performs parsing, verification, and reward computation through a shared interface.
+%
+This abstraction lets the trainer interact with heterogeneous reward logic in one way while preserving task-specific verification inside each verifier.
+%
+In this work we primarily instantiate two verifiers, corresponding to two verification regimes:
+%
+\noindent\paragraph{MathVerifyVerifier: Rule-verifiable outcomes}
+This verifier handles tasks whose outputs can be parsed and deterministically checked, including mathematics, puzzles, science, chart reasoning, OCR, and counting.
+%
+For these tasks, we parse the model output into a normalized answer and verify it against the reference using \texttt{math\_verify}~\citep{mathverify2025}.
+%
+The resulting accuracy reward follows the standard 0--1 rule-based form:
+%
+\begin{equation}
+    R_\text{acc}(\hat{a}, a) = \mathbb{I}(\texttt{verify}(\texttt{parse}(\hat{a}), \texttt{parse}(a)))
+    \label{eq:math_rule}
+\end{equation}
+%
+where $\hat{a}$ denotes the predicted answer and $a$ the ground-truth answer.
+%
+In our setup, model responses are instructed to place the final answer inside \texttt{\textbackslash boxed\{\}}.
+
+\noindent\paragraph{DetectionVerifier: Localization-centric outcomes}
+This verifier handles tasks such as detection and grounding, where outputs must satisfy both a structural format and a spatial accuracy criterion.
+%
+We therefore compute a composite reward with separate format and accuracy terms.
+%
+To enforce the required output structure, we define a format reward as
+%
+\begin{equation}
+    R_{\text{format}}(o_q) = 0.25 \sum_{i=1}^{4} \mathbb{I}(\text{count}(o_q, s_i) = 1)
+    \label{eq:format_rule}
+\end{equation}
+%
+where $o_q$ is the model response to query $q$, and the four format tags are $\{s_i\}_{i=1}^4 = \{\texttt{<think>}, \texttt{</think>}, \texttt{<answer>}, \texttt{</answer>}\}$.
+
+For the spatial component, we use IoU-based accuracy:
+%
+\begin{equation}
+R_\text{acc}(\hat{a}, a) =
+\begin{cases}
+\text{IoU}(\hat{a}, a), & \text{if}\quad\text{IoU}(\hat{a}, a) \ge \epsilon \\
+0, & \text{else}
+\end{cases},
+\qquad \text{where} \quad
+\text{IoU}(\hat{a}, a) = \frac{\text{Area}(\hat{a} \cap a)}{\text{Area}(\hat{a} \cup a)}
+\label{eq:iou_rule}
+\end{equation}
+%
+where $\hat{a}$ is the predicted box and $a$ is the ground-truth box.
+%
+The final reward combines the two parts as $\alpha_{\text{acc}} \cdot R_{\text{acc}} + \alpha_{\text{format}} \cdot R_{\text{format}}$, where $\alpha_{\text{acc}}$ and $\alpha_{\text{format}}$ are specified by the sample-level routing metadata.
+
+Verifier-level computation gives different task families a clear boundary for reward logic while keeping the trainer unchanged.
+%
+For new task domains that can reuse an existing output structure and verification regime, only the data routing needs to be updated.
+%
+We verify this point with the GUI-domain extension experiment in~\cref{subsec:gui_extension}.
+
+\subsubsection{Dynamic IoU for Precision Enhancement}
+\label{subsec:dynamic_iou}
+
+Within \textit{DetectionVerifier}, the main optimization challenge is to construct a localization reward that is informative without becoming too sparse.
+%
+IoU is the most direct spatial signal for detection and grounding, but a fixed threshold creates a practical dilemma.
+
+With a loose threshold such as IoU@50~\citep{yu2025perception}, reward density is high but reward ambiguity remains severe: multiple coarse boxes can receive nearly identical rewards, leaving limited pressure for finer localization.
+%
+With a highly strict threshold such as near-exact matching, the objective becomes clearer but early rollouts receive almost no positive feedback, creating a cold-start problem.
+%
+This issue is amplified in unified training because localization rewards must coexist with sharper rule-based rewards from reasoning tasks.
+
+To address this trade-off, we introduce Dynamic IoU, a dense-to-strict reward shaping mechanism.
+%
+Rather than fixing one threshold, we use a simple three-stage schedule that begins with denser supervision, then progressively raises the IoU requirement, and finally enforces near-exact localization later in training.
+%
+This staging preserves learnability in early optimization while still imposing high-precision supervision in the late phase.
+
+Dynamic IoU makes high-precision localization learnable under joint training by combining dense early supervision with stricter late-stage refinement.
+%
+We provide the exact thresholds and stage boundaries in the implementation details, and compare this design against fixed thresholds and alternative schedules in the experiments and appendix.
+%
+\subsection{Source-Level Diagnostics}
+\label{subsec:metric_monitoring}
+
+Even with sample-level routing and verifier-level computation, unified RL can still fail in ways that aggregate metrics do not expose.
+%
+Global averages may remain seemingly stable while individual sources undergo reward collapse, format drift, abnormal token generation, local task suppression, or optimization instability.
+%
+V-Triune therefore tracks verified samples at the source level using the same \texttt{data\_source} key introduced in the routing interface.
+
+We organize these signals into four groups: training reward, response behavior, reflection-related metrics, and auxiliary diagnostics.
+%
+Training reward metrics provide a source-level breakdown of rule-based accuracy, format reward, and IoU-based reward.
+%
+Response behavior metrics include average length, lengths of correct and incorrect responses, and truncation rates, which help reveal verbosity drift or collapse.
+%
+Reflection metrics provide a lightweight online proxy for response strategy by tracking whether reflective cues appear in responses; the precise definition is given in~\cref{appx:reflection_metrics}.
+%
+Auxiliary diagnostics include fixed-threshold IoU, ViT/LLM gradients, and response examples for qualitative analysis.
+
+In our experiments, these diagnostics directly informed two training decisions in the final recipe: freezing the vision encoder after observing ViT gradient explosion, and filtering leaked image special tokens before reward recomputation~(\cref{sec:training_recipe}).
+%
+They also reveal divergent response-length and reflection patterns across task families and help detect when one source is being overshadowed by stronger training signals elsewhere.
+%
+Source-level diagnostics are therefore part of the training methodology rather than a dashboard add-on: they make unified training actionable and diagnosable.
+
+\section{Experiment}
+\label{sec:experiment}
+
+\begin{table*}[t]
+\centering
+\caption{Fair-budget evidence under a fixed training budget. Left: MEGA-Bench task-composition curves for the 7B off-policy setting. Right: benchmark breakdown at the same 60-step budget. Unified = Reason+Perception. MME-R = MME-Reasoning~\citep{yuan2025mme}. CharXiv(RQ) = CharXiv Reasoning Question. COCO (S$\mid$M) reports single-object and multi-object mAP in COCO val-2017. COCO mAP uses the standard cocoapi; see details in~\cref{sec:coco_evaluation}. Best results are bolded and second-best results are underlined.}
+\label{fig:fair_budget_evidence}
+\begin{minipage}[t]{0.31\textwidth}
+\vspace{-1pt}
+\centering
+\includegraphics[width=\linewidth]{images/figure6/7b_task_new.pdf}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.68\textwidth}
+\vspace{0pt}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{6}{c}{Reasoning Benchmarks} \\
+\midrule
+Mixture & MMMU & MathVista & MathVision & MME-R & CharXiv (RQ) \\
+\midrule
+Unified & \underline{56.56} & \underline{71.40} & \underline{30.51} & \textbf{28.20} & \textbf{44.50} \\
+Reason-only & 54.89 & \textbf{71.70} & \textbf{31.24} & \underline{28.03} & \underline{44.00} \\
+Perception-only & \textbf{56.67} & 68.20 & 29.59 & 26.26 & 41.00 \\
+\bottomrule
+\end{tabular}
+}
+
+\vspace{4pt}
+
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{6}{c}{Perception Benchmarks} \\
+\midrule
+Mixture & HrBench4K & VStar & COCO (S$\mid$M) & OCRBenchV2 & ScreenSpot-Pro \\
+\midrule
+Unified & \underline{73.75} & \textbf{82.20} & \underline{80.69} $\mid$ \textbf{38.62} & \textbf{55.87} & \underline{23.91} \\
+Reason-only & 73.25 & 78.53 & 78.36 $\mid$ 33.87 & \underline{55.77} & \textbf{23.97} \\
+Perception-only & \textbf{76.00} & \underline{80.10} & \textbf{80.78} $\mid$ \underline{37.37} & 55.33 & 23.78 \\
+\bottomrule
+\end{tabular}
+}
+\end{minipage}
+\end{table*}
+%
+\vspace{-5pt}
+
+\subsection{Experimental Setup}
+\label{subsec:implementation details}
+
+We evaluate V-Triune at two levels.
+%
+First, under a fixed budget, we compare a unified mixture against two specialist mixtures: \textit{Reason-only} and \textit{Perception-only}.
+%
+Second, we report the final Orsta models under a longer training horizon to evaluate overall competitiveness on broad and task-specific benchmarks.
+
+We use Qwen2.5-VL-7B and 32B~\citep{Qwen2.5-VL} as backbones.
+%
+We study unified RL post-training on strong public VLM backbones when the target outcomes are verifiable.
+%
+RL post-training uses a 47.7K-sample VQA training set with verifiable answers from 18 sources, covering four reasoning tasks (math, puzzle, science, and chart) and four perception tasks (detection, grounding, counting, and OCR).
+%
+Detailed data construction is given in~\cref{subsec:data,tab:data_source}.
+%
+Appendix~\cref{sec:curated_vs_random} further reports a matched-count curated-versus-random control to separate data quality from the training methodology.
+%
+We use GRPO~\citep{shao2024deepseekmath} in all main experiments, with a rollout batch size of 1024 and 8 sampled responses per prompt, and implement the unified RL pipeline on top of Verl~\citep{sheng2024hybridflow}.
+%
+Controlled comparisons use a fixed training budget, whereas final-model results use 3 training epochs.
+%
+For stability, we freeze the vision encoder and update only the LLM layers.
+%
+Rollouts are generated with vLLM using \texttt{temperature=1.0}, \texttt{top-p=1.0}, and \texttt{max\_length=2048}, and localization tasks use a three-stage Dynamic IoU schedule.
+
+\subsection{Does Unified Training Help Under Fair Budgets?}
+\label{subsec:fair_budget}
+
+We first study unified training under a fixed training budget.
+%
+Unless otherwise stated, all fair-budget comparisons use the same 7B off-policy with 8 optimization steps per rollout.
+%
+We compare the unified mixture against two specialist mixtures under the same budget.
+
+The left panel of~\cref{fig:fair_budget_evidence} provides the first evidence through the MEGA-Bench task-composition curves.
+%
+Under the same 60-step budget, \textit{Reason+Perception} follows the strongest or tied-strongest trajectory throughout training.
+%
+This suggests that joint training does not introduce a clear reasoning-versus-perception trade-off on MEGA-Bench.
+
+We further compare the same three mixtures on a 10-benchmark suite spanning both reasoning and perception, and report the fixed-budget benchmark breakdown in~\cref{fig:fair_budget_evidence}.
+%
+The benchmark list and evaluation protocols are given in~\cref{sec:eval_details}.
+%
+The unified mixture remains stronger or comparable on both sides and reaches the best result on multiple benchmarks.
+%
+Across this suite, the unified model matches or exceeds the specialist baselines on 5/10 benchmarks and stays close on the rest.
+
+This is consistent with improved budget efficiency under unified training, since the unified model remains competitive despite receiving less task-specific exposure per task.
+%
+One plausible explanation is mild cross-task regularization, where exposure to both reasoning and
+perception tasks improves shared learning signals beyond specialist training alone.
+%
+We leave a deeper mechanistic analysis of this effect to future work.
+
+% =============================================================================================
+
+\begin{table*}[t]
+\centering
+
+% ================= LEFT COLUMN =================
+\begin{minipage}[t]{0.29\linewidth}
+\vspace{0pt}
+\centering
+
+\captionof{table}{Performance on MEGA-Bench Core.}
+\label{tab:mega_bench_core}
+
+\small
+\setlength{\tabcolsep}{2pt}
+
+% -------- 7B --------
+\begin{tabular}{@{}lr@{}}
+\toprule
+Model & Score \\
+\midrule
+\multicolumn{2}{c}{7B Models} \\
+\midrule
+Qwen2.5-VL-7B      & 35.07 \\
+MM-Eureka-7B       & 35.96 \\
+VL-Rethinker-7B    & 37.25 \\
+\textbf{Orsta-7B}  & \textbf{38.31} \\
+$\Delta$ (Ours - Backbone) & +3.24 \\
+\bottomrule
+\end{tabular}
+
+\vspace{5pt}
+
+% -------- 32B 0321 --------
+\begin{tabular}{@{}lr@{}}
+\toprule
+\multicolumn{2}{c}{32B Models (0321)} \\
+\midrule
+Qwen2.5-VL-32B-0321     & 11.87 \\
+MM-Eureka-32B           & 18.57 \\
+VL-Rethinker-32B        & 19.41 \\
+\textbf{Orsta-32B-0321} & \textbf{25.94} \\
+$\Delta$ (Ours - Backbone) & +14.07 \\
+\bottomrule
+\end{tabular}
+
+\vspace{5pt}
+
+% -------- 32B 0326 --------
+\begin{tabular}{@{}lr@{}}
+\toprule
+\multicolumn{2}{c}{32B Models (0326)} \\
+\midrule
+Qwen2.5-VL-32B-0326     & 43.67 \\
+Gemma3-27B              & 41.82 \\
+InternVL-3-38B          & \textbf{46.69} \\
+\textbf{Orsta-32B-0326} & 45.77 \\
+$\Delta$ (Ours - Backbone) & +2.10 \\
+\bottomrule
+\end{tabular}
+
+\end{minipage}
+\hfill
+% ================= RIGHT COLUMN =================
+\begin{minipage}[t]{0.68\linewidth}
+\vspace{0pt}
+\centering
+
+% -------- Baseline comparison --------
+\captionof{table}{Comparison against strong multi-task RL-VLM baselines on reasoning and perception benchmarks.}
+\label{tab:baseline_comparison}
+
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\multicolumn{6}{c}{\textbf{Reasoning Benchmarks}} \\
+\midrule
+Model & MMMU & MathVista & MathVision & MME-R & CharXiv (RQ) \\
+\midrule
+\textbf{Orsta-7B}       & \textbf{57.10} & 72.50 & 31.73 & \textbf{31.14} & \textbf{48.40} \\
+MM-Eureka-7B            & 55.33          & 74.10 & 30.84 & 28.45          & 42.10 \\
+VL-Rethinker-7B         & 56.70          & \textbf{75.40} & \textbf{32.46} & 29.38 & 44.00 \\
+VisionReasoner-7B       & 56.56          & 69.70 & 29.20 & 25.84          & 41.20 \\
+\bottomrule
+\end{tabular}
+}
+
+\vspace{5pt}
+
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\multicolumn{6}{c}{\textbf{Perception Benchmarks}} \\
+\midrule
+Model & HrBench4K & VStar & COCO (S$\mid$M) & OCRBenchV2 & ScreenSpot-Pro \\
+\midrule
+\textbf{Orsta-7B}       & \textbf{77.25} & \textbf{81.68} & \textbf{80.73} $\mid$ \textbf{41.41} & \textbf{56.05} & 23.91 \\
+MM-Eureka-7B            & 59.62          & 57.07          & 79.73 $\mid$ 35.84                   & 53.38          & 24.23 \\
+VL-Rethinker-7B         & 65.12          & 68.60          & 72.50 $\mid$ 31.54                   & 55.70          & \textbf{24.48} \\
+VisionReasoner-7B       & 74.38          & 80.63          & 80.22 $\mid$ 36.58                   & 55.44          & 24.23 \\
+\bottomrule
+\end{tabular}
+}
+
+\vspace{10pt}
+
+% -------- GUI extension --------
+\captionof{table}{Extension to a new GUI task domain with 3K ShowUI samples under the same 60-step fixed-compute budget.}
+\label{tab:gui_extension}
+\vspace{4pt}
+
+
+\small
+\setlength{\tabcolsep}{20pt}
+
+\resizebox{0.99\linewidth}{!}{%
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Mixture & ScreenSpot-Pro & OCRBenchV2 \\
+\midrule
+Unified           & 23.91         & 55.87 \\
+Perception-only   & 23.78         & 55.33 \\
+Perception-only + GUI-3K          & 29.85         & 55.96 \\
+Unified + GUI-3K             & \textbf{31.68} & \textbf{56.09} \\
+\bottomrule
+\end{tabular}
+}
+
+\end{minipage}
+
+\end{table*}
+
+\subsection{General Performance on MEGA-Bench}
+\label{subsec:mega_bench}
+
+The fixed-budget results in~\cref{subsec:fair_budget} show that unified RL training matches or outperforms specialist mixtures under matched budgets.
+%
+We now turn to the final Orsta models and report their overall performance on MEGA-Bench, which spans over 440 diverse tasks for general VLM capability.
+%
+For each backbone, we train both on-policy and off-policy variants for 3 epochs, designate one model as Orsta based on its MEGA-Bench performance, and evaluate that same selected model on all subsequent benchmarks.
+%
+We provide the full MEGA-Bench evaluation curves in~\cref{appx:mega_bench_curves}.
+
+Overall, Orsta consistently improves the MEGA-Bench performance of its base model at both 7B and 32B scales.
+%
+For the 7B model, unified RL post-training yields a clear overall gain.
+%
+The same pattern holds at 32B, but with two different gain profiles in~\cref{tab:mega_bench_core}: for the \texttt{0321} checkpoint,\footnote{\texttt{0321} and \texttt{0326} follow the release dates of the public HuggingFace checkpoints. The former shows noticeably weaker perception and formatting abilities, while the latter is a stronger later release.} RL post-training brings a much larger improvement; for the stronger \texttt{0326} checkpoint, V-Triune still delivers stable and notable gains.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{images/combined_iou_train_disable_vit.pdf}
+\caption{Dynamic IoU ablations and source-level diagnostics. (a) Dynamic IoU ablations on COCO multi-object using only the detection and grounding subsets for training. The left plot compares fixed IoU@50, fixed IoU@99, and the main Dynamic IoU schedule; the right plot compares alternative staged schedules. Fixed IoU@50 learns quickly but degrades later, whereas fixed IoU@99 is more stable but learns more slowly; the main Dynamic IoU schedule gives the best balance. (b) Source-level logs from full 8-task Orsta-32B unified RL training show that the reasoning-heavy Puzzle source has increasing response length and reflection ratio, whereas the localization-centric Detection source remains short and nearly reflection-free. (c) In a full 8-task 7B training ablation that updates the ViT only, the LLM only, or both, continuing to update the vision encoder hurts COCO performance and increases gradient norms, motivating the decision to freeze the vision encoder and connector in the main experiments. More detailed failure analyses are provided in~\cref{sec:training_recipe}.}
+\label{fig:combined_iou_source_level}
+\end{figure*}
+
+\subsection{Comparison with Strong Multi-task RL-VLM Baselines}
+\label{subsec:baseline_comparison}
+
+Beyond the overall MEGA-Bench gains in~\cref{subsec:mega_bench}, we compare Orsta-7B against three strong multi-task RL-VLM baselines on the same 10-benchmark suite as in~\cref{subsec:fair_budget}.
+%
+MM-Eureka-7B~\citep{meng2025mm} and VL-Rethinker-7B~\citep{vl_rethinker} are more reasoning-oriented, whereas VisionReasoner-7B~\citep{liu2025visionreasoner} is more perception-centric.
+
+As shown in~\cref{tab:baseline_comparison}, Orsta-7B achieves the best score on 7/10 benchmarks.
+%
+On the reasoning side, it wins MMMU, MME-Reasoning, and CharXiv(RQ), while staying competitive on MathVista and MathVision.
+%
+On the perception side, it reaches the top score on 4/5 benchmarks, with the clearest margin on the challenging COCO multi-object setting.
+%
+This complements the fair-budget evidence in~\cref{subsec:fair_budget}: the benefit of unified training remains visible in the final model and is not confined to either reasoning or perception alone.
+
+\subsection{Why is Dynamic IoU Necessary for Localization Tasks?}
+\label{subsec:dynamic_iou_ablation}
+
+We next examine why Dynamic IoU is necessary for localization-centric tasks and why a staged schedule is effective.
+%
+Unless otherwise stated, the ablations in this subsection use only the detection and grounding subsets of the training data in the same 7B off-policy setup.
+%
+The main schedule uses IoU thresholds $0.85$, $0.95$, and $0.99$ over the first 10\%, the next 15\%, and the remaining training steps.
+
+On COCO multi-object, the fixed-threshold comparison in~\cref{fig:combined_iou_source_level}(a) shows the two failure modes directly.
+%
+IoU@50 learns quickly but degrades later, which we attribute to reward ambiguity under a loose threshold.
+%
+Qualitative cases in~\cref{appx:dynamic_iou_cases} support this interpretation: late-stage predictions often drift among multiple coarse boxes that remain similarly rewarded under IoU@50, rather than continuing to sharpen around the ground-truth box.
+%
+IoU@99 is more precise but learns much more slowly because the reward is too sparse early on.
+%
+Dynamic IoU avoids both issues by remaining learnable early while enforcing higher precision later.
+%
+We further compare alternative staged schedules in~\cref{fig:combined_iou_source_level}(a).
+%
+The loose variant ($0.7 \rightarrow 0.8 \rightarrow 0.85$) plateaus because its final threshold remains too permissive, whereas the strict variant ($0.9 \rightarrow 0.95 \rightarrow 0.99$) slows early learning by making the initial reward too sparse.
+%
+Our main schedule ($0.85 \rightarrow 0.95 \rightarrow 0.99$) gives the best balance.
+
+The same advantage pattern also appears on the OVDEval negation subset; full curves are given in~\cref{appx:ovd_dynamic_iou}.
+%
+We also implemented an adaptive scheduler based on the batch-level bbox success rate, but it does not yield a clear advantage over the fixed three-stage schedule in our setting; full results are given in~\cref{appx:adaptive}.
+
+
+\subsection{What Do Source-Level Diagnostics Reveal?}
+\label{subsec:source_level_diagnostics}
+
+These diagnostics reveal signals aggregate metrics can hide: global averages may look stable while source-specific response behavior and failure modes diverge during training~(\cref{fig:combined_iou_source_level}).
+
+On the behavior side, \cref{fig:combined_iou_source_level}(b) uses Puzzle and Detection as two representative sources and shows unified training does not collapse them into the same response pattern.
+%
+For the reasoning-heavy Puzzle source, both response length and reflection ratio increase over training.
+%
+For the localization-centric Detection source, responses remain short and direct, and reflection stays low.
+%
+This suggests unified training preserves task-appropriate response patterns across task families.
+%
+Combined with the fair-budget results, these diagnostics suggest that joint training improves robustness across task families without forcing them into a uniform response pattern.
+%
+More detailed multi-source dynamics are provided in~\cref{sec:training_dynamics_analysis}.
+
+On stability side, \cref{fig:combined_iou_source_level}(c) shows that continuing to update the vision encoder quickly hurts COCO performance and increases total gradient norms.
+%
+\cref{sec:training_recipe} further shows that this instability appears as gradient explosion in the ViT and soon hurts detection and grounding performance.
+%
+The same source-level logs also exposed leaked image special tokens in model responses, which can cause the number of visual features to no longer match the input sequence and directly lead to training failure.
+%
+Based on these findings, we freeze the vision encoder and connector in the main experiments and filter leaked image special tokens before reward recomputation; more detailed layer-wise gradients, image-token failure cases, and stability analysis are provided in~\cref{sec:training_recipe}.
+
+\subsection{Can V-Triune Extend to New Task Domains?}
+\label{subsec:gui_extension}
+
+Finally, we test whether V-Triune can absorb a new task domain beyond the original training mix, and whether the benefit of unified training remains after the new domain is added.
+%
+As a concrete case, we add about 3K GUI grounding samples from ShowUI~\citep{lin2025showui}, a domain not covered in the original dataset.
+%
+We treat GUI grounding as a new domain to test the scalability of our framework, which can be added by reusing the existing localization-style verifier regime.
+
+As shown in~\cref{tab:gui_extension}, adding ShowUI data substantially improves ScreenSpot-Pro, with the unified model rising from 23.91 to 31.68.
+%
+Notably, after adding the same GUI data, \textit{Unified + GUI} still outperforms \textit{Perception + GUI} by +1.83 points on ScreenSpot-Pro.
+%
+Reasoning-heavy data therefore does not block learning in the new GUI domain, and unified training continues to show positive transfer once the model has basic in-domain visual support.
+
+These results suggest that V-Triune can extend beyond the original training domains while preserving the benefit of unified training.
+%
+In the ShowUI case, this extension is straightforward because the GUI task can reuse the existing localization-style verifier regime.
+
+
+\section{Discussion \& Future Work}
+
+We presented V-Triune, a training methodology for unified multimodal RL over reasoning-heavy and perception-heavy VLM tasks.
+%
+By organizing training around reward routing, verifier-level outcome verification, and source-level diagnostics, together with Dynamic IoU for localization-centric tasks, V-Triune addresses rigid reward interfaces, localization reward ambiguity versus sparsity, and lack of observability in mixed-task RL.
+%
+Under matched budgets, unified training matches or outperforms specialist mixtures, and the final Orsta models improve over their backbones on MEGA-Bench and a broad set of downstream benchmarks, while the same recipe also extends to a new GUI domain.
+
+Two future directions seem especially important.
+%
+One is to extend unified RL from static benchmark settings to multimodal agentic tool-use tasks.
+%
+The other is to generalize this training recipe beyond vision, toward joint RL training across speech, video, and text.
+\bibliography{colm2026_conference}
+\bibliographystyle{colm2026_conference}
+
+
+\end{document}
+
