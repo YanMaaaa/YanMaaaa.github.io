@@ -7,9 +7,8 @@
 \usepackage{linespacing_fix} % disable extra space before next section
 \usepackage{cite}
 
-\usepackage{setspace}
-\setstretch{1.2}
 \usepackage{fontawesome5}
+
 
 %-------------------------
 % Custom commands
@@ -30,34 +29,34 @@
 }
 
 \newcommand{\Paper}[3]{
-  \vspace{-1pt}\item \small
+  \vspace{0pt}\item \small
     \hangindent=1.4em \hangafter=1
     \textbf{#1}. #2
-    \par{\footnotesize #3}
-  \vspace{-4pt}
+    \par\vspace{4pt}{\footnotesize #3}
+  \vspace{10pt}
 }
 
 \newcommand{\PaperTLDR}[4]{
-  \vspace{-1pt}\item \small
+  \vspace{0pt}\item \small
     \hangindent=1.4em \hangafter=1
     \textbf{#1}. #2
-    \par{\footnotesize #3}
+    \par\vspace{4pt}{\footnotesize #3}
     \if\relax\detokenize{#4}\relax\else
-      \par{\scriptsize \emph{TLDR: #4}}
+      \par\vspace{4pt}{\scriptsize \emph{TLDR: #4}}
     \fi
-  \vspace{-4pt}
+  \vspace{10pt}
 }
 
 \newcommand{\ExperienceListStart}{
-    \vspace{-1pt}\begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+    \vspace{-1pt}\begin{itemize}[leftmargin=1.2em,itemsep=5pt,topsep=2pt,parsep=2pt]
 }
 
 \newcommand{\ExperienceListEnd}{
-    \end{tabular*}\vspace{-5pt}
+    \end{itemize}\vspace{-5pt}
 }
 
-\newcommand{\Experience}[2]{
-    $\bullet$ {\small#1} & {\small #2} \\
+\newcommand{\Experience}[3]{
+    \item \small \textbf{#1} \textit{(#2)}：#3
 }
 
 \newcommand{\AwardListStart}{
@@ -97,6 +96,13 @@
 %
 }
 
+\newcommand{\EducationEntry}[2]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{@{}p{0.78\textwidth}@{\extracolsep{\fill}}r@{}}
+      \small #1 & \small\textit{#2} \\
+    \end{tabular*}\vspace{0pt}
+}
+
 \newcommand{\resumeSubSubheading}[2]{
     \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
       \textit{\small#1} & \textit{\small #2} \\
@@ -105,12 +111,16 @@
 
 \newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}}
 
-\newcommand{\resumeSubItemSimple}[1]{\resumeItemsimple{#1}}
+\newcommand{\resumeSubItemSimple}[1]{\resumeItemSimple{#1}}
 
 \renewcommand{\labelitemii}{$\circ$}
 
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\educationListStart}{\begin{itemize}[leftmargin=*, itemsep=4pt, topsep=2pt, parsep=2pt]}
+\newcommand{\educationListEnd}{\end{itemize}}
+\newcommand{\compactListStart}{\begin{itemize}[leftmargin=*, itemsep=4pt, topsep=2pt, parsep=2pt]}
+\newcommand{\compactListEnd}{\end{itemize}}
 \newcommand{\resumeItemListStart}{\begin{itemize}}
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
 %
@@ -120,35 +130,32 @@
 %----------HEADING-----------------
 \begin{center}
 {\LARGE \scshape \bfseries 马琰} \\ \vspace{2pt}
+{\footnotesize 600+ citations，相关科研项目累计 1.3k+ GitHub stars} \\ \vspace{2pt}
 (+86) 152-6982-9096 $\bullet$
 \href{mailto:yanma23@m.fudan.edu.cn}{yanma23@m.fudan.edu.cn} $\bullet$
 \href{https://yanmaaaa.github.io}{主页} $\bullet$
-\href{https://scholar.google.com/citations?user=tnJyAAoAAAAJ\&hl=en}{Google Scholar}
+\href{https://scholar.google.com/citations?user=tnJyAAoAAAAJ\&hl=en}{Google Scholar} $\bullet$
+\href{https://yanmaaaa.github.io/assets/research_statement.pdf}{研究陈述}
 \end{center}
 
 %-----------研究兴趣-----------------
 \section{研究兴趣}
-我的研究兴趣位于强化学习与多模态模型的交叉方向。2025 年，我在视觉语言模型的强化学习训练方面积累了较为系统的经验，重点关注单视觉任务、多视觉任务以及 Agentic 视觉工具使用场景下的 RL Scaling。此前，我也从事过统一多模态模型与文本生成相关研究。当前我主要关注多模态生成模型的预训练。
+我的研究目标在于构建部分可观测环境中的多模态智能体，尤其关注它们如何在长程任务中进行感知、推理、行动与预测。迄今为止，我的工作 主要研究强化学习如何改变多模态模型，包括训练动态、推理与感知的联合提升，以及 agentic 视觉工具使用。最近，我开始关注基于视频的预 测式多模态学习，尤其是视频数据如何清洗，筛选与标注以更好地支持对未来观测与行动后果的预测。
 
 %-----------教育经历-----------------
 \section{教育经历}
-  \resumeSubHeadingListStart
-    \resumeSubheading
-      {复旦大学，计算机科学技术博士在读}{上海，中国}
-      {导师：\href{https://scholar.google.co.jp/citations?user=oIz_CYEAAAAJ\&hl=en}{刘鹏飞} 教授、\href{https://mmlab.siat.ac.cn/yuqiao}{乔宇} 教授}{2023.09 -- 2027.06（预计）}
-    \resumeSubheading
-      {复旦大学，计算机应用技术硕士}{上海，中国}
-      {导师：\href{https://scholar.google.co.uk/citations?user=AG3OXS0AAAAJ\&hl=en}{李伟} 教授}{2020.09 -- 2023.06}
-    \resumeSubheading
-      {大连理工大学，计算机科学与技术学士}{大连，中国}
-      {GPA：4.076/5，排名：12/123}{2016.09 -- 2020.06}
-  \resumeSubHeadingListEnd
+  \educationListStart
+    \EducationEntry{\textbf{复旦大学，博士研究生}（导师：\href{https://scholar.google.co.jp/citations?user=oIz_CYEAAAAJ\&hl=en}{刘鹏飞} 教授、\href{https://mmlab.siat.ac.cn/yuqiao}{乔宇} 教授）}{2023.09 -- 2027.06}
+    \EducationEntry{\textbf{复旦大学，计算机应用技术硕士}}{2020.09 -- 2023.06}
+    \EducationEntry{\textbf{大连理工大学，计算机科学学士}（GPA：4.076/5）}{2016.09 -- 2020.06}
+  \educationListEnd
 
 %-----------实习经历-----------------
 \section{实习经历}
   \ExperienceListStart
-    \Experience{\textbf{MiniMax \& HailuoAI} - 实习生；参与 M 系列基础模型与 Hailuo 视频生成模型研发}{2025.01 -- 2026.02}
-    \Experience{\textbf{Shanghai AI Laboratory} - 实习生；文本生成与统一多模态模型研究}{2023.07 -- 2025.01}
+    \Experience{Shanghai Innovation Institute}{2026.03 -- 2026.06}{主导面向多模态生成模型预训练的大规模音视频数据管线搭建}
+    \Experience{MiniMax \& HailuoAI}{2025.01 -- 2026.02}{参与 M-series 中视觉推理与视觉工具使用相关多模态基础模型研究，并参与 Hailuo 视频生成中的Image Caption系统的搭建}
+    \Experience{Shanghai AI Laboratory}{2023.07 -- 2025.01}{参与文本生成与统一多模态模型训练}
   \ExperienceListEnd
 
 %-----------论文发表-----------------
@@ -156,12 +163,12 @@
   \resumeSubHeadingListStart
   \PaperTLDR
   {What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom \href{https://arxiv.org/abs/2602.01334}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/Med}{[\faGithub]}}
-  {\textit{arXiv:2602.01334}}
+  {\textit{arXiv:2602.01334}\tiny[ICML 2026 under review]}
   {\underline{Yan Ma}$^\dagger$, Weiyu Zhang$^\dagger$, Tianle Li, Linge Du, Xuyang Shen, Pengfei Liu}
   {我们发现当前视觉工具使用 RL 的性能提升主要来自模型内在能力增强与工具引入误差的减少，而非真正掌握了基于工具的纠错能力。}
   \PaperTLDR
   {One RL to See Them All: Visual Triple Unified Reinforcement Learning \href{https://arxiv.org/abs/2505.18129}{[\faFilePdf]}\href{https://github.com/MiniMax-AI/One-RL-to-See-Them-All}{[\faGithub]}}
-  {\textit{arXiv:2505.18129}}
+  {\textit{arXiv:2505.18129}\tiny[COLM 2026 under review]}
   {\underline{Yan Ma}$^\dagger$, Linge Du$^\dagger$, Xuyang Shen$^\dagger$, Shaoxiang Chen, Pengfei Li, Qibing Ren, Lizhuang Ma, Yuchao Dai, Pengfei Liu, Junjie Yan}
   {我们构建了统一的 RL 系统（V-Triune），联合训练视觉推理与感知能力，并在两类任务上均取得了广泛提升。}
   \PaperTLDR
@@ -173,7 +180,7 @@
   {ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation \href{https://arxiv.org/abs/2407.06135}{[\faFilePdf]}\href{https://iclr-blogposts.github.io/2025/blog/fine-tuning-token-based-large-multimodal-models/}{[\faGlobe]}\href{https://github.com/GAIR-NLP/Anole}{[\faGithub]}}
   {\textit{arXiv:2407.06135; extended version accepted to ICLR 2025 Blog Track}}
   {Ethan Chern*, Jiadi Su*, \underline{Yan Ma*}, Pengfei Liu}
-  {}
+  {我们提出了一个开放的原生自回归多模态模型，可实现连贯的交错图文生成，并支持从 Chameleon 高效微调。}
   \PaperTLDR
   {MoPS: Modular Story Premise Synthesis for Open-Ended Automatic Story Generation \href{https://arxiv.org/abs/2406.05690}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/MoPS}{[\faGithub]}}
   {\textit{ACL 2024}}
@@ -189,14 +196,20 @@
   {Zhen Huang, Zengzhi Wang, Shijie Xia, ..., \underline{Yan Ma}, ..., Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu}
   \resumeSubHeadingListEnd
 
-%-----------编程技能-----------------
-\section{编程技能}
-  \resumeSubHeadingListStart
+%-----------研究技术栈-----------------
+\section{研究技术栈}
+  \compactListStart
     \item{
-      \textbf{语言}{: Python, Bash, Markdown, Latex}
-      \hfill
-      \textbf{技术栈}{: Verl, FSDP, VLLM/SGLang, NeoVim, Tmux}
+      \small Verl, Transformers, Ray, FSDP, vLLM, SGLang, JAX, FFmpeg, Codex, Git, NeoVim, Tmux
     }
-  \resumeSubHeadingListEnd
+  \compactListEnd
+
+%-----------学术服务-----------------
+\section{学术服务}
+  \compactListStart
+    \item{
+      \small 审稿人：AAAI 2025，NeurIPS 2025，COLM 2025--2026，ICLR 2026，ICML 2026，ACL ARR 2026
+    }
+  \compactListEnd
 
 \end{document}
