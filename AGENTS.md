@@ -4,40 +4,32 @@ This file records project-specific conventions for the current `visiting` branch
 
 # 当前进度
 
-  你现在的进度已经比较清楚了。压缩上下文前，建议你保留这几个最关键的结论，下一轮直接从这里继续：
+  你现在的 visiting 材料已经基本成套。压缩上下文前，建议优先保留这些最新结论：
 
-  - 当前有效稿子在 research_statement_v4.md
-  - 这版只保留英文，前三段已经成形
-  - 第三段主轴已经定成：
-      - 不是论文罗列
-      - 而是 RL 如何改变 multimodal models
-      - 三个 scientific takeaways：
-          - Rethinking: RL 改变训练动态与泛化，不只是分数
-          - One RL: RL 可以在统一框架下同时塑造 reasoning 与 perception
-          - Tool-Use: 当前收益更多来自 intrinsic improvement 和 harm reduction，而不是真正 tool mastery
-  - 第三段结尾已经改成 necessity statement：
-      - 对 long-horizon multimodal tasks，单靠当前观测下的 perceive/reason/act 往往不够
-      - 需要预测后续状态演化和行动后果
-
-  你下一段要写的是：
-
-  - 我现在正在做什么
-  - 并把它自然接到 predictive modeling
-
-  我建议你下一轮继续时，先围绕这两个问题展开：
-
-  1. 你“现在正在做的事情”更准确的上位描述是什么
-      - audio-video pretraining
-      - multimodal generative modeling
-      - future-state prediction
-      - world modeling
-        这几个词的层级要先理顺
-  2. 这一段是要写成
-      - current work paragraph
-      - 还是 future agenda paragraph
-        这会决定语气强弱
-
-  如果你回来继续，我建议我们直接从 research_statement_v4.md 往下写第四段
+  - 当前有效的 research statement 源文件在：
+      - `visiting/research_statement/research_statement_v4.tex`
+      - 对应 PDF 在 `visiting/official_pdfs/Research_Statement_0416.pdf`
+  - 当前有效的 CV 材料在：
+      - `cv.tex`
+      - `cv_CN.tex`
+      - 对应 PDF 在 `visiting/official_pdfs/CV_EN.pdf` 和 `visiting/official_pdfs/CV_CN.pdf`
+  - `index.html` 已同步更新：
+      - homepage intro-text 已与 research statement 主线对齐
+      - profile links 中已加入 `Research Statement`
+  - 当前统一的研究主线已经定为：
+      - multimodal agents in partially observed environments
+      - past line: RL changes multimodal models
+      - current / future line: predictive multimodal learning from video
+  - research statement 的核心逻辑已经收束为：
+      - current observations -> action changes information -> future states / action outcomes
+      - 过去工作围绕 RL 对 perception / reasoning / tool use 的影响
+      - 当前工作围绕 video data foundations for predictive multimodal learning
+  - 当前最值得推进的不是继续重写 statement，而是：
+      - final consistency check across CV / homepage / statement
+      - cold email template
+      - professor-specific fit notes
+      - modular 6--8 slide base deck
+      - short visiting proposal when needed
 
 ## Current Scope
 
@@ -45,7 +37,8 @@ This file records project-specific conventions for the current `visiting` branch
   - `visiting/`
   - `cv.tex`
   - `cv_CN.tex`
-- Do not treat homepage-source conventions for `index.html`, publication filters, news items, or footer updates as active requirements on this branch unless the user explicitly asks.
+  - `index.html`
+- Do not treat unrelated homepage maintenance, publication filters, news items, or footer updates as active requirements unless the user explicitly asks.
 
 ## `visiting/` Folder Purpose
 
@@ -61,7 +54,10 @@ This file records project-specific conventions for the current `visiting` branch
 
 - Owner: **Yan Ma**
 - Current context: Ph.D. student at Fudan University
-- Main research focus: reinforcement learning and foundation models, especially RL-based post-training for vision-language / multimodal models
+- Main research focus:
+  - multimodal agents in partially observed environments
+  - RL-based post-training for vision-language / multimodal models
+  - predictive multimodal learning from video
 
 When editing research or application materials, preserve a direct academic tone unless the user asks for a rewrite.
 
