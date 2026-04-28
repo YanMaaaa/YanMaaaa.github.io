@@ -14,9 +14,11 @@
 - This line leads naturally to a broader question: when current observations are not enough, how should agents predict future states and action outcomes?
 - My current and future work moves toward predictive multimodal learning from video, with the long-term goal of integrating prediction into multimodal agent systems.
 
+> Note: the opening slides in this outline have been superseded by the Beamer implementation in `visiting/beamer/opening.tex`. Keep the struck-through opening section below only as historical planning notes.
+
 ## Suggested Deck Structure
 
-### Slide 1. Title
+### ~~Slide 1. Title~~
 
 - Suggested title:
   - `Toward Multimodal Agents that Perceive, Reason, Act, and Predict`
@@ -26,7 +28,7 @@
 - Visual:
   - clean title slide, or a cropped version of the main agenda figure
 
-### Slide 2. Past Work Overview
+### ~~Slide 2. Past Work Overview~~
 
 - Key message:
   - My past work studies what RL changes in multimodal models under current observations.
@@ -43,7 +45,7 @@
   - three-box overview or three takeaway cards
   - citations `[1][2][3]` can appear in small text at the bottom
 
-### Slide 3. Why This Leads to Prediction
+### ~~Slide 3. Why This Leads to Prediction~~
 
 - Key message:
   - The limits revealed by my past work motivate a shift toward predictive multimodal learning for long-horizon multimodal tasks.
@@ -65,8 +67,12 @@
   - emphasize long-horizon multimodal tasks rather than isolated examples
 - Role note:
   - this page is about personal trajectory: why my past work leads to prediction
+- Function sentence:
+  - `My past work led me to prediction because acting under current observations exposes the limits of purely reactive multimodal competence.`
+- Slide tag:
+  - `Research trajectory`
 
-### Slide 4. Research Agenda
+### ~~Slide 4. Research Agenda~~
 
 - Key message:
   - My research agenda connects a past RL line with a current and future predictive line.
@@ -85,7 +91,7 @@
   - do not repeat all Slide 2 / Slide 3 text on this page
   - use the figure as a global map for the rest of the talk
 
-### Slide 4 Figure Design Notes
+### ~~Slide 4 Figure Design Notes~~
 
 - Purpose:
   - show the whole research agenda in one view
@@ -250,6 +256,8 @@
 - Content:
   - one-line sentence:
     - `Most gains come from intrinsic learning, while tool-induced effects contribute much less.`
+  - agenda link:
+    - `Tool-use gains must be separated from general model drift when actions change observations.`
   - emphasize:
     - tool-free versus tool-available evaluation
     - intrinsic drift dominates overall improvement
@@ -265,6 +273,8 @@
 - Content:
   - one-line sentence:
     - `Tool-use RL mainly reduces tool-induced harm rather than continuously increasing tool-based gain.`
+  - agenda link:
+    - `Action learning is not only about taking more actions, but about avoiding actions that corrupt future evidence.`
   - emphasize:
     - Gross Gain versus Gross Harm
     - why the net tool gap saturates
@@ -280,6 +290,8 @@
 - Content:
   - one-line sentence:
     - `RL suppresses harmful tool-side behavior more than it improves correction of intrinsically hard failures.`
+  - agenda link:
+    - `Limited tool gain suggests current RL is weak at correcting hard failures through action-generated information.`
   - emphasize:
     - factor decomposition
     - limited improvement on the hardest failure cases
@@ -323,26 +335,39 @@
   - avoid project details on this page
 - Role note:
   - this page is about task necessity: why long-horizon multimodal tasks need prediction
+- Function sentence:
+  - `Prediction becomes necessary when tasks unfold over time and actions change what information will be available next.`
+- Slide tag:
+  - `Task necessity`
 
 ### Slide 16. Current Project: Video Data Foundations for Predictive Multimodal Learning
 
 - Key message:
-  - Video is a scalable basis for learning how multimodal environments evolve over time.
+  - Video curation choices should be studied as experimental variables that shape what world models learn.
 - Content:
+  - core question:
+    - `Which video curation practices actually matter for world model pretraining, and why?`
   - one-line slide sentence:
-    - `I study how video data should be segmented, filtered, annotated, organized, and validated so that models learn useful predictive structure.`
-  - three guiding questions:
-    - `What temporal structure should video preprocessing preserve?`
-    - `What annotations and metadata make predictive learning more effective?`
-    - `How do these data choices change what world models actually learn?`
+    - `I study how curation choices shape the capabilities learned by predictive multimodal models.`
+  - capability diagnostics:
+    - `What changes?` predictive accuracy, temporal consistency, motion understanding, controllability, and long-horizon prediction
+    - `Where does it change?` across model families such as video generation models and JEPA-style learners
+    - `Why does it change?` segmentation, filtering, annotation, and organization effects
+  - near-term studies:
+    - `Segmentation:` scene-based versus fixed-length versus random clips
+    - `Filtering:` motion, aesthetics, and duplication criteria
+    - `Annotation / organization:` caption granularity, metadata, and dataset structure
+  - note:
+    - these are current project studies to complete before the visit, not the proposed visiting-period project
 - Visual:
   - recommended structure for this specific page:
-    - left: `Raw video`
-    - middle: `Segment / Filter / Annotate / Organize / Validate`
-    - right: `Predictive models / Video generation / JEPA-like models / Learned predictive structure`
+    - left: `Video corpus`
+    - middle: `Controlled curation variants`
+    - right: `Predictive pretraining`
+    - far right: `Capability diagnostics`
   - bottom line:
-    - `Data choices shape what predictive structure models actually learn.`
-  - avoid pipeline details
+    - `The goal is to demystify video curation recipes for world modeling and turn them into principles for better data, optimization, and architectures.`
+  - avoid implementation details such as metadata schemas, run IDs, viewers, or storage formats on the main slide
 
 ### Slide 17. Future Program: Integrating Prediction into Multimodal Agent Systems
 
@@ -384,8 +409,33 @@
   - keep the page significance-oriented rather than project-specific
 - Role note:
   - this page is about field significance: why this research direction is worth doing
+- Function sentence:
+  - `This matters because prediction can become a unifying capability that improves perception, reasoning, and action together.`
+- Slide tag:
+  - `Field opportunity`
 
-### Slide 19. Closing
+### Slide 19. Why a Visit Would Help
+
+- Key message:
+  - A visit would connect my current strengths in multimodal RL analysis and predictive data design with stronger environments for video, world modeling, and multimodal agent systems.
+- Content:
+  - one-line slide sentence:
+    - `A visit would help connect my current strengths in multimodal RL analysis and predictive data design with stronger environments for video, world modeling, and multimodal agent systems.`
+  - `What I bring`:
+    - empirical RL analysis for multimodal models
+    - multimodal agent framing around perception, reasoning, action, and prediction
+    - controlled data-centric studies for predictive multimodal learning
+  - `What I seek`:
+    - collaboration on video / world-modeling research questions
+    - agent-system settings where prediction can be evaluated through perception, reasoning, and action
+    - feedback on turning predictive learning into deployable multimodal agent capabilities
+  - bottom line:
+    - `The visit is a way to move from studying predictive representations to building prediction-aware multimodal agents.`
+- Visual:
+  - two-column `What I bring` / `What I seek` layout
+  - keep this page easy to customize for each professor
+
+### Slide 20. Closing
 
 - Key message:
   - My long-term goal is to build multimodal agents that perceive, reason, act, and predict in partially observed environments.
@@ -402,8 +452,6 @@
   - keep this page minimal
   - optional: a faint version of the agenda figure or a small `Perceive / Reason / Act / Predict` loop
   - do not introduce any new diagram or detail here
-- Visual:
-  - reuse the main agenda figure or a simplified closing graphic
 
 ## Minimal Version
 
@@ -415,7 +463,8 @@
   - Slide 15. Why Predictive Multimodal Learning
   - Slide 16. Current Project
   - Slide 17. Future Program
-  - Slide 19. Closing
+  - Slide 19. Why a Visit Would Help
+  - Slide 20. Closing
 
 ## Customization Strategy
 

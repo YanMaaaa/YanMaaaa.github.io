@@ -20,6 +20,18 @@
 - `index.html`: completed
   - Homepage intro text has been updated to match the current research positioning.
   - A `Research Statement` link has been added to the profile links section.
+- `visiting/slides/research_talk_content_notes.md`: in progress
+  - Full research talk storyline has been drafted as content notes.
+  - The talk is now structured around an opening agenda, past multimodal RL work, current video-based predictive learning, and future integration into agents.
+- `visiting/beamer/`: in progress
+  - Beamer with the `moloch` theme is being used for the research talk deck.
+  - `visiting/beamer/main.tex` now holds the shared preamble, title page, table of contents, and section inputs.
+  - `visiting/beamer/opening.tex` now contains the opening section as a separate file.
+  - The opening section is largely finalized:
+    - Past Work Overview
+    - From Multimodal Models to Multimodal Agents
+    - From Current Observations to Prediction
+    - Research Agenda
 
 ## Current Ready-to-Use Materials
 
@@ -32,6 +44,9 @@
 - Research statement PDF: `visiting/official_pdfs/Research_Statement_0416.pdf`
 - Teacher shortlist: `selected_teachers.md`
 - Application material notes: `application_materials.md`
+- Research talk content notes: `visiting/slides/research_talk_content_notes.md`
+- Beamer research talk draft: `visiting/beamer/main.tex`
+- Beamer opening section: `visiting/beamer/opening.tex`
 
 ## Next Steps
 
@@ -39,5 +54,8 @@
 - Verify that the public `Research Statement` links on the homepage and in both CVs resolve correctly after GitHub Pages deployment.
 - Prepare a general cold email template for visiting outreach.
 - Write short professor-specific fit notes and customized outreach emails for the top target professors.
-- Prepare a modular 6--8 slide base deck for research introduction and follow-up meetings.
+- Continue the Beamer research talk after the completed opening section.
+- Build the next section: `Past Work: Learning to Perceive, Reason, and Act through Tools with RL`.
+- Start with the first past-work question: what RL changes across multimodal reasoning, perception, and acting through tools.
+- After the full deck is drafted, derive shorter 12--14 page and 8--10 page versions if needed.
 - Prepare a short visiting proposal if a professor shows interest.

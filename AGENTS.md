@@ -24,12 +24,33 @@ This file records project-specific conventions for the current `visiting` branch
       - current observations -> action changes information -> future states / action outcomes
       - 过去工作围绕 RL 对 perception / reasoning / tool use 的影响
       - 当前工作围绕 video data foundations for predictive multimodal learning
-  - 当前最值得推进的不是继续重写 statement，而是：
-      - final consistency check across CV / homepage / statement
-      - cold email template
-      - professor-specific fit notes
-      - modular 6--8 slide base deck
-      - short visiting proposal when needed
+  - 当前正在推进 visiting research talk slides：
+      - 内容源文件：
+          - `visiting/slides/research_talk_content_notes.md`
+          - `visiting/slides/research_talk_base_deck_outline.md`
+      - 当前 Beamer 主入口在：
+          - `visiting/beamer/main.tex`
+      - 当前 opening section 文件在：
+          - `visiting/beamer/opening.tex`
+      - 当前选择：
+          - 使用 `moloch` Beamer 模板，而不是先做 PPTX
+          - 不运行编译，编译由用户自己执行
+          - `main.tex` 保留 preamble、title page、TOC、section inputs
+          - opening slides 已拆到 `opening.tex` 方便后续分 section 管理
+      - 已基本完成 opening section：
+          - `Past Work Overview`
+          - `From Multimodal Models to Multimodal Agents`
+          - `From Current Observations to Prediction`
+          - `Research Agenda`
+      - opening section 当前叙事：
+          - 先建立 past work credibility：multimodal RL 如何影响 reasoning / perception / acting through tools
+          - 再区分 multimodal model 与 multimodal agent：current-observation short-horizon tasks vs goal-conditioned model-environment interaction
+          - 再解释 prediction 的必要性：agent 必须在看到 consequences 前选择 action，prediction estimates action-conditioned futures
+          - 最后用 `Main_Figure1.png` 收束 research agenda
+      - 下一步优先继续：
+          - 进入 `Past Work: Learning to Perceive, Reason, and Act through Tools with RL`
+          - 开始制作第一篇 past-work slide：`What Does RL Actually Change in Multimodal Models?`
+          - 后续每个 section 可以继续拆成独立 tex，再由 `main.tex` input
 
 ## Current Scope
 

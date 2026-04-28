@@ -2,6 +2,8 @@
 
 This file tracks the agreed slide content before we turn it into the final deck.
 
+> Note: the opening section below has been superseded by the Beamer implementation in `visiting/beamer/opening.tex`. Keep it only as historical planning notes; use `opening.tex` as the current source of truth.
+
 ## Current Overall Narrative
 
 - Research object:
@@ -15,7 +17,7 @@ This file tracks the agreed slide content before we turn it into the final deck.
 - Long-term goal:
   - integrate prediction into multimodal agent systems so that prediction improves perception, reasoning, and action
 
-## Current Recommended Opening Structure
+## ~~Current Recommended Opening Structure~~
 
 The previous opening was:
 
@@ -38,9 +40,9 @@ This order is stronger because:
 - by Slide 3, prediction is motivated as a limitation revealed by past work
 - by Slide 4, the broader agenda feels earned rather than purely aspirational
 
-## Agreed Opening Slides
+## ~~Agreed Opening Slides~~
 
-### Slide 1. Title
+### ~~Slide 1. Title~~
 
 - Title:
   - `Toward Multimodal Agents that Perceive, Reason, Act, and Predict`
@@ -54,7 +56,7 @@ This order is stronger because:
 - Visual:
   - place the main agenda figure on the right
 
-### Slide 2. Past Work Overview
+### ~~Slide 2. Past Work Overview~~
 
 - Core message:
   - so far, my work has mainly studied what RL changes in multimodal models under current observations
@@ -71,7 +73,7 @@ This order is stronger because:
   - three-box takeaway slide
   - citations `[1][2][3]` can appear in smaller text
 
-### Slide 3. Why This Leads to Prediction
+### ~~Slide 3. Why This Leads to Prediction~~
 
 - Core message:
   - the RL line naturally exposes why long-horizon multimodal tasks motivate predictive multimodal learning
@@ -93,8 +95,12 @@ This order is stronger because:
   - emphasize long-horizon multimodal tasks rather than isolated examples
 - Role note:
   - this page is about personal trajectory: why my past work leads to prediction
+- Function sentence:
+  - `My past work led me to prediction because acting under current observations exposes the limits of purely reactive multimodal competence.`
+- Slide tag:
+  - `Research trajectory`
 
-### Slide 4. Research Agenda
+### ~~Slide 4. Research Agenda~~
 
 - Core message:
   - my research agenda connects a past RL line with a current and future predictive line
@@ -112,7 +118,7 @@ This order is stronger because:
   - use it as a global map, not as another dense argument slide
   - avoid repeating all the bullet content from Slides 2 and 3
 
-### Slide 4 Figure Notes
+### ~~Slide 4 Figure Notes~~
 
 - Function:
   - this slide is the first full reveal of the agenda figure
@@ -133,7 +139,7 @@ This order is stronger because:
   - keep text inside the figure minimal
   - let the figure carry structure, and let the surrounding labels carry interpretation
 
-## Current Opening Logic in One Line
+## ~~Current Opening Logic in One Line~~
 
 - Slide 1:
   - what I study
@@ -144,7 +150,7 @@ This order is stronger because:
 - Slide 4:
   - how the full research agenda is organized
 
-## Likely Next Slides
+## Detailed Slide Plan
 
 - Slide 5:
   - `How Can We Make Claims About What RL Changes Trustworthy?`
@@ -220,18 +226,24 @@ This order is stronger because:
   - `Do Gains Come From Intrinsic Learning or Tool-Induced Effects?`
   - one-line sentence:
     - `Most gains come from intrinsic learning, while tool-induced effects contribute much less.`
+  - agenda link:
+    - `Tool-use gains must be separated from general model drift when actions change observations.`
   - visual:
     - use `Exp-I`
 - Slide 12:
   - `Does Vision Tool-Use RL Expand Gain or Mainly Reduce Harm?`
   - one-line sentence:
     - `Tool-use RL mainly reduces tool-induced harm rather than continuously increasing tool-based gain.`
+  - agenda link:
+    - `Action learning is not only about taking more actions, but about avoiding actions that corrupt future evidence.`
   - visual:
     - use `Exp-II`
 - Slide 13:
   - `Why Does Tool Gain Remain Limited?`
   - one-line sentence:
     - `RL suppresses harmful tool-side behavior more than it improves correction of intrinsically hard failures.`
+  - agenda link:
+    - `Limited tool gain suggests current RL is weak at correcting hard failures through action-generated information.`
   - visual:
     - use `Exp-III`
 - Slide 14:
@@ -248,6 +260,10 @@ This order is stronger because:
   - `Why Predictive Multimodal Learning for Long-Horizon Tasks?`
   - role note:
     - this page is about task necessity: why long-horizon multimodal tasks need prediction
+  - function sentence:
+    - `Prediction becomes necessary when tasks unfold over time and actions change what information will be available next.`
+  - slide tag:
+    - `Task necessity`
   - oral transition from past work:
     - `My past work has mainly studied multimodal competence under current observations. These studies helped me understand how multimodal models can be shaped to reason, perceive, and use tools more effectively. But many multimodal tasks with real practical value are long-horizon, partially observed, and interaction-driven. In those settings, stronger performance on the current observation is not enough; agents also need to anticipate how the environment will evolve and what their actions will change. That is what led me to predictive multimodal learning.`
   - slide text should be much shorter:
@@ -263,19 +279,28 @@ This order is stronger because:
     - a simple bridge layout with the lead-in at top, three task labels, and a prediction-oriented concept graphic
 - Slide 16:
   - `Current Project: Video Data Foundations for Predictive Multimodal Learning`
-  - this should be the concrete anchor page for the current project
+  - this should be the concrete anchor page for the current project, but framed as a scientific measurement problem rather than a data-processing pipeline
+  - core question:
+    - `Which video curation practices actually matter for world model pretraining, and why?`
   - one-line sentence:
-    - `I study how video data should be segmented, filtered, annotated, organized, and validated so that models learn useful predictive structure.`
-  - three guiding questions:
-    - `What temporal structure should video preprocessing preserve?`
-    - `What annotations and metadata make predictive learning more effective?`
-    - `How do these data choices change what world models actually learn?`
+    - `I study how curation choices shape the capabilities learned by predictive multimodal models.`
+  - scientific focus:
+    - `What changes? predictive accuracy, temporal consistency, motion understanding, controllability, and long-horizon prediction`
+    - `Where does it change? across model families such as video generation models and JEPA-style learners`
+    - `Why does it change? segmentation, filtering, annotation, and organization effects`
+  - near-term studies:
+    - `Segmentation:` scene-based versus fixed-length versus random clips
+    - `Filtering:` motion, aesthetics, and duplication criteria
+    - `Annotation / organization:` caption granularity, metadata, and dataset structure
+  - note:
+    - these are current project studies to complete before the visit, not the proposed visiting-period project
   - visual structure:
-    - left: `Raw video`
-    - middle: `Segment / Filter / Annotate / Organize / Validate`
-    - right: `Predictive models / Video generation / JEPA-like models / Learned predictive structure`
+    - left: `Video corpus`
+    - middle: `Controlled curation variants`
+    - right: `Predictive pretraining`
+    - far right: `Capability diagnostics`
   - bottom line:
-    - `Data choices shape what predictive structure models actually learn.`
+    - `The goal is to demystify video curation recipes for world modeling and turn them into principles for better data, optimization, and architectures.`
 - Slide 17:
   - `Future Program: Integrating Prediction into Multimodal Agent Systems`
   - this page should move from current project to longer-term research program
@@ -298,6 +323,10 @@ This order is stronger because:
   - `Why This Direction Matters`
   - role note:
     - this page is about field significance: why this research direction is worth doing
+  - function sentence:
+    - `This matters because prediction can become a unifying capability that improves perception, reasoning, and action together.`
+  - slide tag:
+    - `Field opportunity`
   - this should be a significance page, not a visit/application page
   - one-line sentence:
     - `This direction matters because long-horizon multimodal tasks require agents that can anticipate, not only react.`
@@ -314,6 +343,24 @@ This order is stronger because:
     - three-column layout or three cards
     - keep it significance-oriented rather than project-specific
 - Slide 19:
+  - `Why a Visit Would Help`
+  - this should be a visiting-specific fit page, but still framed around research capability and collaboration rather than application logistics
+  - one-line sentence:
+    - `A visit would help connect my current strengths in multimodal RL analysis and predictive data design with stronger environments for video, world modeling, and multimodal agent systems.`
+  - what I bring:
+    - `empirical RL analysis for multimodal models`
+    - `multimodal agent framing around perception, reasoning, action, and prediction`
+    - `controlled data-centric studies for predictive multimodal learning`
+  - what I seek:
+    - `collaboration on video / world-modeling research questions`
+    - `agent-system settings where prediction can be evaluated through perception, reasoning, and action`
+    - `feedback on turning predictive learning into deployable multimodal agent capabilities`
+  - bottom line:
+    - `The visit is a way to move from studying predictive representations to building prediction-aware multimodal agents.`
+  - visual:
+    - two-column `What I bring` / `What I seek` layout
+    - keep this page easy to customize for each professor
+- Slide 20:
   - `Toward Multimodal Agents that Perceive, Reason, Act, and Predict`
   - this should be a minimal closing page that echoes the title slide
   - one-line takeaway:

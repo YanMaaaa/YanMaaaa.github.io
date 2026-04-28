@@ -1,0 +1,246 @@
+\section{Opening: From Past Work to a Research Agenda}
+
+\begin{frame}{Past Work Overview}
+  \centering
+  \frametitle{\LARGE Past Work Overview}
+  {\large Research Question: What Does RL Actually Change in Multimodal Models?}
+
+  \vspace{0.75cm}
+  \begin{tikzpicture}[
+    root/.style={
+      rounded corners=5pt,
+      draw=AgentBlueDark!75,
+      fill=AgentBlue,
+      very thick,
+      minimum width=5.0cm,
+      minimum height=1.05cm,
+      align=center
+    },
+    work/.style={
+      coordinate
+    },
+    arrow/.style={-Latex,thick,draw=AgentBlueDark!80},
+    boundary/.style={thick,draw=AgentBlueDark!35}
+  ]
+    \node[root,minimum width=1.8cm] (rl) at (-2.5,1.55) {\textbf{RL}};
+    \node[root,minimum width=3.7cm] (models) at (1.5,1.55) {\textbf{Multimodal Models \tiny(e.g. VLMs)}};
+    \draw[arrow] (rl.east) -- (models.west);
+
+    \twotoneworknode{reason}{-5.0,-0.9}{Visual Reasoning}{Reshapes training dynamics and improves generalization}
+    \twotoneworknode{unified}{0,-0.9}{Perception + Reasoning}{Positive transfer under joint multimodal RL training}
+    \twotoneworknode{tool}{5.0,-0.9}{Vision Tool-Use}{Intrinsic learning dominates\\ RL reduces tool-induced harm}
+
+    \draw[boundary] (rl.south west) to[out=235,in=75] (reason.north west);
+    \draw[boundary] (models.south east) to[out=-45,in=105] (tool.north east);
+    \draw[arrow] (reason.east) -- (unified.west);
+    \draw[arrow] (unified.east) -- (tool.west);
+  \end{tikzpicture}
+
+  \vspace{0.4cm}
+  {\fontsize{12}{12}\selectfont Together, these works study multimodal models under current observations:\\[0.15em] how RL can improve their reasoning, perception, and action.}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\LARGE From Multimodal Models to Multimodal Agents}
+  \centering
+  \vspace{0.45cm}
+  {\fontsize{11}{9}\selectfont \textbf{Past focus:} multimodal models solve short-horizon tasks from current observations.}
+
+  \vspace{0.37cm}
+  \begin{tikzpicture}[
+    box/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!65,
+      fill=AgentBlue,
+      very thick,
+      minimum width=3.2cm,
+      minimum height=0.82cm,
+      align=center
+    },
+    obsbox/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=3.25cm,
+      minimum height=0.82cm,
+      align=center
+    },
+    pred/.style={
+      rounded corners=4pt,
+      draw=AgentOrangeDark!75,
+      fill=AgentOrange,
+      very thick,
+      minimum width=3.25cm,
+      minimum height=0.82cm,
+      align=center
+    },
+    tasktag/.style={
+      rounded corners=2pt,
+      draw=AgentBlueDark!35,
+      fill=AgentGray,
+      inner xsep=5pt,
+      inner ysep=2pt,
+      align=center
+    },
+    arrow/.style={-Latex,thick,draw=AgentBlueDark!85},
+    predarrow/.style={-Latex,thick,dashed,draw=AgentOrangeDark!90},
+    examplearrow/.style={-Latex,thin,dashed,draw=AgentBlueDark!45}
+  ]
+    \path[use as bounding box] (-6.6,-1.9) rectangle (6.6,2.35);
+    \node[obsbox] (obs) at (-4.7,1.8) {Current\\observation};
+    \node[box] (perceive) at (0,1.8) {Perceive};
+    \node[box] (reason) at (0,0.25) {Reason};
+    \node[box] (act) at (0,-1.3) {Act / Output};
+    \node[pred,opacity=\GhostPredictionOpacity,text opacity=\GhostPredictionOpacity] (predict) at (4.7,0.25) {Predict};
+    \node[pred,opacity=\GhostPredictionOpacity,text opacity=\GhostPredictionOpacity] (predfuture) at (4.7,1.8) {Predicted\\future};
+    \node[pred,opacity=\GhostPredictionOpacity,text opacity=\GhostPredictionOpacity] (future) at (4.7,-1.3) {Future\\observation};
+
+    \draw[arrow] (obs.east) -- (perceive.west);
+    \draw[arrow] (perceive.south) -- (reason.north);
+    \draw[arrow] (reason.south) -- (act.north);
+    \draw[arrow,opacity=\GhostPredictionOpacity] (act.east) -- (future.west);
+    \draw[predarrow,opacity=\GhostPredictionOpacity] (reason.east) -- (predict.west);
+    \draw[predarrow,opacity=\GhostPredictionOpacity] (predict.north) -- (predfuture.south);
+    \draw[predarrow,opacity=\GhostPredictionOpacity] (predfuture.west) -- (perceive.east);
+
+    \node[tasktag] (task1) at (-4.7,-0.15) {\scriptsize video caption};
+    \node[tasktag] (task2) at (-4.7,-0.75) {\scriptsize math solving};
+    \node[tasktag] (task3) at (-4.7,-1.35) {\scriptsize detection/OCR};
+    \begin{scope}[on background layer]
+      \node[
+        draw=AgentBlueDark!20,
+        fill=AgentGray!25,
+        rounded corners=3pt,
+        inner xsep=7pt,
+        inner ysep=5pt,
+        fit=(task1)(task2)(task3)
+      ] (tasks) {};
+    \end{scope}
+    \node[anchor=south west] at (tasks.north west) {\tiny \quad \quad short-horizon QA};
+    \draw[examplearrow] (tasks.north) to[out=90,in=-90] (obs.south);
+  \end{tikzpicture}
+
+  \vspace{0.25cm}
+  \fontsize{11}{9}\selectfont \textbf{Long-term target:}
+
+  \vspace{-0.35cm}
+  {\fontsize{9}{11}\selectfont
+  \[
+    \textbf{Multimodal Agent}
+    =
+    \text{Goal-conditioned}
+    \left(
+      \text{Model}_{\text{\tiny perceive, reason, act}}
+      \xleftrightarrow{\;\text{Interaction}\;}
+      \text{Environment}
+    \right)
+  \]
+  }
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\LARGE From Current Observations to Prediction}
+  \centering
+  {\fontsize{11}{9}\selectfont Multimodal agents are goal-directed systems for solving long-horizon multimodal tasks.}
+
+  \vspace{0.5cm}
+  \begin{tikzpicture}[
+    box/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!65,
+      fill=AgentBlue,
+      very thick,
+      minimum width=3.2cm,
+      minimum height=0.82cm,
+      align=center
+    },
+    obsbox/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=3.25cm,
+      minimum height=0.82cm,
+      align=center
+    },
+    pred/.style={
+      rounded corners=4pt,
+      draw=AgentOrangeDark!75,
+      fill=AgentOrange,
+      very thick,
+      minimum width=3.25cm,
+      minimum height=0.82cm,
+      align=center
+    },
+    tasktag/.style={
+      rounded corners=2pt,
+      draw=AgentBlueDark!35,
+      fill=AgentGray,
+      inner xsep=5pt,
+      inner ysep=2pt,
+      align=center
+    },
+    arrow/.style={-Latex,thick,draw=AgentBlueDark!85},
+    predarrow/.style={-Latex,thick,dashed,draw=AgentOrangeDark!90},
+    examplearrow/.style={-Latex,thin,dashed,draw=AgentBlueDark!45}
+  ]
+    \path[use as bounding box] (-6.6,-1.9) rectangle (6.6,2.35);
+    \node[obsbox] (obs) at (-4.7,1.8) {Current\\observation};
+    \node[box] (perceive) at (0,1.8) {Perceive};
+    \node[box] (reason) at (0,0.25) {Reason};
+    \node[box] (act) at (0,-1.3) {Act};
+    \node[pred] (predict) at (4.7,0.25) {Predict};
+    \node[pred] (predfuture) at (4.7,1.8) {Predicted\\future};
+    \node[pred] (future) at (4.7,-1.3) {Future\\observation};
+
+    \draw[arrow] (obs.east) -- (perceive.west);
+    \draw[arrow] (perceive.south) -- (reason.north);
+    \draw[arrow] (reason.south) -- (act.north);
+    \draw[arrow] (act.east) -- (future.west);
+    \draw[predarrow] (reason.east) -- (predict.west);
+    \draw[predarrow] (predict.north) -- (predfuture.south);
+    \draw[predarrow] (predfuture.west) -- (perceive.east);
+
+    \node[tasktag] (task1) at (-4.7,-0.15) {\scriptsize computer use};
+    \node[tasktag] (task2) at (-4.7,-0.75) {\scriptsize streaming video};
+    \node[tasktag] (task3) at (-4.7,-1.35) {\scriptsize embodied tasks};
+    \begin{scope}[on background layer]
+      \node[
+        draw=AgentBlueDark!20,
+        fill=AgentGray!25,
+        rounded corners=3pt,
+        inner xsep=7pt,
+        inner ysep=5pt,
+        fit=(task1)(task2)(task3)
+      ] (tasks) {};
+    \end{scope}
+    \node[anchor=south west] at (tasks.north west) {\tiny multimodal environments};
+    \draw[examplearrow] (tasks.north) to[out=90,in=-90] (obs.south);
+  \end{tikzpicture}
+
+  \vspace{0.25cm}
+  {\fontsize{9}{10}\selectfont At time \(t\), the agent observes the present but must act before seeing the consequences;\\[0.35em]
+  \underline{\textit{prediction estimates the action-conditioned futures needed for better decisions.}}\\[-0.05em]
+  {\scriptsize\color{AgentOrangeDark}\textbf{Why prediction matters}}}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\LARGE Research Agenda}
+  \centering
+  \vspace{0.05cm}
+  {\large My research agenda has two connected lines:\\[0.15em]
+  1) multimodal RL for perception, reasoning, and acting through tools;\\[0.15em]
+  2) video as a scalable foundation for predictive multimodal learning.}
+
+  \vspace{0.35cm}
+  \includegraphics[width=0.56\linewidth]{../research_statement/Main_Figure1.png}
+
+  \vspace{0.35cm}
+  {I first ask: what does RL change across these multimodal capabilities?}
+\end{frame}
+
+\molochset{progressbar=foot}

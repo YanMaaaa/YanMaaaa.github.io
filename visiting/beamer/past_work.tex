@@ -1,0 +1,139 @@
+\section{Past Work: Learning to Perceive, Reason, and Act through Tools with Multimodal RL}
+
+\begin{frame}{\Large How Can We Make Claims About Multimodal Reasoning RL
+Trustworthy?}
+  \centering
+  \vspace{0.10cm}
+  {\fontsize{8.5}{11}\selectfont Early multimodal RL was hard to interpret from final tables and heterogeneous codebases. I built a transparent from-scratch VLM-RL framework and evaluated \underline{full learning trajectories} on visual reasoning tasks.}
+
+  \vspace{0.30cm}
+  \includegraphics[width=0.75\linewidth]{figures/paper1/eval_scheme.pdf}
+
+  \vspace{0.32cm}
+  \begin{tikzpicture}[
+    evidence/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=2.9cm,
+      minimum height=0.20cm,
+      align=center,
+      inner sep=4pt
+    },
+    arrow/.style={-Latex,thick,draw=AgentBlueDark!75}
+  ]
+    \node[evidence] (traj) at (-3.6,0) {\scriptsize \textbf{Trajectory}\\[-0.35em] \tiny checkpoint-level dynamics};
+    \node[evidence] (behavior) at (0,0) {\scriptsize \textbf{Behavior}\\[-0.35em] \tiny length and reflection metrics};
+    \node[evidence] (gen) at (3.6,0) {\scriptsize \textbf{Generalization}\\[-0.35em] \tiny pass@\{1,k\} evaluation};
+    \draw[arrow] (traj.east) -- (behavior.west);
+    \draw[arrow] (behavior.east) -- (gen.west);
+  \end{tikzpicture}
+
+  \vspace{-0.20cm}
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large What Does RL Change During Multimodal Reasoning Training?}
+  \centering
+  \vspace{0.05cm}
+  {\fontsize{8.7}{10}\selectfont
+  Trajectory-level evaluation reveals that RL changes how VLMs learn and respond, not only where final accuracy lands.}
+
+  \vspace{0.15cm}
+  \includegraphics[width=0.62\linewidth]{figures/paper1/qwen2.5_mmmath_training_metrics.pdf}
+
+  \vspace{0.15cm}
+  \begin{tikzpicture}[
+    metric/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=2.65cm,
+      minimum height=0.48cm,
+      align=center,
+      inner sep=2pt
+    }
+  ]
+    \node[metric] at (-4.2,0) {\scriptsize Accuracy improves};
+    \node[metric] at (-1.4,0) {\scriptsize Length shifts};
+    \node[metric] at (1.4,0) {\scriptsize Reflection changes};
+    \node[metric] at (4.2,0) {\scriptsize Seeds matter};
+  \end{tikzpicture}
+
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large Do Multimodal RL Dynamics Look the Same Across Settings?}
+  \centering
+  {\fontsize{8}{10}\selectfont The same multimodal RL evaluation scheme reveals different dynamics across backbones and datasets.}
+
+  \vspace{0.10cm}
+  \begingroup
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{0.88}
+  \begin{tabular}{@{}cc@{}}
+    {\tiny Qwen2-VL-7B @ \textit{mm\_math5k}} &
+    {\tiny Qwen2.5-VL-7B @ \textit{mm\_math5k}} \\
+    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2_mmmath_training_metrics.pdf} &
+    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2.5_mmmath_training_metrics.pdf} \\[-0.15em]
+    {\tiny Qwen2-VL-7B @ \textit{geometry3k}} &
+    {\tiny Qwen2.5-VL-7B @ \textit{geometry3k}} \\
+    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2_geo3k_training_metrics.pdf} &
+    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2.5_geo3k_training_metrics.pdf}
+  \end{tabular}
+  \endgroup
+  \begin{flushright}
+    \vspace{-0.20cm}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large Does Multimodal RL Change Generalization Beyond SFT?}
+  \centering
+  \vspace{0.10cm}
+  {\fontsize{11}{10}\selectfont Compared with SFT on high-quality CoT solutions from textbooks, RL shows stronger validation/test generalization.}
+
+  \vspace{0.18cm}
+  \begingroup
+  \setlength{\tabcolsep}{8pt}
+  \renewcommand{\arraystretch}{0.90}
+  \begin{tabular}{@{}cc@{}}
+    {\scriptsize Qwen2-VL-7B @ \textit{mm\_math5k}} &
+    {\scriptsize Qwen2.5-VL-7B @ \textit{mm\_math5k}} \\
+    \includegraphics[width=0.49\linewidth]{figures/paper1/qwen2_rl_sft.pdf} &
+    \includegraphics[width=0.49\linewidth]{figures/paper1/qwen2_5_rl_sft.pdf}
+  \end{tabular}
+  \endgroup
+
+  \vspace{0.12cm}
+  \begin{tikzpicture}
+    \node[
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      inner xsep=9pt,
+      inner ysep=5pt,
+      align=center
+    ] {\scriptsize RL improves generalization where SFT can overfit to supervised reasoning traces.};
+  \end{tikzpicture}
+
+  \begin{flushright}
+    \vspace{0.05cm}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}

@@ -1,0 +1,108 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme[colortheme=highcontrast]{moloch}
+
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
+
+\definecolor{AgentBlue}{HTML}{DDEAF7}
+\definecolor{AgentBlueDark}{HTML}{3D5F7F}
+\definecolor{AgentOrange}{HTML}{F3D2B3}
+\definecolor{AgentOrangeDark}{HTML}{A45D22}
+\definecolor{AgentGray}{HTML}{F4F6F8}
+\definecolor{AgentInk}{HTML}{1F2933}
+\newcommand{\GhostPredictionOpacity}{0.10}
+
+% \setbeamercolor{normal text}{fg=AgentInk}
+% \setbeamercolor{frametitle}{fg=AgentInk}
+\molochset{
+  progressbar=foot, % The default
+  progressbar linewidth=2pt % Adjust the thickness of the progress bar
+}
+% \setbeamercolor{progress bar}{fg=AgentBlueDark,bg=AgentGray}
+
+
+\newcommand{\smalltag}[1]{%
+  \tikz[baseline=(x.base)]\node[
+    rounded corners=2pt,
+    fill=AgentGray,
+    draw=AgentBlueDark!35,
+    inner xsep=5pt,
+    inner ysep=2pt
+  ] (x) {\scriptsize #1};%
+}
+
+\newcommand{\takeawaycard}[3]{%
+  \begin{minipage}[t]{0.31\linewidth}
+    \begin{beamercolorbox}[
+      wd=\linewidth,
+      sep=0.8em,
+      rounded=true,
+      shadow=false
+    ]{block body}
+      {\small\textbf{#1}}\hfill{\scriptsize #2}\\[0.6em]
+      {\large #3}
+    \end{beamercolorbox}
+  \end{minipage}
+}
+
+\newcommand{\twotoneworknode}[4]{%
+  \node[
+    draw=AgentBlueDark!55,
+    fill=AgentGray,
+    thick,
+    rounded corners=5pt,
+    minimum width=4.05cm,
+    minimum height=1.55cm,
+    inner sep=0pt
+  ] (#1) at (#2) {};
+  \node[
+    fill=AgentBlue,
+    minimum width=4.00cm,
+    minimum height=0.52cm,
+    anchor=north,
+    inner sep=0pt,
+    align=center
+  ] at ([yshift=-0.03cm]#1.north) {\parbox{3.82cm}{\centering\fontsize{9}{9}\selectfont\bfseries #3}};
+  \node[
+    minimum width=4.00cm,
+    minimum height=1.00cm,
+    anchor=south,
+    inner sep=0pt,
+    align=center
+  ] at (#1.south) {\parbox{3.72cm}{\centering\fontsize{8.5}{11}\selectfont #4}};
+  \node[
+    draw=AgentBlueDark!55,
+    thick,
+    rounded corners=5pt,
+    minimum width=4.05cm,
+    minimum height=1.55cm,
+    inner sep=0pt
+  ] at (#1.center) {};
+}
+
+\title{\fontsize{22}{22}\selectfont\bfseries Toward Multimodal Agents that\\[0.25em] Perceive, Reason, Act, and Predict\vspace{0.45cm}}
+% \subtitle{Multimodal agents in partially observed environments}
+\author{\Large Yan Ma}
+\institute{\large Fudan University \\[0.25em] \href{mailto:yanma23@m.fudan.edu.cn}{yanma23@m.fudan.edu.cn} \\[0.25em] \href{https://yanmaaaa.github.io/}{yanmaaaa.github.io}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+  \frametitle{\LARGE Table of Contents}
+  \tableofcontents
+\end{frame}
+
+\input{opening.tex}
+
+\input{past_work.tex}
+
+\section{Current Work: Video as a Scalable Foundation for Predictive Multimodal Learning}
+
+\end{document}

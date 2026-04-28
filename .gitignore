@@ -3,3 +3,12 @@
 /package-lock.json
 /package.json
 
+*.aux
+*.bib
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.toc
