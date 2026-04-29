@@ -126,7 +126,7 @@
   - if Slide 1 already uses the figure, keep Slide 1 cropped or simplified
   - reserve the full figure for Slide 4 so it still feels like a reveal
 
-### Slide 5. How Can We Make Claims About What RL Changes Trustworthy?
+~~### Slide 5. How Can We Make Claims About What RL Changes Trustworthy?~~
 
 - Key message:
   - this work was less about another final-score gain, and more about making empirical claims in an emerging area transparent and defensible
@@ -148,7 +148,7 @@
 - Source:
   - `Rethinking RL Scaling for Vision Language Models`
 
-### Slide 6. What Does RL Actually Change In Visual Reasoning Models?
+~~### Slide 6. What Does RL Actually Change In Visual Reasoning Models?~~
 
 - Key message:
   - trajectory-level evaluation reveals both behavioral changes during training and stronger generalization than SFT
@@ -168,7 +168,7 @@
 - Source:
   - `Rethinking RL Scaling for Vision Language Models`
 
-### Optional Backup Slide For Paper 1
+~~### Optional Backup Slide For Paper 1~~
 
 - Possible title:
   - `Why Look Beyond Final Checkpoints?`

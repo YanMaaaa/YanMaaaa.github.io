@@ -137,3 +137,182 @@ Trustworthy?}
 \end{frame}
 
 \molochset{progressbar=foot}
+
+\begin{frame}{\Large Can Multimodal RL Jointly Shape Perception and Reasoning?}
+  \centering
+  \vspace{0.03cm}
+  {\fontsize{8.4}{10}\selectfont Under matched budgets, unified RL matches or outperforms specialist mixtures across both reasoning and perception.}
+
+  \vspace{0.18cm}
+  \noindent
+  \begin{minipage}[t]{0.30\textwidth}
+    \vspace{0pt}
+    \centering
+    {\scriptsize MEGA-Bench task composition}\\[-0.15em]
+    \includegraphics[width=0.98\linewidth]{figures/paper2/fair_budget_evidence_megabench.pdf}
+  \end{minipage}
+  \hfill
+  \input{figures/paper2/fair_budget_evidence_10bench.tex}
+
+  \vfill
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{\textit{One RL to See Them All}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large How Did I Make Unified Multimodal RL Work Across Heterogeneous Tasks?}
+  \centering
+  \vspace{0.03cm}
+  {\fontsize{8.4}{10}\selectfont V-Triune organizes unified multimodal RL around reward routing, outcome verification, and source-level diagnostics.}
+
+  \vspace{0.18cm}
+  \includegraphics[width=0.82\linewidth]{figures/paper2/vtriune_framework.pdf}
+
+  \vspace{0.16cm}
+  \begin{tikzpicture}[
+    method/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=3.2cm,
+      minimum height=0.50cm,
+      align=center,
+      inner sep=2pt
+    },
+    arrow/.style={-Latex,thick,draw=AgentBlueDark!75}
+  ]
+    \node[method] (routing) at (-4.0,0) {\scriptsize Reward routing};
+    \node[method] (verify) at (0,0) {\scriptsize Outcome verification};
+    \node[method] (diagnose) at (4.0,0) {\scriptsize Source-level diagnostics};
+    \draw[arrow] (routing.east) -- (verify.west);
+    \draw[arrow] (verify.east) -- (diagnose.west);
+  \end{tikzpicture}
+
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{\textit{One RL to See Them All}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large What Made Unified Multimodal RL Stable in Practice?}
+  \centering
+  \vspace{0.03cm}
+  {\fontsize{8.4}{10}\selectfont Stable unified RL required localization reward shaping and careful control over which model components to update.}
+
+  \vspace{0.18cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \centering
+      {\scriptsize Localization rewards}\\[-0.15em]
+      \includegraphics[width=0.98\linewidth]{figures/paper2/dynamic_iou.pdf}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \centering
+      {\scriptsize Vision encoder updates}\\[-0.15em]
+      \includegraphics[width=0.98\linewidth]{figures/paper2/disable_vit.pdf}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.14cm}
+  \begin{tikzpicture}[
+    insight/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=3.35cm,
+      minimum height=0.50cm,
+      align=center,
+      inner sep=2pt
+    }
+  ]
+    \node[insight] at (-2.1,0) {\scriptsize Dynamic IoU balances density and precision};
+    \node[insight] at (2.1,0) {\scriptsize Freezing ViT avoids perception degradation};
+  \end{tikzpicture}
+
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{\textit{One RL to See Them All}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large What Made Unified Multimodal RL Diagnosable?}
+  \centering
+  \vspace{0.03cm}
+  {\fontsize{8.4}{10}\selectfont Source-level diagnostics reveal task-specific behaviors and failures hidden by aggregate metrics.}
+
+  \vspace{0.16cm}
+  \includegraphics[width=0.74\linewidth]{figures/paper2/train_analysis.pdf}
+
+  \vspace{0.14cm}
+  \begin{tikzpicture}[
+    insight/.style={
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      minimum width=3.6cm,
+      minimum height=0.50cm,
+      align=center,
+      inner sep=2pt
+    }
+  ]
+    \node[insight] at (-2.5,0) {\scriptsize Reasoning and localization behave differently};
+    \node[insight] at (2.5,0) {\scriptsize Aggregates can hide source-specific signals};
+  \end{tikzpicture}
+
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{\textit{One RL to See Them All}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large Can Unified Multimodal RL Scale with New Task Domains?}
+  \centering
+  \vspace{0.05cm}
+  {\fontsize{8.4}{10}\selectfont Adding a new task domain can improve in-domain performance without sacrificing existing reasoning and perception capabilities.}
+
+  \vspace{0.35cm}
+  \begingroup
+  \setlength{\tabcolsep}{16pt}
+  \renewcommand{\arraystretch}{1.20}
+  {\small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    Mixture & ScreenSpot-Pro & OCRBenchV2 \\
+    \midrule
+    Unified & 23.91 & 55.87 \\
+    Perception-only & 23.78 & 55.33 \\
+    Perception-only + GUI-3K & 29.85 & 55.96 \\
+    Unified + GUI-3K & \textbf{31.68} & \textbf{56.09} \\
+    \bottomrule
+  \end{tabular}
+  }
+  \endgroup
+
+  \vspace{0.35cm}
+  \begin{tikzpicture}
+    \node[
+      rounded corners=4pt,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
+      very thick,
+      inner xsep=9pt,
+      inner ysep=5pt,
+      align=center
+    ] {\scriptsize New-domain data improves ScreenSpot-Pro while OCRBenchV2 is preserved or slightly improved.};
+  \end{tikzpicture}
+
+  \vfill
+  \begin{flushright}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{\textit{One RL to See Them All}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}

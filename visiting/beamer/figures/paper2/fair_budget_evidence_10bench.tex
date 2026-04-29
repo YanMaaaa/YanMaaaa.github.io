@@ -1,0 +1,35 @@
+\begin{minipage}[t]{0.68\textwidth}
+\vspace{0pt}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{6}{c}{Reasoning Benchmarks} \\
+\midrule
+Mixture & MMMU & MathVista & MathVision & MME-R & CharXiv (RQ) \\
+\midrule
+Unified & \underline{56.56} & \underline{71.40} & \underline{30.51} & \textbf{28.20} & \textbf{44.50} \\
+Reason-only & 54.89 & \textbf{71.70} & \textbf{31.24} & \underline{28.03} & \underline{44.00} \\
+Perception-only & \textbf{56.67} & 68.20 & 29.59 & 26.26 & 41.00 \\
+\bottomrule
+\end{tabular}
+}
+
+\vspace{4pt}
+
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{6}{c}{Perception Benchmarks} \\
+\midrule
+Mixture & HrBench4K & VStar & COCO (S$\mid$M) & OCRBenchV2 & ScreenSpot-Pro \\
+\midrule
+Unified & \underline{73.75} & \textbf{82.20} & \underline{80.69} $\mid$ \textbf{38.62} & \textbf{55.87} & \underline{23.91} \\
+Reason-only & 73.25 & 78.53 & 78.36 $\mid$ 33.87 & \underline{55.77} & \textbf{23.97} \\
+Perception-only & \textbf{76.00} & \underline{80.10} & \textbf{80.78} $\mid$ \underline{37.37} & 55.33 & 23.78 \\
+\bottomrule
+\end{tabular}
+}
+\end{minipage}
