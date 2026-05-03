@@ -4,6 +4,7 @@
 
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{booktabs}
 \usepackage{tikz}
@@ -151,63 +152,63 @@
 
 \input{past_work.tex}
 
-\section{Current Work: Video as a Scalable Foundation for Predictive Multimodal Learning}
-
-\begin{frame}{\Large What Made Unified Multimodal RL Stable in Practice?}
-  \centering
-  \vspace{0.03cm}
-  {\fontsize{11}{10}\selectfont In unified multimodal RL, stability bottlenecks arise from both sparse localization rewards and fragile vision-model updates.}
-
-  \vspace{0.18cm}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.49\textwidth}
-      \centering
-      \tikz[baseline=(x.base)]\node[
-        rounded corners=4pt,
-        draw=red!55!black,
-        fill=red!5,
-        very thick,
-        inner xsep=6pt,
-        inner ysep=3pt,
-        align=center
-      ] (x) {\scriptsize Fixed IoU: loose is ambiguous, strict is sparse};\\[0.50em]
-      \includegraphics[width=0.98\linewidth]{figures/paper2/dynamic_iou.pdf}
-    \end{column}
-    \begin{column}{0.49\textwidth}
-      \centering
-      \tikz[baseline=(x.base)]\node[
-        rounded corners=4pt,
-        draw=red!55!black,
-        fill=red!5,
-        very thick,
-        inner xsep=6pt,
-        inner ysep=3pt,
-        align=center
-      ] (x) {\scriptsize Updating ViT causes gradient spikes};\\[0.50em]
-      \includegraphics[width=0.98\linewidth]{figures/paper2/disable_vit_coco_layer.pdf}
-    \end{column}
-  \end{columns}
-
-  \vspace{0.14cm}
-  \begin{tikzpicture}[
-    solution/.style={
-      rounded corners=4pt,
-      draw=green!45!black,
-      fill=green!6,
-      very thick,
-      minimum width=4.60cm,
-      minimum height=0.54cm,
-      align=center,
-      inner sep=2pt
-    }
-  ]
-    \node[solution] at (-3.5,0) {\scriptsize Dynamic IoU: loose-to-strict localization curriculum};
-    \node[solution] at (3.5,0) {\scriptsize Freezing ViT prevents perception degradation};
-  \end{tikzpicture}
-
-  \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
-  \end{flushright}
-\end{frame}
+% \section{Current Work: Video as a Scalable Foundation for Predictive Multimodal Learning}
+%
+% \begin{frame}{\Large What Made Unified Multimodal RL Stable in Practice?}
+%   \centering
+%   \vspace{0.03cm}
+%   {\fontsize{11}{10}\selectfont In unified multimodal RL, stability bottlenecks arise from both sparse localization rewards and fragile vision-model updates.}
+%
+%   \vspace{0.18cm}
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{0.49\textwidth}
+%       \centering
+%       \tikz[baseline=(x.base)]\node[
+%         rounded corners=4pt,
+%         draw=red!55!black,
+%         fill=red!5,
+%         very thick,
+%         inner xsep=6pt,
+%         inner ysep=3pt,
+%         align=center
+%       ] (x) {\scriptsize Fixed IoU: loose is ambiguous, strict is sparse};\\[0.50em]
+%       \includegraphics[width=0.98\linewidth]{figures/paper2/dynamic_iou.pdf}
+%     \end{column}
+%     \begin{column}{0.49\textwidth}
+%       \centering
+%       \tikz[baseline=(x.base)]\node[
+%         rounded corners=4pt,
+%         draw=red!55!black,
+%         fill=red!5,
+%         very thick,
+%         inner xsep=6pt,
+%         inner ysep=3pt,
+%         align=center
+%       ] (x) {\scriptsize Updating ViT causes gradient spikes};\\[0.50em]
+%       \includegraphics[width=0.98\linewidth]{figures/paper2/disable_vit_coco_layer.pdf}
+%     \end{column}
+%   \end{columns}
+%
+%   \vspace{0.14cm}
+%   \begin{tikzpicture}[
+%     solution/.style={
+%       rounded corners=4pt,
+%       draw=green!45!black,
+%       fill=green!6,
+%       very thick,
+%       minimum width=4.60cm,
+%       minimum height=0.54cm,
+%       align=center,
+%       inner sep=2pt
+%     }
+%   ]
+%     \node[solution] at (-3.5,0) {\scriptsize Dynamic IoU: loose-to-strict localization curriculum};
+%     \node[solution] at (3.5,0) {\scriptsize Freezing ViT prevents perception degradation};
+%   \end{tikzpicture}
+%
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
 
 \end{document}

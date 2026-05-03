@@ -1,241 +1,554 @@
 \section{Past Work: Learning to Perceive, Reason, and Act through Tools with Multimodal RL}
 
-\begin{frame}{\Large Starting with Visual Reasoning RL}
-  \centering
-  \vspace{-0.50cm}
-  {\fontsize{11}{11}\selectfont
-  I use visual reasoning RL as a first step toward improving the reasoning capability of multimodal agents under current observations.}
+% \begin{frame}{\Large Starting with Visual Reasoning RL}
+%   \centering
+%   \vspace{-0.50cm}
+%   {\fontsize{11}{11}\selectfont
+%   I use visual reasoning RL as a first step toward improving the reasoning capability of multimodal agents under current observations.}
+%
+%   \vspace{0.50cm}
+%   \begin{tikzpicture}[
+%     rootfade/.style={
+%       rounded corners=5pt,
+%       draw=AgentBlueDark!55,
+%       fill=AgentGray,
+%       very thick,
+%       minimum height=0.95cm,
+%       align=center,
+%       opacity=\SpotlightFadeOpacity,
+%       text opacity=\SpotlightFadeOpacity
+%     },
+%     activeouter/.style={
+%       rounded corners=5pt,
+%       draw=AgentBlueDark!75,
+%       fill=AgentGray,
+%       very thick,
+%       minimum width=4.15cm,
+%       minimum height=1.42cm,
+%       inner sep=0pt
+%     },
+%     fadeouter/.style={
+%       rounded corners=5pt,
+%       draw=AgentBlueDark!55,
+%       fill=AgentGray,
+%       very thick,
+%       minimum width=4.15cm,
+%       minimum height=1.42cm,
+%       inner sep=0pt,
+%       opacity=\SpotlightFadeOpacity
+%     },
+%     arrowfade/.style={-Latex,thick,draw=AgentBlueDark!80,opacity=\SpotlightFadeOpacity},
+%     arrowactive/.style={-Latex,thick,draw=AgentBlueDark!80},
+%     boundary/.style={thick,draw=AgentBlueDark!45,opacity=\SpotlightFadeOpacity}
+%   ]
+%     \node[rootfade,minimum width=1.8cm] (rl) at (-2.5,1.45) {\textbf{RL}};
+%     \node[rootfade,minimum width=3.7cm] (models) at (1.5,1.45) {\textbf{Multimodal Models \tiny(e.g. VLMs)}};
+%     \draw[arrowfade] (rl.east) -- (models.west);
+%
+%     \node[activeouter] (reason) at (-5.0,-0.80) {};
+%     \begin{scope}
+%       \clip[rounded corners=5pt] (reason.south west) rectangle (reason.north east);
+%       \fill[AgentBlue] (reason.north west) rectangle ([yshift=-0.50cm]reason.north east);
+%     \end{scope}
+%     \node[rounded corners=5pt,draw=AgentBlueDark!75,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+%       at (reason.center) {};
+%     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt]
+%       at ([yshift=-0.03cm]reason.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Visual Reasoning}};
+%     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt]
+%       at ([yshift=0.03cm]reason.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Reshapes training dynamics\\and improves generalization}};
+%
+%     \node[fadeouter] (unified) at (0,-0.80) {};
+%     \begin{scope}
+%       \clip[rounded corners=5pt] (unified.south west) rectangle (unified.north east);
+%       \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (unified.north west) rectangle ([yshift=-0.50cm]unified.north east);
+%     \end{scope}
+%     \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+%       at (unified.center) {};
+%     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=-0.03cm]unified.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Perception + Reasoning}};
+%     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=0.03cm]unified.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Positive transfer under joint\\multimodal RL training}};
+%
+%     \node[fadeouter] (tool) at (5.0,-0.80) {};
+%     \begin{scope}
+%       \clip[rounded corners=5pt] (tool.south west) rectangle (tool.north east);
+%       \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (tool.north west) rectangle ([yshift=-0.50cm]tool.north east);
+%     \end{scope}
+%     \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+%       at (tool.center) {};
+%     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=-0.03cm]tool.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Vision Tool-Use}};
+%     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=0.03cm]tool.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Intrinsic learning dominates\\RL reduces tool-induced harm}};
+%
+%     \draw[boundary] (rl.south west) to[out=235,in=75] (reason.north west);
+%     \draw[boundary] (models.south east) to[out=-45,in=105] (tool.north east);
+%     \draw[arrowfade] (reason.east) -- (unified.west);
+%     \draw[arrowfade] (unified.east) -- (tool.west);
+%   \end{tikzpicture}
+%
+%   \vspace{0.85cm}
+%   {\fontsize{10.5}{12}\selectfont
+%   \textbf{First question:} how can we make claims about multimodal reasoning RL trustworthy?}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large How Can We Make Claims About Multimodal Reasoning RL
+% Trustworthy?}
+%   \centering
+%   \vspace{0.10cm}
+%   {\fontsize{8.5}{11}\selectfont Early multimodal RL was hard to interpret from final tables and heterogeneous codebases. I built a transparent from-scratch VLM-RL framework and evaluated \underline{full learning trajectories} on visual reasoning tasks.}
+%
+%   \vspace{0.30cm}
+%   \includegraphics[width=0.75\linewidth]{figures/paper1/eval_scheme.pdf}
+%
+%   \vspace{0.32cm}
+%   \begin{tikzpicture}[
+%     arrow/.style={-Latex,thick,draw=AgentBlueDark!75}
+%   ]
+%     \stacknode{traj}{(-3.6,0)}{Trajectory}{checkpoint-level dynamics}
+%     \stacknode{behavior}{(0,0)}{Behavior}{length and reflection metrics}
+%     \stacknode{gen}{(3.6,0)}{Generalization}{pass@\{1,k\} evaluation}
+%     \draw[arrow] (traj.east) -- (behavior.west);
+%     \draw[arrow] (behavior.east) -- (gen.west);
+%     \draw[
+%       decorate,
+%       decoration={brace,amplitude=4pt},
+%       thick,
+%       draw=AgentBlueDark!70
+%     ] ([xshift=0.33cm,yshift=0.41cm]gen.east)
+%       -- ([xshift=-0.15cm,yshift=-0.29cm]gen.east)
+%       node[midway,xshift=0.04cm,yshift=-0.08cm,anchor=west]
+%       {\scriptsize random seed};
+%   \end{tikzpicture}
+%
+%   \vspace{-0.20cm}
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large What Does RL Change During Multimodal Reasoning Training?}
+%   \centering
+%   \vspace{0.05cm}
+%   {\fontsize{8.7}{10}\selectfont
+%   Trajectory-level evaluation reveals that RL changes how VLMs learn and respond, not only where final accuracy lands.}
+%
+%   \vspace{0.15cm}
+%   \includegraphics[width=0.62\linewidth]{figures/paper1/qwen2.5_mmmath_training_metrics.pdf}
+%
+%   \vspace{0.15cm}
+%   \begin{tikzpicture}[
+%     metric/.style={
+%       rounded corners=4pt,
+%       draw=AgentBlueDark!45,
+%       fill=AgentGray,
+%       very thick,
+%       minimum width=2.65cm,
+%       minimum height=0.48cm,
+%       align=center,
+%       inner sep=2pt
+%     }
+%   ]
+%     \node[metric] at (-4.2,0) {\scriptsize Accuracy improves};
+%     \node[metric] at (-1.4,0) {\scriptsize Length shifts};
+%     \node[metric] at (1.4,0) {\scriptsize Reflection changes};
+%     \node[metric] at (4.2,0) {\scriptsize Seeds matter};
+%   \end{tikzpicture}
+%
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large Do Multimodal RL Dynamics Look the Same Across Settings?}
+%   \centering
+%   {\fontsize{8}{10}\selectfont The same multimodal RL evaluation scheme reveals different dynamics across backbones and datasets.}
+%
+%   \vspace{0.10cm}
+%   \begingroup
+%   \setlength{\tabcolsep}{3pt}
+%   \renewcommand{\arraystretch}{0.88}
+%   \begin{tabular}{@{}cc@{}}
+%     {\tiny Qwen2-VL-7B @ \textit{mm\_math5k}} &
+%     {\tiny Qwen2.5-VL-7B @ \textit{mm\_math5k}} \\
+%     \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2_mmmath_training_metrics.pdf} &
+%     \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2.5_mmmath_training_metrics.pdf} \\[-0.15em]
+%     {\tiny Qwen2-VL-7B @ \textit{geometry3k}} &
+%     {\tiny Qwen2.5-VL-7B @ \textit{geometry3k}} \\
+%     \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2_geo3k_training_metrics.pdf} &
+%     \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2.5_geo3k_training_metrics.pdf}
+%   \end{tabular}
+%   \endgroup
+%   \begin{flushright}
+%     \vspace{-0.20cm}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large Does Multimodal RL Change Generalization Beyond SFT?}
+%   \centering
+%   \vspace{0.10cm}
+%   {\fontsize{11}{10}\selectfont Compared with SFT on high-quality CoT solutions from textbooks, RL shows stronger validation/test generalization.}
+%
+%   \vspace{0.18cm}
+%   \begingroup
+%   \setlength{\tabcolsep}{8pt}
+%   \renewcommand{\arraystretch}{0.90}
+%   \begin{tabular}{@{}cc@{}}
+%     {\scriptsize Qwen2-VL-7B @ \textit{mm\_math5k}} &
+%     {\scriptsize Qwen2.5-VL-7B @ \textit{mm\_math5k}} \\
+%     \includegraphics[width=0.49\linewidth]{figures/paper1/qwen2_rl_sft.pdf} &
+%     \includegraphics[width=0.49\linewidth]{figures/paper1/qwen2_5_rl_sft.pdf}
+%   \end{tabular}
+%   \endgroup
+%
+%   \vspace{0.12cm}
+%   \begin{tikzpicture}
+%     \node[
+%       rounded corners=4pt,
+%       draw=AgentBlueDark!45,
+%       fill=AgentGray,
+%       very thick,
+%       inner xsep=9pt,
+%       inner ysep=5pt,
+%       align=center
+%     ] {\scriptsize RL improves generalization where SFT can overfit to supervised reasoning traces.};
+%   \end{tikzpicture}
+%
+%   \begin{flushright}
+%     \vspace{0.05cm}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large From Visual Reasoning to Perception + Reasoning}
+%   \centering
+%   \vspace{-0.40cm}
+%   {\fontsize{11}{11}\selectfont
+%   Reasoning decides how to think; perception determines whether the model is thinking about the right visual evidence.}
+%
+%   \vspace{0.70cm}
+%   \begin{tikzpicture}[
+%     rootfade/.style={
+%       rounded corners=5pt,
+%       draw=AgentBlueDark!55,
+%       fill=AgentGray,
+%       very thick,
+%       minimum height=0.95cm,
+%       align=center,
+%       opacity=\SpotlightFadeOpacity,
+%       text opacity=\SpotlightFadeOpacity
+%     },
+%     activeouter/.style={
+%       rounded corners=5pt,
+%       draw=AgentBlueDark!75,
+%       fill=AgentGray,
+%       very thick,
+%       minimum width=4.15cm,
+%       minimum height=1.42cm,
+%       inner sep=0pt
+%     },
+%     fadeouter/.style={
+%       rounded corners=5pt,
+%       draw=AgentBlueDark!55,
+%       fill=AgentGray,
+%       very thick,
+%       minimum width=4.15cm,
+%       minimum height=1.42cm,
+%       inner sep=0pt,
+%       opacity=\SpotlightFadeOpacity
+%     },
+%     arrowfade/.style={-Latex,thick,draw=AgentBlueDark!80,opacity=\SpotlightFadeOpacity},
+%     arrowactive/.style={-Latex,thick,draw=AgentBlueDark!80},
+%     boundary/.style={thick,draw=AgentBlueDark!45,opacity=\SpotlightFadeOpacity}
+%   ]
+%     \node[rootfade,minimum width=1.8cm] (rl) at (-2.5,1.45) {\textbf{RL}};
+%     \node[rootfade,minimum width=3.7cm] (models) at (1.5,1.45) {\textbf{Multimodal Models \tiny(e.g. VLMs)}};
+%     \draw[arrowfade] (rl.east) -- (models.west);
+%
+%     \node[fadeouter] (reason) at (-5.0,-0.80) {};
+%     \begin{scope}
+%       \clip[rounded corners=5pt] (reason.south west) rectangle (reason.north east);
+%       \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (reason.north west) rectangle ([yshift=-0.50cm]reason.north east);
+%     \end{scope}
+%     \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+%       at (reason.center) {};
+%     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=-0.03cm]reason.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Visual Reasoning}};
+%     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=0.03cm]reason.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Reshapes training dynamics\\and improves generalization}};
+%
+%     \node[activeouter] (unified) at (0,-0.80) {};
+%     \begin{scope}
+%       \clip[rounded corners=5pt] (unified.south west) rectangle (unified.north east);
+%       \fill[AgentBlue] (unified.north west) rectangle ([yshift=-0.50cm]unified.north east);
+%     \end{scope}
+%     \node[rounded corners=5pt,draw=AgentBlueDark!75,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+%       at (unified.center) {};
+%     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt]
+%       at ([yshift=-0.03cm]unified.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Perception + Reasoning}};
+%     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt]
+%       at ([yshift=0.03cm]unified.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Positive transfer under joint\\multimodal RL training}};
+%
+%     \node[fadeouter] (tool) at (5.0,-0.80) {};
+%     \begin{scope}
+%       \clip[rounded corners=5pt] (tool.south west) rectangle (tool.north east);
+%       \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (tool.north west) rectangle ([yshift=-0.50cm]tool.north east);
+%     \end{scope}
+%     \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+%       at (tool.center) {};
+%     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=-0.03cm]tool.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Vision Tool-Use}};
+%     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+%       at ([yshift=0.03cm]tool.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Intrinsic learning dominates\\RL reduces tool-induced harm}};
+%
+%     \draw[boundary] (rl.south west) to[out=235,in=75] (reason.north west);
+%     \draw[boundary] (models.south east) to[out=-45,in=105] (tool.north east);
+%     \draw[arrowactive] (reason.east) -- (unified.west);
+%     \draw[arrowfade] (unified.east) -- (tool.west);
+%   \end{tikzpicture}
+%
+%   \vspace{0.55cm}
+%   {\fontsize{10.5}{12}\selectfont
+%   \textbf{Next question:} can multimodal RL improve both within one training pipeline?}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large Can Multimodal RL Jointly Shape Perception and Reasoning?}
+%   \centering
+%   \vspace{0.24cm}
+%   {\fontsize{11}{10}\selectfont Under matched budgets, unified RL matches or outperforms specialist mixtures across both reasoning and perception.}
+%
+%   \vspace{0.14cm}
+%   {
+%   \noindent
+%   \begin{minipage}[t]{0.30\textwidth}
+%     \vspace{0pt}
+%     \centering
+%     {\scriptsize MEGA-Bench task composition}\\[-0.15em]
+%     \includegraphics[width=0.98\linewidth]{figures/paper2/fair_budget_evidence_megabench.pdf}
+%   \end{minipage}
+%   \hfill
+%   \input{figures/paper2/fair_budget_evidence_10bench.tex}
+%
+%   \vspace{0.12cm}
+%   \tinytag{Reasoning: math / science / chart / puzzle}\hspace{0.25cm}
+%   \tinytag{Perception: detection / grounding / OCR / counting}\\[0.25em]
+%   \tinytag{47.7K verifiable samples}\hspace{0.25cm}
+%   \tinytag{Qwen2.5-VL 7B / 32B-0321/0326}}
+%
+%   \vfill
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large How Can Unified Multimodal RL Handle Heterogeneous Tasks?}
+%   \vspace{0.00cm}
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{0.60\textwidth}
+%       \centering
+%       \vspace{0.40cm}
+%       \includegraphics[width=0.98\linewidth]{figures/paper2/vtriune_framework.pdf}
+%     \end{column}
+%     \begin{column}{0.39\textwidth}
+%       \vspace{0.62cm}
+%       {\fontsize{9.2}{11}\selectfont
+%       We make heterogeneous multimodal tasks trainable in one RL loop.}
+%
+%       \vspace{0.28cm}
+%       \begin{tikzpicture}[
+%         method/.style={
+%           rounded corners=4pt,
+%           draw=AgentBlueDark!45,
+%           fill=AgentGray,
+%           very thick,
+%           minimum width=4.75cm,
+%           minimum height=0.68cm,
+%           align=center,
+%           inner sep=2pt
+%         },
+%         arrow/.style={-Latex,semithick,draw=AgentBlueDark!55}
+%       ]
+%         \node[method] (routing) at (0,0) {\parbox{4.45cm}{\centering\small\textbf{Reward routing}\\[0.25em]\scriptsize handles sample-level heterogeneity}};
+%         \node[method] (verify) at (0,-1.85) {\parbox{4.45cm}{\centering\small\textbf{Outcome verification}\\[0.25em]\scriptsize handles reward-side heterogeneity\\[0.30em] Dynamic IoU for localization}};
+%         \node[method] (diagnose) at (0,-3.70) {\parbox{4.45cm}{\centering\small\textbf{Source-level diagnostics}\\[0.25em]\scriptsize reveals source-specific behaviors and failures}};
+%         \draw[arrow] (routing.south) -- (verify.north);
+%         \draw[arrow] (verify.south) -- (diagnose.north);
+%       \end{tikzpicture}
+%     \end{column}
+%   \end{columns}
+%
+%   \begin{flushright}
+%     \vspace{0.30cm}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large What Made Unified Multimodal RL Stable in Practice?}
+%   \centering
+%   \vspace{0.03cm}
+%   {\fontsize{11}{10}\selectfont In unified multimodal RL, stability bottlenecks arise from both sparse localization rewards and fragile vision-model updates.}
+%
+%   \vspace{0.15cm}
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{0.49\textwidth}
+%       \centering
+%       \tikz[baseline=(x.base)]\node[
+%         rounded corners=4pt,
+%         draw=red!55!black,
+%         fill=red!5,
+%         very thick,
+%         inner xsep=6pt,
+%         inner ysep=3pt,
+%         align=center
+%       ] (x) {\scriptsize Fixed IoU: loose is ambiguous, strict is sparse};\\[0.50em]
+%       \includegraphics[width=0.98\linewidth]{figures/paper2/dynamic_iou.pdf}
+%     \end{column}
+%     \begin{column}{0.49\textwidth}
+%       \centering
+%       \tikz[baseline=(x.base)]\node[
+%         rounded corners=4pt,
+%         draw=red!55!black,
+%         fill=red!5,
+%         very thick,
+%         inner xsep=6pt,
+%         inner ysep=3pt,
+%         align=center
+%       ] (x) {\scriptsize Updating ViT causes gradient spikes};\\[0.50em]
+%       \includegraphics[width=0.98\linewidth]{figures/paper2/disable_vit.pdf}
+%     \end{column}
+%   \end{columns}
+%
+%   \vspace{0.14cm}
+%   \begin{tikzpicture}[
+%     solution/.style={
+%       rounded corners=4pt,
+%       draw=green!45!black,
+%       fill=green!6,
+%       very thick,
+%       minimum width=4.60cm,
+%       minimum height=0.54cm,
+%       align=center,
+%       inner sep=2pt
+%     }
+%   ]
+%     \node[solution] at (-3.5,0) {\scriptsize Dynamic IoU: loose-to-strict localization curriculum};
+%     \node[solution] at (3.5,0) {\scriptsize Freezing ViT prevents perception degradation};
+%   \end{tikzpicture}
+%
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+%
+% \begin{frame}{\Large What Made Unified Multimodal RL Diagnosable?}
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{0.68\textwidth}
+%       \centering
+%       \vspace{0.35cm}
+%       \includegraphics[width=0.98\linewidth]{figures/paper2/train_analysis.pdf}
+%     \end{column}
+%     \begin{column}{0.29\textwidth}
+%       \vspace{0.72cm}
+%       {\fontsize{8.5}{10}\selectfont Source diagnostics reveal task-specific behavior patterns hidden by aggregate metrics.}
+%
+%       \vspace{0.42cm}
+%       \begin{tikzpicture}[
+%         insight/.style={
+%           rounded corners=4pt,
+%           draw=AgentBlueDark!45,
+%           fill=AgentGray,
+%           very thick,
+%           minimum width=3.95cm,
+%           minimum height=0.70cm,
+%           text width=3.85cm,
+%           align=center,
+%           inner sep=3pt
+%         }
+%       ]
+%         \node[insight] at (0,0) {\scriptsize Reasoning sources show length and reflection growth};
+%         \node[insight] at (0,-1.4) {\scriptsize Detection and OCR keep low-reflection patterns};
+%         \node[insight] at (0,-3.05) {\scriptsize Unified RL training preserves task-appropriate response styles};
+%       \end{tikzpicture}
+%     \end{column}
+%   \end{columns}
+%
+%   \vspace{-0.14cm}
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
+%
+% \begin{frame}{\Large Can Unified Multimodal RL Scale with New Task Domains?}
+%   \centering
+%   \vspace{0.45cm}
+%   {\fontsize{11}{12}\selectfont Under a fixed-compute budget, unified training shows positive transfer when adding a new GUI grounding domain.}
+%
+%   \vspace{0.35cm}
+%   \begingroup
+%   \setlength{\tabcolsep}{16pt}
+%   \renewcommand{\arraystretch}{1.20}
+%   {\small
+%   \begin{tabular}{@{}lcc@{}}
+%     \toprule
+%     Mixture & ScreenSpot-Pro & OCRBenchV2 \\
+%     \midrule
+%     Unified & 23.91 & 55.87 \\
+%     Perception-only & 23.78 & 55.33 \\
+%     Perception-only + GUI-3K & 29.85 & 55.96 \\
+%     Unified + GUI-3K & \textbf{31.68} & \textbf{56.09} \\
+%     \bottomrule
+%   \end{tabular}
+%   }
+%   \endgroup
+%
+%   \vspace{0.35cm}
+%   \begin{tikzpicture}
+%     \node[
+%       rounded corners=4pt,
+%       draw=AgentBlueDark!45,
+%       fill=AgentGray,
+%       very thick,
+%       inner xsep=9pt,
+%       inner ysep=5pt,
+%       align=center
+%     ] {\scriptsize New-domain data improves ScreenSpot-Pro while OCRBenchV2 is preserved or slightly improved.};
+%   \end{tikzpicture}
+%
+%   \vfill
+%   \begin{flushright}
+%     {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+%   \end{flushright}
+% \end{frame}
+%
+% \molochset{progressbar=foot}
 
-  \vspace{0.50cm}
-  \begin{tikzpicture}[
-    rootfade/.style={
-      rounded corners=5pt,
-      draw=AgentBlueDark!55,
-      fill=AgentGray,
-      very thick,
-      minimum height=0.95cm,
-      align=center,
-      opacity=\SpotlightFadeOpacity,
-      text opacity=\SpotlightFadeOpacity
-    },
-    activeouter/.style={
-      rounded corners=5pt,
-      draw=AgentBlueDark!75,
-      fill=AgentGray,
-      very thick,
-      minimum width=4.15cm,
-      minimum height=1.42cm,
-      inner sep=0pt
-    },
-    fadeouter/.style={
-      rounded corners=5pt,
-      draw=AgentBlueDark!55,
-      fill=AgentGray,
-      very thick,
-      minimum width=4.15cm,
-      minimum height=1.42cm,
-      inner sep=0pt,
-      opacity=\SpotlightFadeOpacity
-    },
-    arrowfade/.style={-Latex,thick,draw=AgentBlueDark!80,opacity=\SpotlightFadeOpacity},
-    arrowactive/.style={-Latex,thick,draw=AgentBlueDark!80},
-    boundary/.style={thick,draw=AgentBlueDark!45,opacity=\SpotlightFadeOpacity}
-  ]
-    \node[rootfade,minimum width=1.8cm] (rl) at (-2.5,1.45) {\textbf{RL}};
-    \node[rootfade,minimum width=3.7cm] (models) at (1.5,1.45) {\textbf{Multimodal Models \tiny(e.g. VLMs)}};
-    \draw[arrowfade] (rl.east) -- (models.west);
-
-    \node[activeouter] (reason) at (-5.0,-0.80) {};
-    \begin{scope}
-      \clip[rounded corners=5pt] (reason.south west) rectangle (reason.north east);
-      \fill[AgentBlue] (reason.north west) rectangle ([yshift=-0.50cm]reason.north east);
-    \end{scope}
-    \node[rounded corners=5pt,draw=AgentBlueDark!75,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
-      at (reason.center) {};
-    \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt]
-      at ([yshift=-0.03cm]reason.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Visual Reasoning}};
-    \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt]
-      at ([yshift=0.03cm]reason.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Reshapes training dynamics\\and improves generalization}};
-
-    \node[fadeouter] (unified) at (0,-0.80) {};
-    \begin{scope}
-      \clip[rounded corners=5pt] (unified.south west) rectangle (unified.north east);
-      \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (unified.north west) rectangle ([yshift=-0.50cm]unified.north east);
-    \end{scope}
-    \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
-      at (unified.center) {};
-    \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
-      at ([yshift=-0.03cm]unified.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Perception + Reasoning}};
-    \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
-      at ([yshift=0.03cm]unified.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Positive transfer under joint\\multimodal RL training}};
-
-    \node[fadeouter] (tool) at (5.0,-0.80) {};
-    \begin{scope}
-      \clip[rounded corners=5pt] (tool.south west) rectangle (tool.north east);
-      \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (tool.north west) rectangle ([yshift=-0.50cm]tool.north east);
-    \end{scope}
-    \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
-      at (tool.center) {};
-    \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
-      at ([yshift=-0.03cm]tool.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Vision Tool-Use}};
-    \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
-      at ([yshift=0.03cm]tool.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Intrinsic learning dominates\\RL reduces tool-induced harm}};
-
-    \draw[boundary] (rl.south west) to[out=235,in=75] (reason.north west);
-    \draw[boundary] (models.south east) to[out=-45,in=105] (tool.north east);
-    \draw[arrowfade] (reason.east) -- (unified.west);
-    \draw[arrowfade] (unified.east) -- (tool.west);
-  \end{tikzpicture}
-
-  \vspace{0.85cm}
-  {\fontsize{10.5}{12}\selectfont
-  \textbf{First question:} how can we make claims about multimodal reasoning RL trustworthy?}
-\end{frame}
-
-\molochset{progressbar=foot}
-
-\begin{frame}{\Large How Can We Make Claims About Multimodal Reasoning RL
-Trustworthy?}
-  \centering
-  \vspace{0.10cm}
-  {\fontsize{8.5}{11}\selectfont Early multimodal RL was hard to interpret from final tables and heterogeneous codebases. I built a transparent from-scratch VLM-RL framework and evaluated \underline{full learning trajectories} on visual reasoning tasks.}
-
-  \vspace{0.30cm}
-  \includegraphics[width=0.75\linewidth]{figures/paper1/eval_scheme.pdf}
-
-  \vspace{0.32cm}
-  \begin{tikzpicture}[
-    arrow/.style={-Latex,thick,draw=AgentBlueDark!75}
-  ]
-    \stacknode{traj}{(-3.6,0)}{Trajectory}{checkpoint-level dynamics}
-    \stacknode{behavior}{(0,0)}{Behavior}{length and reflection metrics}
-    \stacknode{gen}{(3.6,0)}{Generalization}{pass@\{1,k\} evaluation}
-    \draw[arrow] (traj.east) -- (behavior.west);
-    \draw[arrow] (behavior.east) -- (gen.west);
-    \draw[
-      decorate,
-      decoration={brace,amplitude=4pt},
-      thick,
-      draw=AgentBlueDark!70
-    ] ([xshift=0.33cm,yshift=0.41cm]gen.east)
-      -- ([xshift=-0.15cm,yshift=-0.29cm]gen.east)
-      node[midway,xshift=0.04cm,yshift=-0.08cm,anchor=west]
-      {\scriptsize random seed};
-  \end{tikzpicture}
-
-  \vspace{-0.20cm}
-  \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
-  \end{flushright}
-\end{frame}
-
-\molochset{progressbar=foot}
-
-\begin{frame}{\Large What Does RL Change During Multimodal Reasoning Training?}
-  \centering
-  \vspace{0.05cm}
-  {\fontsize{8.7}{10}\selectfont
-  Trajectory-level evaluation reveals that RL changes how VLMs learn and respond, not only where final accuracy lands.}
-
-  \vspace{0.15cm}
-  \includegraphics[width=0.62\linewidth]{figures/paper1/qwen2.5_mmmath_training_metrics.pdf}
-
-  \vspace{0.15cm}
-  \begin{tikzpicture}[
-    metric/.style={
-      rounded corners=4pt,
-      draw=AgentBlueDark!45,
-      fill=AgentGray,
-      very thick,
-      minimum width=2.65cm,
-      minimum height=0.48cm,
-      align=center,
-      inner sep=2pt
-    }
-  ]
-    \node[metric] at (-4.2,0) {\scriptsize Accuracy improves};
-    \node[metric] at (-1.4,0) {\scriptsize Length shifts};
-    \node[metric] at (1.4,0) {\scriptsize Reflection changes};
-    \node[metric] at (4.2,0) {\scriptsize Seeds matter};
-  \end{tikzpicture}
-
-  \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
-  \end{flushright}
-\end{frame}
-
-\molochset{progressbar=foot}
-
-\begin{frame}{\Large Do Multimodal RL Dynamics Look the Same Across Settings?}
-  \centering
-  {\fontsize{8}{10}\selectfont The same multimodal RL evaluation scheme reveals different dynamics across backbones and datasets.}
-
-  \vspace{0.10cm}
-  \begingroup
-  \setlength{\tabcolsep}{3pt}
-  \renewcommand{\arraystretch}{0.88}
-  \begin{tabular}{@{}cc@{}}
-    {\tiny Qwen2-VL-7B @ \textit{mm\_math5k}} &
-    {\tiny Qwen2.5-VL-7B @ \textit{mm\_math5k}} \\
-    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2_mmmath_training_metrics.pdf} &
-    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2.5_mmmath_training_metrics.pdf} \\[-0.15em]
-    {\tiny Qwen2-VL-7B @ \textit{geometry3k}} &
-    {\tiny Qwen2.5-VL-7B @ \textit{geometry3k}} \\
-    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2_geo3k_training_metrics.pdf} &
-    \includegraphics[width=0.36\linewidth]{figures/paper1/qwen2.5_geo3k_training_metrics.pdf}
-  \end{tabular}
-  \endgroup
-  \begin{flushright}
-    \vspace{-0.20cm}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
-  \end{flushright}
-\end{frame}
-
-\molochset{progressbar=foot}
-
-\begin{frame}{\Large Does Multimodal RL Change Generalization Beyond SFT?}
-  \centering
-  \vspace{0.10cm}
-  {\fontsize{11}{10}\selectfont Compared with SFT on high-quality CoT solutions from textbooks, RL shows stronger validation/test generalization.}
-
-  \vspace{0.18cm}
-  \begingroup
-  \setlength{\tabcolsep}{8pt}
-  \renewcommand{\arraystretch}{0.90}
-  \begin{tabular}{@{}cc@{}}
-    {\scriptsize Qwen2-VL-7B @ \textit{mm\_math5k}} &
-    {\scriptsize Qwen2.5-VL-7B @ \textit{mm\_math5k}} \\
-    \includegraphics[width=0.49\linewidth]{figures/paper1/qwen2_rl_sft.pdf} &
-    \includegraphics[width=0.49\linewidth]{figures/paper1/qwen2_5_rl_sft.pdf}
-  \end{tabular}
-  \endgroup
-
-  \vspace{0.12cm}
-  \begin{tikzpicture}
-    \node[
-      rounded corners=4pt,
-      draw=AgentBlueDark!45,
-      fill=AgentGray,
-      very thick,
-      inner xsep=9pt,
-      inner ysep=5pt,
-      align=center
-    ] {\scriptsize RL improves generalization where SFT can overfit to supervised reasoning traces.};
-  \end{tikzpicture}
-
-  \begin{flushright}
-    \vspace{0.05cm}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.01-2025.03]~~\textit{Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme}, Ma et al.}}
-  \end{flushright}
-\end{frame}
-
-\molochset{progressbar=foot}
-
-\begin{frame}{\Large From Visual Reasoning to Perception + Reasoning}
+\begin{frame}{\Large From Perception + Reasoning to Acting Through Tools}
   \centering
   \vspace{-0.40cm}
   {\fontsize{11}{11}\selectfont
-  Reasoning decides how to think; perception determines whether the model is thinking about the right visual evidence.}
+  Perception and reasoning operate on the current observation; vision tools let the model act to acquire new visual evidence.}
 
   \vspace{0.70cm}
   \begin{tikzpicture}[
@@ -288,257 +601,267 @@ Trustworthy?}
     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
       at ([yshift=0.03cm]reason.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Reshapes training dynamics\\and improves generalization}};
 
-    \node[activeouter] (unified) at (0,-0.80) {};
+    \node[fadeouter] (unified) at (0,-0.80) {};
     \begin{scope}
       \clip[rounded corners=5pt] (unified.south west) rectangle (unified.north east);
-      \fill[AgentBlue] (unified.north west) rectangle ([yshift=-0.50cm]unified.north east);
-    \end{scope}
-    \node[rounded corners=5pt,draw=AgentBlueDark!75,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
-      at (unified.center) {};
-    \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt]
-      at ([yshift=-0.03cm]unified.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Perception + Reasoning}};
-    \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt]
-      at ([yshift=0.03cm]unified.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Positive transfer under joint\\multimodal RL training}};
-
-    \node[fadeouter] (tool) at (5.0,-0.80) {};
-    \begin{scope}
-      \clip[rounded corners=5pt] (tool.south west) rectangle (tool.north east);
-      \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (tool.north west) rectangle ([yshift=-0.50cm]tool.north east);
+      \fill[AgentBlue,opacity=\SpotlightFadeOpacity] (unified.north west) rectangle ([yshift=-0.50cm]unified.north east);
     \end{scope}
     \node[rounded corners=5pt,draw=AgentBlueDark!55,opacity=\SpotlightFadeOpacity,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
-      at (tool.center) {};
+      at (unified.center) {};
     \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
-      at ([yshift=-0.03cm]tool.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Vision Tool-Use}};
+      at ([yshift=-0.03cm]unified.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Perception + Reasoning}};
     \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt,text opacity=\SpotlightFadeOpacity]
+      at ([yshift=0.03cm]unified.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Positive transfer under joint\\multimodal RL training}};
+
+    \node[activeouter] (tool) at (5.0,-0.80) {};
+    \begin{scope}
+      \clip[rounded corners=5pt] (tool.south west) rectangle (tool.north east);
+      \fill[AgentBlue] (tool.north west) rectangle ([yshift=-0.50cm]tool.north east);
+    \end{scope}
+    \node[rounded corners=5pt,draw=AgentBlueDark!75,very thick,minimum width=4.15cm,minimum height=1.42cm,inner sep=0pt]
+      at (tool.center) {};
+    \node[minimum width=4.10cm,minimum height=0.50cm,anchor=north,inner sep=0pt]
+      at ([yshift=-0.03cm]tool.north) {\parbox{3.8cm}{\centering\fontsize{9}{9}\selectfont\bfseries Vision Tool-Use}};
+    \node[minimum width=4.10cm,minimum height=0.86cm,anchor=south,inner sep=0pt]
       at ([yshift=0.03cm]tool.south) {\parbox{3.75cm}{\centering\fontsize{8.2}{10}\selectfont Intrinsic learning dominates\\RL reduces tool-induced harm}};
 
     \draw[boundary] (rl.south west) to[out=235,in=75] (reason.north west);
     \draw[boundary] (models.south east) to[out=-45,in=105] (tool.north east);
-    \draw[arrowactive] (reason.east) -- (unified.west);
-    \draw[arrowfade] (unified.east) -- (tool.west);
+    \draw[arrowfade] (reason.east) -- (unified.west);
+    \draw[arrowactive] (unified.east) -- (tool.west);
   \end{tikzpicture}
 
   \vspace{0.55cm}
   {\fontsize{10.5}{12}\selectfont
-  \textbf{Next question:} can multimodal RL improve both within one training pipeline?}
+  \textbf{Next question:} what does RL actually learn when the model can act through visual tools?}
 \end{frame}
 
 \molochset{progressbar=foot}
 
-\begin{frame}{\Large Can Multimodal RL Jointly Shape Perception and Reasoning?}
+\begin{frame}{\Large How Can We Disentangle What Vision Tool-Use RL Learns?}
   \centering
-  \vspace{0.24cm}
-  {\fontsize{11}{10}\selectfont Under matched budgets, unified RL matches or outperforms specialist mixtures across both reasoning and perception.}
-
-  \vspace{0.14cm}
-  {
-  \noindent
-  \begin{minipage}[t]{0.30\textwidth}
-    \vspace{0pt}
-    \centering
-    {\scriptsize MEGA-Bench task composition}\\[-0.15em]
-    \includegraphics[width=0.98\linewidth]{figures/paper2/fair_budget_evidence_megabench.pdf}
-  \end{minipage}
-  \hfill
-  \input{figures/paper2/fair_budget_evidence_10bench.tex}
+  \vspace{0.04cm}
+  {\fontsize{8.6}{10}\selectfont We introduce MED to measure intrinsic vs. tool-induced drift, explain gain vs. harm, and diagnose the factors behind tool-use effects.}
 
   \vspace{0.12cm}
-  \tinytag{Reasoning: math / science / chart / puzzle}\hspace{0.25cm}
-  \tinytag{Perception: detection / grounding / OCR / counting}\\[0.25em]
-  \tinytag{47.7K verifiable samples}\hspace{0.25cm}
-  \tinytag{Qwen2.5-VL 7B / 32B-0321/0326}}
-
-  \vfill
-  \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
-  \end{flushright}
-\end{frame}
-
-\molochset{progressbar=foot}
-
-\begin{frame}{\Large How Can Unified Multimodal RL Handle Heterogeneous Tasks?}
-  \vspace{0.00cm}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.60\textwidth}
+    \begin{column}{0.42\textwidth}
       \centering
-      \vspace{0.40cm}
-      \includegraphics[width=0.98\linewidth]{figures/paper2/vtriune_framework.pdf}
-    \end{column}
-    \begin{column}{0.39\textwidth}
-      \vspace{0.62cm}
-      {\fontsize{9.2}{11}\selectfont
-      We make heterogeneous multimodal tasks trainable in one RL loop.}
+      \includegraphics[width=0.98\linewidth]{figures/paper3/med_framework.pdf}
 
-      \vspace{0.28cm}
+      \vspace{0.12cm}
       \begin{tikzpicture}[
         method/.style={
           rounded corners=4pt,
           draw=AgentBlueDark!45,
           fill=AgentGray,
           very thick,
-          minimum width=4.75cm,
-          minimum height=0.68cm,
+          minimum width=4.65cm,
+          minimum height=0.50cm,
           align=center,
           inner sep=2pt
         },
         arrow/.style={-Latex,semithick,draw=AgentBlueDark!55}
       ]
-        \node[method] (routing) at (0,0) {\parbox{4.45cm}{\centering\small\textbf{Reward routing}\\[0.25em]\scriptsize handles sample-level heterogeneity}};
-        \node[method] (verify) at (0,-1.85) {\parbox{4.45cm}{\centering\small\textbf{Outcome verification}\\[0.25em]\scriptsize handles reward-side heterogeneity\\[0.30em] Dynamic IoU for localization}};
-        \node[method] (diagnose) at (0,-3.70) {\parbox{4.45cm}{\centering\small\textbf{Source-level diagnostics}\\[0.25em]\scriptsize reveals source-specific behaviors and failures}};
-        \draw[arrow] (routing.south) -- (verify.north);
-        \draw[arrow] (verify.south) -- (diagnose.north);
+        \node[method] (measure) at (0,0) {\parbox{4.35cm}{\centering\scriptsize\textbf{Measure:} intrinsic vs. tool-induced drift}};
+        \node[method] (explain) at (0,-0.78) {\parbox{4.35cm}{\centering\scriptsize\textbf{Explain:} tool-induced gain vs. harm}};
+        \node[method] (diagnose) at (0,-1.56) {\parbox{4.35cm}{\centering\scriptsize\textbf{Diagnose:} mass / policy / quality}};
+        \draw[arrow] (measure.south) -- (explain.north);
+        \draw[arrow] (explain.south) -- (diagnose.north);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \vspace{0.10cm}
+      {\fontsize{6.7}{8}\selectfont Tool-induced gap: four outcome changes relative to tool-free behavior.}
+
+      \vspace{0.10cm}
+      \[
+      \resizebox{\linewidth}{!}{$
+      \begin{aligned}
+      G(t) = & \underbrace{P(\mathcal D_{\text{fail}}) P(c \mid \mathcal D_{\text{fail}}) P(\checkmark \mid c, \mathcal D_{\text{fail}})}_{\text{Term 1: Call Gain}} \\
+      & + \underbrace{P(\mathcal D_{\text{fail}}) P(\neg c \mid \mathcal D_{\text{fail}}) P(\checkmark \mid \neg c, \mathcal D_{\text{fail}})}_{\text{Term 2: Schema Gain}} \\
+      & - \underbrace{P(\mathcal D_{\text{succ}}) P(c \mid \mathcal D_{\text{succ}}) P(\times \mid c, \mathcal D_{\text{succ}})}_{\text{Term 3: Call Harm}} \\
+      & - \underbrace{P(\mathcal D_{\text{succ}}) P(\neg c \mid \mathcal D_{\text{succ}}) P(\times \mid \neg c, \mathcal D_{\text{succ}})}_{\text{Term 4: Schema Harm}}
+      \end{aligned}
+      $}
+      \]
+
+      \vspace{0.04cm}
+      \begin{tikzpicture}[
+        note/.style={
+          rounded corners=4pt,
+          very thick,
+          minimum width=5.80cm,
+          text width=5.50cm,
+          minimum height=0.46cm,
+          align=center,
+          inner sep=2pt
+        }
+      ]
+        \node[note,draw=green!45!black,fill=green!6] at (0,0) {\tiny Gain: intrinsic failures become correct with tool context};
+        \node[note,draw=red!55!black,fill=red!5] at (0,-0.63) {\tiny Harm: intrinsic successes become wrong with tool context};
       \end{tikzpicture}
     \end{column}
   \end{columns}
 
   \begin{flushright}
-    \vspace{0.30cm}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+    \vspace{-0.12cm}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.10-2026.01]~~\textit{What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom}, Ma et al.}}
   \end{flushright}
 \end{frame}
 
 \molochset{progressbar=foot}
 
-\begin{frame}{\Large What Made Unified Multimodal RL Stable in Practice?}
+\begin{frame}{\Large Do Gains Come From Tool Use or Intrinsic Learning?}
   \centering
   \vspace{0.03cm}
-  {\fontsize{11}{10}\selectfont In unified multimodal RL, stability bottlenecks arise from both sparse localization rewards and fragile vision-model updates.}
+  {\fontsize{10.2}{11}\selectfont Most improvement comes from intrinsic capability drift; tool-induced effects contribute much less.}
 
-  \vspace{0.15cm}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.49\textwidth}
-      \centering
-      \tikz[baseline=(x.base)]\node[
-        rounded corners=4pt,
-        draw=red!55!black,
-        fill=red!5,
-        very thick,
-        inner xsep=6pt,
-        inner ysep=3pt,
-        align=center
-      ] (x) {\scriptsize Fixed IoU: loose is ambiguous, strict is sparse};\\[0.50em]
-      \includegraphics[width=0.98\linewidth]{figures/paper2/dynamic_iou.pdf}
-    \end{column}
-    \begin{column}{0.49\textwidth}
-      \centering
-      \tikz[baseline=(x.base)]\node[
-        rounded corners=4pt,
-        draw=red!55!black,
-        fill=red!5,
-        very thick,
-        inner xsep=6pt,
-        inner ysep=3pt,
-        align=center
-      ] (x) {\scriptsize Updating ViT causes gradient spikes};\\[0.50em]
-      \includegraphics[width=0.98\linewidth]{figures/paper2/disable_vit.pdf}
-    \end{column}
-  \end{columns}
+  \vspace{0.16cm}
+  \includegraphics[width=0.92\linewidth]{figures/paper3/exp1_intrinsic_tool_drift.pdf}
 
-  \vspace{0.14cm}
+  \vspace{0.08cm}
   \begin{tikzpicture}[
-    solution/.style={
+    insight/.style={
       rounded corners=4pt,
-      draw=green!45!black,
-      fill=green!6,
+      draw=AgentBlueDark!45,
+      fill=AgentGray,
       very thick,
-      minimum width=4.60cm,
+      minimum width=3.45cm,
+      minimum height=0.52cm,
+      align=center,
+      inner sep=2pt
+    }
+  ]
+    \node[insight] at (-3.85,0) {\scriptsize Tool-free capability improves};
+    \node[insight] at (0,0) {\scriptsize Tool contribution stays limited};
+    \node[insight] at (3.85,0) {\scriptsize Initialization changes the gap};
+  \end{tikzpicture}
+
+  \begin{flushright}
+    \vspace{-0.08cm}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.10-2026.01]~~\textit{What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom}, Ma et al.}}
+  \end{flushright}
+\end{frame}
+
+\molochset{progressbar=foot}
+
+\begin{frame}{\Large Does Vision Tool-Use RL Expand Gain or Reduce Harm?}
+  \centering
+  \vspace{0.03cm}
+  {\fontsize{10.2}{11}\selectfont Tool-use RL mainly reduces tool-induced harm rather than continuously increasing tool-based gain.}
+
+  \vspace{0.16cm}
+  \includegraphics[width=0.86\linewidth]{figures/paper3/exp2_gain_harm.pdf}
+
+  \vspace{0.10cm}
+  \begin{tikzpicture}[
+    takeaway/.style={
+      rounded corners=4pt,
+      very thick,
+      minimum width=4.30cm,
       minimum height=0.54cm,
       align=center,
       inner sep=2pt
     }
   ]
-    \node[solution] at (-3.5,0) {\scriptsize Dynamic IoU: loose-to-strict localization curriculum};
-    \node[solution] at (3.5,0) {\scriptsize Freezing ViT prevents perception degradation};
+    \node[takeaway,draw=green!45!black,fill=green!6] at (-2.7,0) {\scriptsize Gross gain saturates or declines};
+    \node[takeaway,draw=red!55!black,fill=red!5] at (2.7,0) {\scriptsize Gross harm consistently decreases};
   \end{tikzpicture}
 
   \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+    \vspace{-0.06cm}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.10-2026.01]~~\textit{What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom}, Ma et al.}}
   \end{flushright}
 \end{frame}
 
 \molochset{progressbar=foot}
 
-
-\begin{frame}{\Large What Made Unified Multimodal RL Diagnosable?}
+\begin{frame}{\Large Why Does Tool Gain Remain Limited?}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.68\textwidth}
+    \begin{column}{0.66\textwidth}
       \centering
-      \vspace{0.35cm}
-      \includegraphics[width=0.98\linewidth]{figures/paper2/train_analysis.pdf}
+      \vspace{0.23cm}
+      \includegraphics[width=0.98\linewidth]{figures/paper3/exp3_factor_decomposition.pdf}
     \end{column}
-    \begin{column}{0.29\textwidth}
+    \begin{column}{0.31\textwidth}
       \vspace{0.72cm}
-      {\fontsize{8.5}{10}\selectfont Source diagnostics reveal task-specific behavior patterns hidden by aggregate metrics.}
+      {\fontsize{8.8}{10}\selectfont Factorizing each term separates the chance to call a tool from the chance that the call actually corrects an error.}
 
-      \vspace{0.42cm}
+      \vspace{0.36cm}
       \begin{tikzpicture}[
         insight/.style={
           rounded corners=4pt,
           draw=AgentBlueDark!45,
           fill=AgentGray,
           very thick,
-          minimum width=3.95cm,
-          minimum height=0.70cm,
+          minimum width=4.05cm,
           text width=3.85cm,
+          minimum height=0.70cm,
           align=center,
           inner sep=3pt
         }
       ]
-        \node[insight] at (0,0) {\scriptsize Reasoning sources show length and reflection growth};
-        \node[insight] at (0,-1.4) {\scriptsize Detection and OCR keep low-reflection patterns};
-        \node[insight] at (0,-3.05) {\scriptsize Unified RL training preserves task-appropriate response styles};
+        \node[insight] at (0,0) {\scriptsize Call-gain quality does not keep improving};
+        \node[insight] at (0,-1.35) {\scriptsize Tool-induced breakage on solved cases decreases};
+        \node[insight] at (0,-2.70) {\scriptsize RL learns safer tool coexistence more than hard-case correction};
       \end{tikzpicture}
     \end{column}
   \end{columns}
 
-  \vspace{-0.14cm}
+  \vspace{-0.08cm}
   \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.10-2026.01]~~\textit{What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom}, Ma et al.}}
   \end{flushright}
 \end{frame}
 
 \molochset{progressbar=foot}
 
-\begin{frame}{\Large Can Unified Multimodal RL Scale with New Task Domains?}
-  \centering
-  \vspace{0.45cm}
-  {\fontsize{11}{12}\selectfont Under a fixed-compute budget, unified training shows positive transfer when adding a new GUI grounding domain.}
+\begin{frame}{\Large What Does This Suggest for Future RL Design?}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \vspace{0.45cm}
+      \includegraphics[width=0.98\linewidth]{figures/paper3/exp4_moving_failure_set.pdf}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \vspace{0.68cm}
+      {\fontsize{9.2}{11}\selectfont The remaining failures are a stricter test of whether the model can use actions to acquire genuinely useful visual evidence.}
 
-  \vspace{0.35cm}
-  \begingroup
-  \setlength{\tabcolsep}{16pt}
-  \renewcommand{\arraystretch}{1.20}
-  {\small
-  \begin{tabular}{@{}lcc@{}}
-    \toprule
-    Mixture & ScreenSpot-Pro & OCRBenchV2 \\
-    \midrule
-    Unified & 23.91 & 55.87 \\
-    Perception-only & 23.78 & 55.33 \\
-    Perception-only + GUI-3K & 29.85 & 55.96 \\
-    Unified + GUI-3K & \textbf{31.68} & \textbf{56.09} \\
-    \bottomrule
-  \end{tabular}
-  }
-  \endgroup
+      \vspace{0.36cm}
+      \begin{tikzpicture}[
+        problem/.style={
+          rounded corners=4pt,
+          draw=red!55!black,
+          fill=red!5,
+          very thick,
+          minimum width=5.05cm,
+          text width=4.75cm,
+          minimum height=0.70cm,
+          align=center,
+          inner sep=3pt
+        },
+        solution/.style={
+          rounded corners=4pt,
+          draw=green!45!black,
+          fill=green!6,
+          very thick,
+          minimum width=5.05cm,
+          text width=4.75cm,
+          minimum height=0.70cm,
+          align=center,
+          inner sep=3pt
+        }
+      ]
+        \node[problem] at (0,0) {\scriptsize Current RL mainly reduces harmful tool effects};
+        \node[solution] at (0,-1.35) {\scriptsize Future RL should directly target hard-failure correction};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
 
-  \vspace{0.35cm}
-  \begin{tikzpicture}
-    \node[
-      rounded corners=4pt,
-      draw=AgentBlueDark!45,
-      fill=AgentGray,
-      very thick,
-      inner xsep=9pt,
-      inner ysep=5pt,
-      align=center
-    ] {\scriptsize New-domain data improves ScreenSpot-Pro while OCRBenchV2 is preserved or slightly improved.};
-  \end{tikzpicture}
-
-  \vfill
   \begin{flushright}
-    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.04-2025.06]~~\textit{One RL to See Them All: Visual Triple Unified Reinforcement Learning}, Ma et al.}}
+    \vspace{-0.02cm}
+    {\fontsize{5.5}{5}\selectfont \textcolor{darkgray}{[2025.10-2026.01]~~\textit{What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom}, Ma et al.}}
   \end{flushright}
 \end{frame}
 
