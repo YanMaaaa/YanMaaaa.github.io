@@ -4,53 +4,76 @@ This file records project-specific conventions for the current `visiting` branch
 
 # 当前进度
 
-  你现在的 visiting 材料已经基本成套。压缩上下文前，建议优先保留这些最新结论：
+你现在的 visiting 材料已经基本成套。后续上下文优先保留这些最新结论：
 
-  - 当前有效的 research statement 源文件在：
-      - `visiting/research_statement/research_statement_v4.tex`
-      - 对应 PDF 在 `visiting/official_pdfs/Research_Statement_0416.pdf`
-  - 当前有效的 CV 材料在：
-      - `cv.tex`
-      - `cv_CN.tex`
-      - 对应 PDF 在 `visiting/official_pdfs/CV_EN.pdf` 和 `visiting/official_pdfs/CV_CN.pdf`
-  - `index.html` 已同步更新：
-      - homepage intro-text 已与 research statement 主线对齐
-      - profile links 中已加入 `Research Statement`
-  - 当前统一的研究主线已经定为：
-      - multimodal agents in partially observed environments
-      - past line: RL changes multimodal models
-      - current / future line: predictive multimodal learning from video
-  - research statement 的核心逻辑已经收束为：
-      - current observations -> action changes information -> future states / action outcomes
-      - 过去工作围绕 RL 对 perception / reasoning / tool use 的影响
-      - 当前工作围绕 video data foundations for predictive multimodal learning
-  - 当前正在推进 visiting research talk slides：
-      - 内容源文件：
-          - `visiting/slides/research_talk_content_notes.md`
-          - `visiting/slides/research_talk_base_deck_outline.md`
-      - 当前 Beamer 主入口在：
-          - `visiting/beamer/main.tex`
-      - 当前 opening section 文件在：
-          - `visiting/beamer/opening.tex`
-      - 当前选择：
-          - 使用 `moloch` Beamer 模板，而不是先做 PPTX
-          - 不运行编译，编译由用户自己执行
-          - `main.tex` 保留 preamble、title page、TOC、section inputs
-          - opening slides 已拆到 `opening.tex` 方便后续分 section 管理
-      - 已基本完成 opening section：
-          - `Past Work Overview`
-          - `From Multimodal Models to Multimodal Agents`
-          - `From Current Observations to Prediction`
-          - `Research Agenda`
-      - opening section 当前叙事：
-          - 先建立 past work credibility：multimodal RL 如何影响 reasoning / perception / acting through tools
-          - 再区分 multimodal model 与 multimodal agent：current-observation short-horizon tasks vs goal-conditioned model-environment interaction
-          - 再解释 prediction 的必要性：agent 必须在看到 consequences 前选择 action，prediction estimates action-conditioned futures
-          - 最后用 `Main_Figure1.png` 收束 research agenda
-      - 下一步优先继续：
-          - 进入 `Past Work: Learning to Perceive, Reason, and Act through Tools with RL`
-          - 开始制作第一篇 past-work slide：`What Does RL Actually Change in Multimodal Models?`
-          - 后续每个 section 可以继续拆成独立 tex，再由 `main.tex` input
+- 当前有效的 research statement 源文件在：
+  - `visiting/research_statement/research_statement_v4.tex`
+  - 对应 PDF 在 `visiting/official_pdfs/Research_Statement_0416.pdf`
+- 当前有效的 CV 材料在：
+  - `cv.tex`
+  - `cv_CN.tex`
+  - 对应 PDF 在 `visiting/official_pdfs/CV_EN.pdf` 和 `visiting/official_pdfs/CV_CN.pdf`
+- `index.html` 已同步更新：
+  - homepage intro-text 已与 research statement 主线对齐
+  - profile links 中已加入 `Research Statement`
+- 当前统一研究主线：
+  - multimodal agents in partially observed environments
+  - past line: RL changes multimodal perception, reasoning, and acting through tools under current observations
+  - current / future line: video as a scalable foundation for predictive multimodal learning
+- research statement 的核心逻辑已经收束为：
+  - current observations -> action changes information -> future multimodal states / action outcomes
+  - 过去工作围绕 RL 对 perception / reasoning / tool use 的影响
+  - 当前工作围绕 video data foundations / video curation for predictive multimodal learning
+
+## 当前 Slides 进度
+
+- 当前正在推进 visiting research talk slides：
+  - 内容源文件：
+    - `visiting/slides/research_talk_content_notes.md`
+    - `visiting/slides/research_talk_base_deck_outline.md`
+  - 当前 Beamer 主入口：
+    - `visiting/beamer/main.tex`
+  - 已拆分出的 Beamer section：
+    - `visiting/beamer/opening.tex`
+    - `visiting/beamer/past_work.tex`
+  - 当前选择：
+    - 使用 `moloch` Beamer 模板，而不是先做 PPTX
+    - 不运行编译，编译由用户自己执行
+    - `main.tex` 保留 preamble、title page、TOC、section inputs
+    - 每个主要 section 尽量拆成独立 tex，再由 `main.tex` input
+- opening section 已基本完成：
+  - `Past Work Overview`
+  - `From Multimodal Models to Multimodal Agents`
+  - `From Current Observations to Prediction`
+  - `Research Agenda`
+  - opening 叙事：先建立 past work credibility，再区分 model vs. agent，再解释 prediction 为什么对 long-horizon multimodal agents 必要，最后用 `Main_Figure1.png` 收束 research agenda。
+- past work section 已基本完成，文件在 `visiting/beamer/past_work.tex`：
+  - Paper 1: visual reasoning RL
+    - 核心问题：如何让关于 multimodal reasoning RL 的经验结论更可信？
+    - 重点展示 full learning trajectories、training behavior、generalization beyond SFT。
+  - Paper 2: unified multimodal RL for perception + reasoning
+    - 核心问题：multimodal RL 能否 jointly shape perception and reasoning？
+    - 重点展示 matched-budget positive transfer、heterogeneous-task RL framework、Dynamic IoU、ViT freezing、source-level diagnostics、new-domain scaling。
+  - Paper 3: vision tool-use RL / MED
+    - 核心问题：what does vision tool-use RL really learn?
+    - 当前结论：intrinsic drift dominates; tool-use RL mainly reduces tool-induced harm; future tool-use RL should target correction on the moving failure set.
+    - Paper 3 main slides 已形成：MED overview、measure intrinsic/tool-induced drift、explain/diagnose term decomposition、gain vs. harm、factor diagnosis、future tool-use RL target。
+- 当前 deck 不算 backup 约 27 页；后续可以先完成 full deck，再压缩出 12-14 页和 8-10 页版本。
+
+## 下一步
+
+- 下一步优先进入 current / future work section，而不是继续扩展 past work：
+  - 从 past work under current observations 过渡到 long-horizon multimodal agents that require prediction。
+  - 设计 current project slide：
+    - `Video as a Scalable Foundation for Predictive Multimodal Learning`
+    - 项目标题候选：`The Curse of Conventional Wisdom: Which Video Curation Practices Matter for World Model Pretraining?`
+    - 科学问题：which video segmentation / filtering / annotation / organization practices affect what world models learn, which capabilities they affect, and how they affect predictive multimodal learning。
+  - 设计 future program slide：
+    - video data foundations 是近程切入点
+    - integrating prediction into multimodal agent systems 是长期目标
+  - 设计 final closing / visiting-fit slide：
+    - what I bring: RL/post-training empirical analysis, multimodal agent framing, video-data project execution
+    - what I seek: video/world-modeling/agent-system collaboration environment, experimental platform, data/model resources
 
 ## Current Scope
 
