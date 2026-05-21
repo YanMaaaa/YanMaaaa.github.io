@@ -316,79 +316,68 @@
 - Visual:
   - mix one compact baseline comparison with a few qualitative cases
 
-### Slide 15. Why Predictive Multimodal Learning for Long-Horizon Tasks?
+### Slide 15. Why Video for Predictive Multimodal Learning?
 
+- Current Beamer status:
+  - implemented in `visiting/beamer/current_future.tex`
 - Key message:
-  - Many practically important multimodal tasks are long-horizon, partially observed, and interaction-driven, which makes prediction necessary.
+  - Video is a scalable entry point for learning how multimodal states evolve over time.
 - Content:
-  - slide-friendly lead-in:
-    - `From current-observation competence to long-horizon multimodal tasks`
-  - one short core sentence on the slide:
-    - `Long-horizon multimodal tasks require anticipating future states and action outcomes.`
-  - keep the fuller transition as oral narration rather than slide text
-  - representative task labels on the slide:
-    - `computer use across tools`
-    - `streaming video decision-making`
-    - `embodied interaction`
-- Visual:
-  - a simple bridge layout with the lead-in at top, three task labels, and a prediction-oriented concept graphic
-  - avoid project details on this page
-- Role note:
-  - this page is about task necessity: why long-horizon multimodal tasks need prediction
-- Function sentence:
-  - `Prediction becomes necessary when tasks unfold over time and actions change what information will be available next.`
-- Slide tag:
-  - `Task necessity`
+  - symbolic transition:
+    - `Past work: o_t -> Model_{perceive, reason, act} -> y_t`
+    - `Agent rollout: o_t --a_t--> o_{t+1}, (o_1, a_1, o_2, a_2, ..., o_T)`
+    - `Video rollout: o_t --u_t--> o_{t+1}, (o_1, u_1, o_2, u_2, ..., o_T)`
+    - `Prediction: estimate future observations under transition drivers`
+  - definitions:
+    - `o_t`: multimodal observation `[frames | language | audio | ...]`
+    - `a_t`: explicit agent action
+    - `u_t`: unobserved video dynamics
+- Important wording constraint:
+  - Avoid saying video is simply a no-action agent rollout.
+  - Avoid saying agents “must” predict before acting.
+  - Emphasize prediction as useful for estimating future observations under transition drivers.
 
 ### Slide 16. Current Project: Video Data Foundations for Predictive Multimodal Learning
 
 - Key message:
-  - Video curation choices should be studied as experimental variables that shape what world models learn.
+  - Video curation is the near-term project for building better predictive models.
 - Content:
-  - core question:
-    - `Which video curation practices actually matter for world model pretraining, and why?`
   - one-line slide sentence:
-    - `I study how curation choices shape the capabilities learned by predictive multimodal models.`
-  - capability diagnostics:
-    - `What changes?` predictive accuracy, temporal consistency, motion understanding, controllability, and long-horizon prediction
-    - `Where does it change?` across model families such as video generation models and JEPA-style learners
-    - `Why does it change?` segmentation, filtering, annotation, and organization effects
-  - near-term studies:
-    - `Segmentation:` scene-based versus fixed-length versus random clips
-    - `Filtering:` motion, aesthetics, and duplication criteria
-    - `Annotation / organization:` caption granularity, metadata, and dataset structure
-  - note:
-    - these are current project studies to complete before the visit, not the proposed visiting-period project
+    - `Video curation to build better predictive models.`
+  - pipeline:
+    - `Raw Videos -> Segmentation -> Filtering -> Annotation -> Video Gen / V-JEPA`
+  - node details:
+    - `Raw Videos`: web-scale source
+    - `Segmentation`: semantic clips
+    - `Filtering`: quality control
+    - `Annotation`: captions / metadata
+    - `Video Gen`: generative prediction
+    - `V-JEPA`: self-supervised prediction
+  - evaluation:
+    - `controlled curation variants -> matched-budget pretraining -> predictive capability probes`
+  - project title / cite:
+    - `[Ongoing Project] Which Video Curation Practices Matter for Predictive Model Pretraining?`
+  - bridge:
+    - `This project is a near-term entry point for studying how prediction enters future multimodal agents.`
 - Visual:
-  - recommended structure for this specific page:
-    - left: `Video corpus`
-    - middle: `Controlled curation variants`
-    - right: `Predictive pretraining`
-    - far right: `Capability diagnostics`
-  - bottom line:
-    - `The goal is to demystify video curation recipes for world modeling and turn them into principles for better data, optimization, and architectures.`
-  - avoid implementation details such as metadata schemas, run IDs, viewers, or storage formats on the main slide
+  - simple horizontal pipeline.
+  - avoid showing internal segmentation/filtering examples on this page; the point is project-level scope.
 
-### Slide 17. Future Program: Integrating Prediction into Multimodal Agent Systems
+### Slide 17. Future Vision: Three Generations of Multimodal Agents
 
 - Key message:
-  - Prediction should improve perception, reasoning, and action, not remain a standalone modeling ability.
+  - Prediction becomes central as multimodal agents move from desktop environments to live streams and physical bodies.
 - Content:
-  - bridge from Slide 16:
-    - `Video data foundations are my near-term entry point.`
-    - `The longer-term goal is to turn predictive models into capabilities that improve how multimodal agents perceive, reason, and act.`
-  - one-line slide sentence:
-    - `Prediction should feed back into how multimodal agents perceive, reason, and act.`
-  - three future questions:
-    - `How can anticipating future observations improve perception under partial observation?`
-    - `How can longer-horizon multimodal state modeling support reasoning and planning?`
-    - `How can action-outcome prediction improve tool use and decision making?`
-  - bottom line:
-    - `Goal: multimodal agents that act with foresight, not only react to the present.`
+  - three generations:
+    - `Desktop agents`: `GUI / CLI / files`; `user asks, agent answers`
+    - `Real-world agents`: `live video / audio`; `anticipate changes, guide decisions`
+    - `Embodied agents`: `physical body`; `predict outcomes, act`
+  - closing slogan:
+    - `From desktops, to live real-world streams, to physical bodies: prediction becomes central.`
 - Visual:
-  - a clean agent-loop diagram with `Perceive / Reason / Act / Predict`
-  - show `Predict` feeding back into the other three capabilities
-  - avoid repeating the more data-centric structure from Slide 16
+  - AI-generated three-panel illustration saved at:
+    - `visiting/beamer/figures/current_future/real_world_multimodal_agents.png`
+  - Beamer overlays text labels under each panel rather than relying on text inside the generated image.
 
 ### Slide 18. Why This Direction Matters
 
@@ -460,9 +449,9 @@
   - Slide 2. Past Work Overview
   - Slide 3. Why This Leads to Prediction
   - Slide 4. Research Agenda
-  - Slide 15. Why Predictive Multimodal Learning
-  - Slide 16. Current Project
-  - Slide 17. Future Program
+  - Slide 15. Why Video for Predictive Multimodal Learning
+  - Slide 16. Video Data Foundations
+  - Slide 17. Future Vision: Three Generations of Multimodal Agents
   - Slide 19. Why a Visit Would Help
   - Slide 20. Closing
 

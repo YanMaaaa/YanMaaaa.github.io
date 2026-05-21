@@ -1,0 +1,79 @@
+(() => {
+  document.querySelectorAll(".intelligence-interactivity-chart").forEach((chart) => {
+    if (chart.dataset.iiTooltipReady === "true") {
+      return;
+    }
+
+    chart.dataset.iiTooltipReady = "true";
+
+    const tooltip = document.createElement("div");
+    tooltip.className = "ii-chart-tooltip";
+    tooltip.setAttribute("aria-hidden", "true");
+    tooltip.innerHTML = `
+    <div class="ii-chart-tooltip-card">
+      <span class="ii-chart-tooltip-title"></span>
+      <span class="ii-chart-tooltip-values"></span>
+    </div>
+  `;
+    chart.appendChild(tooltip);
+
+    const tooltipTitle = tooltip.querySelector(".ii-chart-tooltip-title");
+    const tooltipValues = tooltip.querySelector(".ii-chart-tooltip-values");
+
+    const positionTooltip = (point) => {
+      const marker = point.querySelector(".ii-point-marker");
+      if (!marker) {
+        return;
+      }
+
+      const markerRect = marker.getBoundingClientRect();
+      const chartRect = chart.getBoundingClientRect();
+      const markerX = markerRect.left + markerRect.width / 2 - chartRect.left;
+      const markerTop = markerRect.top - chartRect.top;
+
+      tooltip.style.left = `${markerX}px`;
+      tooltip.style.top = `${markerTop}px`;
+      tooltip.style.setProperty("--ii-tooltip-offset-x", "0px");
+
+      requestAnimationFrame(() => {
+        const nextTooltipRect = tooltip.getBoundingClientRect();
+        const nextChartRect = chart.getBoundingClientRect();
+        const padding = 6;
+        let offset = 0;
+        const leftOverflow = nextChartRect.left + padding - nextTooltipRect.left;
+        const rightOverflow = nextTooltipRect.right - (nextChartRect.right - padding);
+
+        if (leftOverflow > 0) {
+          offset = leftOverflow;
+        } else if (rightOverflow > 0) {
+          offset = -rightOverflow;
+        }
+
+        tooltip.style.setProperty("--ii-tooltip-offset-x", `${offset}px`);
+      });
+    };
+
+    const showTooltip = (point) => {
+      if (tooltipTitle) {
+        tooltipTitle.textContent = point.dataset.iiTooltipTitle || "";
+      }
+      if (tooltipValues) {
+        tooltipValues.textContent = (point.dataset.iiTooltipValues || "").replaceAll(" | ", "\n");
+      }
+      positionTooltip(point);
+      point.classList.add("is-ii-point-active");
+      tooltip.classList.add("is-active");
+    };
+
+    const hideTooltip = (point) => {
+      point.classList.remove("is-ii-point-active");
+      tooltip.classList.remove("is-active");
+    };
+
+    chart.querySelectorAll(".ii-point[data-ii-tooltip-title]").forEach((point) => {
+      point.addEventListener("pointerenter", () => showTooltip(point));
+      point.addEventListener("pointermove", () => positionTooltip(point));
+      point.addEventListener("pointerleave", () => hideTooltip(point));
+    });
+  });
+})();

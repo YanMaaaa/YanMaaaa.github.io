@@ -1,0 +1,230 @@
+(() => {
+document.querySelectorAll(".token-timeline-figure").forEach((figure) => {
+  const panel = figure.querySelector(".token-timeline-panel");
+  if (!panel) {
+    return;
+  }
+
+  const tokens = Array.from(panel.querySelectorAll("[data-token-key]"));
+  const modelScroll = panel.querySelector(".token-timeline-model-scroll");
+  const modelTokens = Array.from(panel.querySelectorAll(".token-timeline-track-model [data-token-key]"));
+  const skipButton = panel.querySelector("[data-token-timeline-action='skip']");
+  const replayButton = panel.querySelector("[data-token-timeline-action='replay']");
+  const animationCompleteDelay = 6400;
+  let animationStarted = false;
+  let sequenceTimers = [];
+  const setControlAvailability = (button, isVisible) => {
+    if (!button) {
+      return;
+    }
+
+    button.setAttribute("aria-hidden", isVisible ? "false" : "true");
+    button.tabIndex = isVisible ? 0 : -1;
+  };
+  const setControlsState = (state) => {
+    panel.dataset.tokenTimelineState = state;
+    setControlAvailability(skipButton, state === "playing");
+    setControlAvailability(replayButton, state === "complete");
+  };
+  const setSequenceTimeout = (callback, delay) => {
+    const timer = window.setTimeout(callback, delay);
+    sequenceTimers.push(timer);
+    return timer;
+  };
+  const clearSequenceTimers = () => {
+    sequenceTimers.forEach((timer) => window.clearTimeout(timer));
+    sequenceTimers = [];
+  };
+  const clearActive = () => {
+    panel.classList.remove("is-token-hovering");
+    tokens.forEach((token) => token.classList.remove("is-token-match"));
+  };
+
+  const updateModelScrollFade = () => {
+    if (!modelScroll) {
+      return;
+    }
+
+    const maxScroll = Math.max(0, modelScroll.scrollWidth - modelScroll.clientWidth);
+    const atStart = modelScroll.scrollLeft <= 1;
+    const atEnd = modelScroll.scrollLeft >= maxScroll - 1;
+    modelScroll.style.setProperty("--token-timeline-scroll-fade-left", atStart ? "0px" : "var(--token-timeline-scroll-fade)");
+    modelScroll.style.setProperty("--token-timeline-scroll-fade-right", atEnd ? "0px" : "var(--token-timeline-scroll-fade)");
+  };
+
+  const getTokenDelay = (token) => {
+    const delay = token.style.getPropertyValue("--token-timeline-token-delay");
+    const seconds = Number.parseFloat(delay);
+    return Number.isFinite(seconds) ? seconds * 1000 : 0;
+  };
+
+  const scrollModelTokenIfNeeded = (token) => {
+    if (!modelScroll || modelScroll.scrollWidth <= modelScroll.clientWidth) {
+      return;
+    }
+
+    const edgeBuffer = 32;
+    const visibleLeft = modelScroll.scrollLeft;
+    const visibleRight = modelScroll.scrollLeft + modelScroll.clientWidth;
+    const tokenLeft = token.offsetLeft;
+    const tokenRight = token.offsetLeft + token.offsetWidth;
+    if (tokenLeft >= visibleLeft + edgeBuffer && tokenRight <= visibleRight - edgeBuffer) {
+      return;
+    }
+
+    const targetLeft = tokenLeft < visibleLeft
+      ? tokenLeft - edgeBuffer
+      : tokenRight - modelScroll.clientWidth + edgeBuffer;
+    modelScroll.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+    window.setTimeout(updateModelScrollFade, 180);
+  };
+
+  const scrollMatchingModelTokenIfNeeded = (key) => {
+    const matchingModelToken = modelTokens.find((token) => token.dataset.tokenKey === key);
+    if (matchingModelToken) {
+      scrollModelTokenIfNeeded(matchingModelToken);
+    }
+  };
+
+  const startModelAutoScroll = () => {
+    if (!modelScroll || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    modelScroll.scrollLeft = 0;
+    updateModelScrollFade();
+    modelTokens.forEach((token) => {
+      setSequenceTimeout(() => {
+        scrollModelTokenIfNeeded(token);
+      }, getTokenDelay(token));
+    });
+  };
+
+  const startSequence = () => {
+    if (animationStarted) {
+      return;
+    }
+
+    animationStarted = true;
+    setControlsState("playing");
+    figure.classList.add("is-sequence-in-view");
+    startModelAutoScroll();
+    setSequenceTimeout(() => {
+      panel.classList.add("is-token-animation-complete");
+      setControlsState("complete");
+    }, animationCompleteDelay);
+  };
+
+  const skipSequence = () => {
+    clearSequenceTimers();
+    animationStarted = true;
+    clearActive();
+    figure.classList.add("is-sequence-in-view");
+    panel.classList.add("is-token-animation-complete");
+    setControlsState("complete");
+    if (modelScroll) {
+      modelScroll.scrollTo({ left: modelScroll.scrollWidth, behavior: "smooth" });
+      window.setTimeout(updateModelScrollFade, 180);
+    }
+  };
+
+  const replaySequence = () => {
+    clearSequenceTimers();
+    animationStarted = false;
+    clearActive();
+    panel.classList.remove("is-token-animation-complete");
+    figure.classList.remove("is-sequence-in-view");
+    setControlsState("playing");
+    if (modelScroll) {
+      modelScroll.scrollLeft = 0;
+      updateModelScrollFade();
+    }
+
+    void figure.offsetWidth;
+    startSequence();
+  };
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        startSequence();
+        observer.disconnect();
+      }
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.25 });
+
+    observer.observe(figure);
+  } else {
+    startSequence();
+  }
+
+  tokens.forEach((token) => {
+    token.addEventListener("mouseenter", () => {
+      if (!panel.classList.contains("is-token-animation-complete")) {
+        return;
+      }
+
+      panel.classList.add("is-token-hovering");
+      const key = token.dataset.tokenKey;
+      tokens.forEach((candidate) => {
+        candidate.classList.toggle("is-token-match", candidate.dataset.tokenKey === key);
+      });
+      scrollMatchingModelTokenIfNeeded(key);
+    });
+
+    token.addEventListener("mouseleave", clearActive);
+  });
+
+  if (modelScroll) {
+    modelScroll.addEventListener("scroll", updateModelScrollFade, { passive: true });
+    window.addEventListener("resize", updateModelScrollFade);
+    updateModelScrollFade();
+  }
+
+  setControlsState("playing");
+
+  if (skipButton) {
+    skipButton.addEventListener("click", skipSequence);
+  }
+
+  if (replayButton) {
+    replayButton.addEventListener("click", replaySequence);
+  }
+
+  [skipButton, replayButton].filter(Boolean).forEach((button) => {
+    let isPressed = false;
+
+    const pressButton = () => {
+      isPressed = true;
+    };
+
+    const releaseButton = () => {
+      if (!isPressed) {
+        return;
+      }
+
+      isPressed = false;
+      window.requestAnimationFrame(() => {
+        button.classList.remove("is-control-spring");
+        void button.offsetWidth;
+        window.requestAnimationFrame(() => {
+          button.classList.add("is-control-spring");
+        });
+      });
+      window.setTimeout(() => {
+        button.classList.remove("is-control-spring");
+      }, 450);
+    };
+
+    button.addEventListener("mousedown", pressButton);
+    button.addEventListener("mouseup", releaseButton);
+    button.addEventListener("mouseleave", () => {
+      isPressed = false;
+    });
+    button.addEventListener("touchstart", pressButton, { passive: true });
+    button.addEventListener("touchend", releaseButton);
+  });
+});
+})();

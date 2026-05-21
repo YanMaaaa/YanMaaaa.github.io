@@ -6,7 +6,7 @@ This note records the current conceptual framing for the Beamer transition page 
 
 This page should answer **why video**.
 
-It should not yet explain the current project's full data-foundation design. The next page can explain which video data choices matter, such as segmentation, filtering, annotation, and organization.
+It should not yet explain the current project's full data-foundation design. The next page explains the video curation pipeline, currently summarized as segmentation, filtering, and annotation before predictive pretraining.
 
 The page should function as a compact bridge:
 

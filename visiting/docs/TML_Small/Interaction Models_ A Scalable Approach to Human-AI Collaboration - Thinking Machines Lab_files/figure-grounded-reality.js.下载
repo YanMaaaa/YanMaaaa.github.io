@@ -1,0 +1,682 @@
+(() => {
+  document.querySelectorAll(".grounded-reality-figure").forEach((figure) => {
+const startSequence = () => {
+  figure.classList.add("is-sequence-in-view");
+};
+
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      startSequence();
+      observer.disconnect();
+    }
+  }, { rootMargin: "0px 0px -12% 0px", threshold: 0.25 });
+
+  observer.observe(figure);
+} else {
+  startSequence();
+}
+  });
+
+  document.querySelectorAll(".grounded-reality-panel-time").forEach((panel) => {
+const grid = panel.querySelector(".time-world-grid");
+const frameLayer = panel.querySelector(".time-world-frame-column-layer");
+const columns = frameLayer ? Array.from(frameLayer.querySelectorAll(".time-world-frame-column")) : [];
+const skipButton = panel.querySelector("[data-time-world-action='skip']");
+const replayButton = panel.querySelector("[data-time-world-action='replay']");
+const frameCount = columns.length || 14;
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const barRevealDuration = 400;
+const barRevealStepDelay = 120;
+const barRevealStartDelay = 30;
+const lineRevealDuration = barRevealStartDelay + barRevealDuration + barRevealStepDelay * 2;
+const contentRevealDuration = 2700;
+const skipFadeDuration = 360;
+let revealStarted = false;
+let revealTimers = [];
+let lineRevealFrameRequest = null;
+let revealFrameRequest = null;
+
+const waveformPatterns = [
+  [1, 1, 2, 5, 11, 4, 15, 7, 3, 13, 17, 6, 2, 10, 5, 14, 4, 2, 1, 3, 2, 1, 5, 12, 8, 2, 1],
+  [1, 2, 7, 3, 16, 8, 4, 2, 12, 5, 18, 9, 3, 15, 6, 2, 8, 13, 4, 2, 1, 6, 15, 7, 3, 1],
+  [1, 1, 4, 12, 6, 17, 9, 3, 2, 11, 5, 16, 7, 2, 13, 4, 10, 18, 5, 2, 1, 3, 9, 14, 6, 2],
+  [1, 3, 13, 6, 18, 8, 2, 5, 15, 4, 11, 7, 3, 14, 5, 2, 1, 4, 12, 7, 16, 5, 2, 1],
+];
+const waveformEvents = {
+  audio: [
+    { start: 0.05, end: 2.65, intensity: 0.82, density: 15, syllables: 5, gap: 0.08, seed: 11 },
+    { start: 2.95, end: 3.95, intensity: 0.66, density: 12, syllables: 3, gap: 0.14, seed: 17 },
+    { start: 5.32, end: 5.68, intensity: 0.34, density: 11, syllables: 1, gap: 0.22, seed: 23 },
+    { start: 8.15, end: 10.15, intensity: 0.74, density: 13, syllables: 4, gap: 0.12, seed: 29 },
+    { start: 13.28, end: 13.82, intensity: 0.32, density: 9, syllables: 2, gap: 0.2, seed: 43 },
+  ],
+  model: [
+    { start: 2.12, end: 2.95, intensity: 0.52, density: 9, syllables: 2, gap: 0.18, seed: 53 },
+    { start: 3.72, end: 5.95, intensity: 0.74, density: 13, syllables: 5, gap: 0.1, seed: 61 },
+    { start: 8.95, end: 9.75, intensity: 0.34, density: 8, syllables: 2, gap: 0.2, seed: 71 },
+    { start: 11.28, end: 11.82, intensity: 0.42, density: 10, syllables: 2, gap: 0.18, seed: 79 },
+    { start: 12.08, end: 13.25, intensity: 0.6, density: 11, syllables: 3, gap: 0.14, seed: 83 },
+  ],
+};
+const waveformDensityScale = 1.75;
+
+const randomUnit = (seed, frameIndex, tickIndex) => {
+  const value = Math.sin((seed * 97 + frameIndex * 31 + tickIndex * 17) * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+};
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const getFrameWaveformBars = (frameIndex, variant = "audio") => {
+  const events = waveformEvents[variant] || [];
+  const frameStart = frameIndex;
+  const frameEnd = frameIndex + 1;
+  const maxHeight = variant === "model" ? 20 : 21;
+  const bars = [];
+
+  events.forEach((event) => {
+    if (event.start >= frameEnd || event.end <= frameStart) {
+      return;
+    }
+
+    const localStart = Math.max(event.start, frameStart) - frameStart;
+    const localEnd = Math.min(event.end, frameEnd) - frameStart;
+    const localSpan = Math.max(0, localEnd - localStart);
+    const tickCount = Math.max(1, Math.ceil(localSpan * event.density * waveformDensityScale));
+    const tickWidth = localSpan / tickCount;
+
+    Array.from({ length: tickCount }).forEach((_, tickIndex) => {
+      const x = localStart + tickIndex * tickWidth;
+      const sampleX = x + tickWidth / 2;
+      const eventProgress = clamp((frameStart + sampleX - event.start) / (event.end - event.start), 0, 1);
+      const envelope = Math.pow(Math.sin(eventProgress * Math.PI), 0.78);
+      const syllable = 0.5 + 0.5 * Math.pow(Math.sin(eventProgress * Math.PI * event.syllables), 2);
+      const noise = randomUnit(event.seed + 7, frameIndex, tickIndex);
+      const variation = 0.48 + noise * 0.86;
+      const height = Math.max(2, Math.min(maxHeight, Math.round(2 + maxHeight * event.intensity * envelope * syllable * variation)));
+      const leftPercent = x * 100;
+      bars.push({
+        height,
+        width: Math.min(100 - leftPercent, tickWidth * 100),
+        x: leftPercent,
+      });
+    });
+  });
+
+  return bars.sort((a, b) => a.x - b.x);
+};
+
+const addWaveform = (bar, pattern, variant = "audio") => {
+  if (bar.querySelector(".time-world-waveform")) {
+    return;
+  }
+
+  const waveform = document.createElement("span");
+  waveform.className = "time-world-waveform";
+  waveform.dataset.waveformVariant = variant;
+  waveform.setAttribute("aria-hidden", "true");
+
+  pattern.forEach((height) => {
+    const tick = document.createElement("span");
+    tick.style.setProperty("--waveform-height", height);
+    waveform.appendChild(tick);
+  });
+
+  bar.appendChild(waveform);
+};
+
+const addFrameWaveform = (container, bars, variant = "audio") => {
+  const waveform = document.createElement("span");
+  waveform.className = "time-world-waveform time-world-frame-waveform";
+  waveform.dataset.waveformVariant = variant;
+  waveform.setAttribute("aria-hidden", "true");
+
+  bars.forEach((bar) => {
+    const tick = document.createElement("span");
+    tick.style.setProperty("--waveform-height", bar.height);
+    tick.style.setProperty("--waveform-width", `${bar.width.toFixed(3)}%`);
+    tick.style.setProperty("--waveform-x", `${bar.x.toFixed(2)}%`);
+    waveform.appendChild(tick);
+  });
+
+  container.appendChild(waveform);
+};
+
+panel.querySelectorAll(".time-world-audio-track > .time-world-block").forEach((bar, index) => {
+  addWaveform(bar, waveformPatterns[index % waveformPatterns.length]);
+});
+
+panel.querySelectorAll(".time-world-model-track > .time-world-block").forEach((bar, index) => {
+  addWaveform(bar, waveformPatterns[(index + 1) % waveformPatterns.length], "model");
+});
+
+const audioContent = Array.from(panel.querySelectorAll(".time-world-audio-track > .time-world-block"));
+const videoContent = Array.from(panel.querySelectorAll(".time-world-video-frame"));
+const modelContent = Array.from(panel.querySelectorAll(".time-world-model-track > .time-world-block"));
+const frameColumnCount = 96;
+
+const getBlockRange = (block) => {
+  const gridColumn = block.style.getPropertyValue("grid-column");
+  const match = gridColumn.match(/^\s*(\d+)\s*\/\s*span\s+(\d+)/);
+  if (!match) {
+    return null;
+  }
+
+  const startColumn = Number.parseInt(match[1], 10);
+  const span = Number.parseInt(match[2], 10);
+  if (!Number.isFinite(startColumn) || !Number.isFinite(span)) {
+    return null;
+  }
+
+  const start = startColumn - 1;
+  return {
+    start,
+    end: start + span,
+  };
+};
+
+const frameOverlapsRange = (range, index) => {
+  const frameStart = (index / frameCount) * frameColumnCount;
+  const frameEnd = ((index + 1) / frameCount) * frameColumnCount;
+  return range.start < frameEnd && range.end > frameStart;
+};
+
+const getFrameBars = (ranges, index, variant) => {
+  if (!ranges.some((range) => frameOverlapsRange(range, index))) {
+    return [];
+  }
+
+  return getFrameWaveformBars(index, variant);
+};
+
+const addFrameContentLayer = (track, blocks, variant = "audio") => {
+  if (!track) {
+    return [];
+  }
+
+  const existingStrip = track.querySelector(".time-world-content-strip");
+  if (existingStrip) {
+    return Array.from(existingStrip.querySelectorAll(".time-world-content-frame"));
+  }
+
+  const ranges = blocks.map(getBlockRange).filter(Boolean);
+  const strip = document.createElement("span");
+  strip.className = "time-world-content-strip";
+  strip.setAttribute("aria-hidden", "true");
+
+  Array.from({ length: frameCount }).forEach((_, index) => {
+    const frame = document.createElement("span");
+    const bars = getFrameBars(ranges, index, variant);
+    const hasSignal = bars.length > 0;
+    frame.className = `time-world-content-frame${hasSignal ? "" : " is-empty"}`;
+    frame.dataset.microturnIndex = String(index);
+
+    if (hasSignal) {
+      addFrameWaveform(frame, bars, variant);
+    }
+
+    strip.appendChild(frame);
+  });
+
+  track.appendChild(strip);
+  return Array.from(strip.querySelectorAll(".time-world-content-frame"));
+};
+
+const audioFrames = addFrameContentLayer(panel.querySelector(".time-world-audio-track"), audioContent, "audio");
+const modelFrames = addFrameContentLayer(panel.querySelector(".time-world-model-track"), modelContent, "model");
+const modelMarkerLayer = panel.querySelector(".time-world-model-marker-layer");
+const modelMarkers = Array.from(panel.querySelectorAll(".time-world-model-marker"));
+const modelNotes = Array.from(panel.querySelectorAll(".time-world-model-note"));
+
+videoContent.forEach((element, index) => {
+  element.dataset.microturnIndex = String(Math.max(0, Math.min(frameCount - 1, index)));
+});
+
+const contentRows = [
+  { elements: videoContent },
+  { elements: audioFrames },
+  { elements: modelFrames },
+  { elements: modelMarkers },
+];
+
+const setRevealTimeout = (callback, delay) => {
+  const timer = window.setTimeout(() => {
+    revealTimers = revealTimers.filter((candidate) => candidate !== timer);
+    callback();
+  }, delay);
+  revealTimers.push(timer);
+  return timer;
+};
+
+const clearRevealTimers = () => {
+  revealTimers.forEach((timer) => window.clearTimeout(timer));
+  revealTimers = [];
+};
+
+const cancelRevealFrames = () => {
+  if (lineRevealFrameRequest) {
+    window.cancelAnimationFrame(lineRevealFrameRequest);
+    lineRevealFrameRequest = null;
+  }
+  if (revealFrameRequest) {
+    window.cancelAnimationFrame(revealFrameRequest);
+    revealFrameRequest = null;
+  }
+};
+
+const setControlAvailability = (button, isVisible) => {
+  if (!button) {
+    return;
+  }
+
+  button.setAttribute("aria-hidden", isVisible ? "false" : "true");
+  button.tabIndex = isVisible ? 0 : -1;
+};
+
+const setControlsState = (state) => {
+  panel.dataset.timeWorldState = state;
+  setControlAvailability(skipButton, state === "playing");
+  setControlAvailability(replayButton, state === "complete");
+};
+
+const setLineReveal = (percent, opacity = 0.22) => {
+  if (!grid) {
+    return;
+  }
+
+  const clampedPercent = Math.max(0, Math.min(percent, 100));
+  const fadeWidthPercent = 100 / frameCount;
+  const solidPercent = clampedPercent >= 100
+    ? 100
+    : Math.max(0, clampedPercent - fadeWidthPercent);
+  grid.style.setProperty("--time-world-line-reveal-x", `${clampedPercent}%`);
+  grid.style.setProperty("--time-world-line-solid-x", `${solidPercent}%`);
+  grid.style.setProperty("--time-world-line-opacity", opacity);
+};
+
+const setTrackBarScale = (name, scale) => {
+  if (!grid) {
+    return;
+  }
+
+  grid.style.setProperty(`--time-world-${name}-bar-scale`, scale);
+};
+
+const setAllTrackBars = (scale) => {
+  ["video", "audio", "model"].forEach((name) => setTrackBarScale(name, scale));
+};
+
+const setContentReveal = (percent, opacity = 1) => {
+  if (!grid) {
+    return;
+  }
+
+  const clampedPercent = Math.max(0, Math.min(percent, 100));
+  const fadeWidthPercent = 100 / frameCount;
+  const solidPercent = clampedPercent >= 100
+    ? 100
+    : Math.max(0, clampedPercent - fadeWidthPercent);
+  grid.style.setProperty("--time-world-content-reveal-x", `${clampedPercent}%`);
+  grid.style.setProperty("--time-world-content-solid-x", `${solidPercent}%`);
+  grid.style.setProperty("--time-world-content-opacity", opacity);
+};
+
+const revealAllContent = () => {
+  contentRows.forEach((row) => {
+    row.elements.forEach((element) => element.classList.add("is-microturn-visible"));
+  });
+};
+
+const clearContentReveal = () => {
+  contentRows.forEach((row) => {
+    row.elements.forEach((element) => element.classList.remove("is-microturn-visible"));
+  });
+  setContentReveal(0, 0);
+};
+
+const setFrameVisualization = (index) => {
+  if (!frameLayer) {
+    return;
+  }
+
+  const clampedIndex = Math.max(0, Math.min(index, frameCount - 1));
+  const tooltip = frameLayer.querySelector(".time-world-frame-tooltip");
+  const label = `Micro-turn ${clampedIndex + 1}`;
+  const timeLabel = `${(clampedIndex + 1) * 200}ms`;
+  frameLayer.style.setProperty("--time-world-active-frame", clampedIndex);
+  frameLayer.classList.add("is-frame-active");
+  frameLayer.classList.toggle("is-first-frame", clampedIndex === 0);
+  frameLayer.classList.toggle("is-last-frame", clampedIndex === frameCount - 1);
+  if (tooltip) {
+    const tooltipLabel = tooltip.querySelector(".time-world-frame-tooltip-label");
+    const tooltipTime = tooltip.querySelector(".time-world-frame-tooltip-time");
+    if (tooltipLabel) {
+      tooltipLabel.textContent = label;
+    }
+    if (tooltipTime) {
+      tooltipTime.textContent = timeLabel;
+    }
+  }
+  modelMarkers.forEach((marker) => {
+    const markerIndex = Number.parseInt(marker.dataset.microturnIndex || "-1", 10);
+    const isActive = markerIndex === clampedIndex;
+    marker.classList.toggle("is-marker-active", isActive);
+  });
+  const activeNoteIndex = panel.classList.contains("is-time-world-content-revealing")
+    ? modelNotes.reduce((activeIndex, note) => {
+      const noteIndex = Number.parseInt(note.dataset.microturnIndex || "-1", 10);
+      return noteIndex <= clampedIndex ? Math.max(activeIndex, noteIndex) : activeIndex;
+    }, -1)
+    : clampedIndex;
+  modelNotes.forEach((note) => {
+    const noteIndex = Number.parseInt(note.dataset.microturnIndex || "-1", 10);
+    note.classList.toggle("is-marker-note-active", noteIndex === activeNoteIndex);
+  });
+};
+
+const setCursorVisualization = (index, cursorPercent) => {
+  setFrameVisualization(index);
+  if (frameLayer) {
+    frameLayer.style.setProperty("--time-world-cursor-x", `${cursorPercent.toFixed(2)}%`);
+  }
+};
+
+const clearFrameVisualization = () => {
+  if (frameLayer) {
+    frameLayer.classList.remove("is-frame-active", "is-first-frame", "is-last-frame");
+  }
+  modelMarkers.forEach((marker) => marker.classList.remove("is-marker-active"));
+  modelNotes.forEach((note) => note.classList.remove("is-marker-note-active"));
+};
+
+const clearHoverVisualization = () => {
+  if (panel.classList.contains("is-time-world-loaded")) {
+    return;
+  }
+
+  clearFrameVisualization();
+};
+
+const animateLineReveal = (onComplete) => {
+  const startedAt = window.performance.now();
+
+  const tick = (now) => {
+    const progress = Math.min(1, (now - startedAt) / lineRevealDuration);
+    const easedProgress = 1 - Math.pow(1 - progress, 3);
+    setLineReveal(easedProgress * 100, 0.22 * easedProgress);
+
+    if (progress < 1) {
+      lineRevealFrameRequest = window.requestAnimationFrame(tick);
+      return;
+    }
+
+    lineRevealFrameRequest = null;
+    setLineReveal(100, 0.22);
+    onComplete();
+  };
+
+  lineRevealFrameRequest = window.requestAnimationFrame(tick);
+};
+
+const completeReveal = () => {
+  clearRevealTimers();
+  cancelRevealFrames();
+
+  setLineReveal(100, 0.22);
+  setAllTrackBars(1);
+  setContentReveal(100, 1);
+  revealAllContent();
+  panel.classList.remove("is-time-world-lines-revealing", "is-time-world-bars-revealing", "is-time-world-content-revealing", "is-time-world-skip-fading");
+  panel.classList.add("is-time-world-loaded");
+  setControlsState("complete");
+  clearFrameVisualization();
+};
+
+const resetRevealState = () => {
+  clearRevealTimers();
+  cancelRevealFrames();
+
+  panel.classList.remove("is-time-world-lines-revealing", "is-time-world-bars-revealing", "is-time-world-content-revealing", "is-time-world-loaded", "is-time-world-skip-fading");
+  setLineReveal(0, 0);
+  setAllTrackBars(0);
+  clearContentReveal();
+  clearFrameVisualization();
+};
+
+const revealContentSmoothSequence = () => {
+  panel.classList.remove("is-time-world-bars-revealing");
+  panel.classList.add("is-time-world-content-revealing");
+  clearFrameVisualization();
+  revealAllContent();
+  setContentReveal(0, 1);
+  const loadingCounter = frameLayer ? frameLayer.querySelector(".time-world-loading-counter") : null;
+  const loadingCounterNumber = loadingCounter ? loadingCounter.querySelector(".time-world-loading-counter-number") : null;
+  const startedAt = window.performance.now();
+
+  const tick = (now) => {
+    const elapsed = now - startedAt;
+    const progress = Math.min(1, elapsed / contentRevealDuration);
+    const revealPercent = progress * 100;
+    const frameIndex = Math.max(0, Math.min(frameCount - 1, Math.floor(progress * frameCount)));
+    setContentReveal(revealPercent, 1);
+    if (loadingCounterNumber) {
+      loadingCounterNumber.textContent = String((frameIndex + 1) * 200);
+    }
+
+    if (progress < 1) {
+      revealFrameRequest = window.requestAnimationFrame(tick);
+      return;
+    }
+
+    revealFrameRequest = null;
+    setContentReveal(100, 1);
+    completeReveal();
+  };
+
+  revealFrameRequest = window.requestAnimationFrame(tick);
+};
+
+const revealBarsSequence = () => {
+  panel.classList.add("is-time-world-bars-revealing");
+  setRevealTimeout(() => setTrackBarScale("video", 1), barRevealStartDelay);
+  setRevealTimeout(() => setTrackBarScale("audio", 1), barRevealStartDelay + barRevealStepDelay);
+  setRevealTimeout(() => setTrackBarScale("model", 1), barRevealStartDelay + barRevealStepDelay * 2);
+  setRevealTimeout(revealContentSmoothSequence, barRevealStartDelay + barRevealDuration + barRevealStepDelay * 2);
+};
+
+const startTimeWorldReveal = () => {
+  if (revealStarted) {
+    return;
+  }
+
+  revealStarted = true;
+  setControlsState("playing");
+
+  if (!grid || prefersReducedMotion) {
+    completeReveal();
+    return;
+  }
+
+  panel.classList.remove("is-time-world-skip-fading");
+  panel.classList.add("is-time-world-lines-revealing");
+  setLineReveal(0, 0);
+  setContentReveal(0, 0);
+  setAllTrackBars(0);
+  clearContentReveal();
+
+  animateLineReveal(() => {
+    panel.classList.remove("is-time-world-lines-revealing");
+  });
+  revealBarsSequence();
+};
+
+if (grid) {
+  panel.classList.add("is-time-world-enhanced");
+  setLineReveal(prefersReducedMotion ? 100 : 0, prefersReducedMotion ? 0.22 : 0);
+  setContentReveal(prefersReducedMotion ? 100 : 0, prefersReducedMotion ? 1 : 0);
+  setAllTrackBars(prefersReducedMotion ? 1 : 0);
+  if (prefersReducedMotion) {
+    revealAllContent();
+  } else {
+    clearContentReveal();
+  }
+}
+
+setControlsState("playing");
+
+const skipTimeWorldReveal = () => {
+  clearRevealTimers();
+  cancelRevealFrames();
+
+  revealStarted = true;
+  setControlsState("complete");
+  panel.classList.remove("is-time-world-lines-revealing", "is-time-world-bars-revealing", "is-time-world-content-revealing", "is-time-world-loaded");
+  panel.classList.add("is-time-world-skip-fading");
+  clearFrameVisualization();
+  setLineReveal(100, 0);
+  setAllTrackBars(0);
+  clearContentReveal();
+
+  window.requestAnimationFrame(() => {
+    setLineReveal(100, 0.22);
+    setContentReveal(100, 1);
+    setAllTrackBars(1);
+    revealAllContent();
+  });
+
+  setRevealTimeout(() => {
+    panel.classList.remove("is-time-world-skip-fading");
+    panel.classList.add("is-time-world-loaded");
+  }, skipFadeDuration);
+};
+
+const replayTimeWorldReveal = () => {
+  resetRevealState();
+  revealStarted = false;
+  setControlsState("playing");
+  void panel.offsetWidth;
+  startTimeWorldReveal();
+};
+
+if (skipButton) {
+  skipButton.addEventListener("click", skipTimeWorldReveal);
+}
+
+if (replayButton) {
+  replayButton.addEventListener("click", replayTimeWorldReveal);
+}
+
+[skipButton, replayButton].filter(Boolean).forEach((button) => {
+  let isPressed = false;
+
+  const pressButton = () => {
+    isPressed = true;
+  };
+
+  const releaseButton = () => {
+    if (!isPressed) {
+      return;
+    }
+
+    isPressed = false;
+    window.requestAnimationFrame(() => {
+      button.classList.remove("is-control-spring");
+      void button.offsetWidth;
+      window.requestAnimationFrame(() => {
+        button.classList.add("is-control-spring");
+      });
+    });
+    window.setTimeout(() => {
+      button.classList.remove("is-control-spring");
+    }, 450);
+  };
+
+  button.addEventListener("mousedown", pressButton);
+  button.addEventListener("mouseup", releaseButton);
+  button.addEventListener("mouseleave", () => {
+    isPressed = false;
+  });
+  button.addEventListener("touchstart", pressButton, { passive: true });
+  button.addEventListener("touchend", releaseButton);
+});
+
+const revealTarget = panel.closest(".grounded-reality-figure") || panel;
+if ("IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      startTimeWorldReveal();
+      revealObserver.disconnect();
+    }
+  }, { rootMargin: "0px 0px -12% 0px", threshold: 0.25 });
+
+  revealObserver.observe(revealTarget);
+} else {
+  startTimeWorldReveal();
+}
+
+if (frameLayer) {
+  const hoverCue = frameLayer.querySelector(".time-world-hover-cue");
+  let hoverCueHasAppeared = false;
+
+  const suppressHoverCue = () => {
+    if (!hoverCueHasAppeared) {
+      return;
+    }
+
+    panel.classList.add("has-time-world-hover-cue-played");
+  };
+
+  if (hoverCue) {
+    hoverCue.addEventListener("animationstart", () => {
+      hoverCueHasAppeared = true;
+    });
+    hoverCue.addEventListener("animationend", suppressHoverCue);
+  }
+
+  const setActiveFrame = (index) => {
+    if (!panel.classList.contains("is-time-world-loaded")) {
+      return;
+    }
+
+    suppressHoverCue();
+    setFrameVisualization(index);
+  };
+
+  const setCursorFrame = (event) => {
+    if (!panel.classList.contains("is-time-world-loaded")) {
+      return;
+    }
+
+    suppressHoverCue();
+    const bounds = frameLayer.getBoundingClientRect();
+    const cursorRatio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+    const cursorPercent = cursorRatio * 100;
+    const frameIndex = Math.max(0, Math.min(frameCount - 1, Math.floor(cursorRatio * frameCount)));
+    setCursorVisualization(frameIndex, cursorPercent);
+  };
+
+  columns.forEach((column, index) => {
+    column.addEventListener("pointerenter", () => {
+      clearHoverVisualization();
+      setActiveFrame(index);
+    });
+  });
+
+  frameLayer.addEventListener("pointermove", setCursorFrame);
+  frameLayer.addEventListener("pointerover", clearHoverVisualization);
+
+  frameLayer.addEventListener("pointerleave", () => {
+    clearFrameVisualization();
+  });
+
+  if (modelMarkerLayer) {
+    modelMarkerLayer.addEventListener("pointerenter", setCursorFrame);
+    modelMarkerLayer.addEventListener("pointermove", setCursorFrame);
+    modelMarkerLayer.addEventListener("pointerleave", () => {
+      clearFrameVisualization();
+    });
+  }
+}
+  });
+})();

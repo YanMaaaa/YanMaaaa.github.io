@@ -25,6 +25,10 @@
 \newcommand{\GhostPredictionOpacity}{0.10}
 \newcommand{\SpotlightFadeOpacity}{0.12}
 
+\ifdefined\ShortDeck
+\includeonlyframes{short-title,short-past-overview,short-current-to-prediction,short-research-agenda,short-paper1-start,short-paper1-dynamics,short-paper2-start,short-paper2-evidence,short-paper3-start,short-paper3-intrinsic,short-paper3-future-target,short-why-video,short-video-data-foundations,short-future-vision}
+\fi
+
 % \setbeamercolor{normal text}{fg=AgentInk}
 % \setbeamercolor{frametitle}{fg=AgentInk}
 \molochset{
@@ -147,12 +151,18 @@
 
 \begin{document}
 
-\maketitle
-
-\begin{frame}
-  \frametitle{\LARGE Table of Contents}
-  \tableofcontents
+\ifdefined\ShortDeck
+\begin{frame}[plain,label=short-title]
+  \titlepage
 \end{frame}
+\else
+  \maketitle
+
+  \begin{frame}
+    \frametitle{\LARGE Table of Contents}
+    \tableofcontents
+  \end{frame}
+\fi
 
 \input{opening.tex}
 
@@ -160,5 +170,8 @@
 
 \input{current_future.tex}
 
-% \input{backup.tex}
+\ifdefined\ShortDeck
+\else
+\input{backup.tex}
+\fi
 \end{document}

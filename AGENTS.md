@@ -36,6 +36,8 @@ This file records project-specific conventions for the current `visiting` branch
   - 已拆分出的 Beamer section：
     - `visiting/beamer/opening.tex`
     - `visiting/beamer/past_work.tex`
+    - `visiting/beamer/current_future.tex`
+    - `visiting/beamer/backup.tex`（appendix/backup，当前可能为预览而 input）
   - 当前选择：
     - 使用 `moloch` Beamer 模板，而不是先做 PPTX
     - 不运行编译，编译由用户自己执行
@@ -46,7 +48,8 @@ This file records project-specific conventions for the current `visiting` branch
   - `From Multimodal Models to Multimodal Agents`
   - `From Current Observations to Prediction`
   - `Research Agenda`
-  - opening 叙事：先建立 past work credibility，再区分 model vs. agent，再解释 prediction 为什么对 long-horizon multimodal agents 必要，最后用 `Main_Figure1.png` 收束 research agenda。
+  - opening 叙事：先建立 past work credibility，再区分 model vs. agent，再解释 prediction 对 long-horizon multimodal agents 的作用，最后用 `Main_Figure1.png` 收束 research agenda。
+  - `From Current Observations to Prediction` 中已避免过强的 `must act` 表述，改为：agent observes the present; its decisions shape what it will observe next。
 - past work section 已基本完成，文件在 `visiting/beamer/past_work.tex`：
   - Paper 1: visual reasoning RL
     - 核心问题：如何让关于 multimodal reasoning RL 的经验结论更可信？
@@ -58,22 +61,33 @@ This file records project-specific conventions for the current `visiting` branch
     - 核心问题：what does vision tool-use RL really learn?
     - 当前结论：intrinsic drift dominates; tool-use RL mainly reduces tool-induced harm; future tool-use RL should target correction on the moving failure set.
     - Paper 3 main slides 已形成：MED overview、measure intrinsic/tool-induced drift、explain/diagnose term decomposition、gain vs. harm、factor diagnosis、future tool-use RL target。
-- 当前 deck 不算 backup 约 27 页；后续可以先完成 full deck，再压缩出 12-14 页和 8-10 页版本。
+- current / future section 已基本完成，文件在 `visiting/beamer/current_future.tex`：
+  - `Why Video for Predictive Multimodal Learning?`
+    - 用 symbolic diagram 连接 past work、agent rollout、video rollout、prediction。
+    - 当前表述区分 \(a_t\)（explicit agent action）和 \(u_t\)（unobserved video dynamics），避免把 video 简化成无 action 的特殊 agent rollout。
+  - `Video Data Foundations for Predictive Multimodal Learning`
+    - 项目目的：`Video curation to build better predictive models.`
+    - 当前图：`Raw Videos -> Segmentation -> Filtering -> Annotation -> Video Gen / V-JEPA`。
+    - 评估逻辑：`controlled curation variants -> matched-budget pretraining -> predictive capability probes`。
+    - bridge：当前项目是 studying how prediction enters future multimodal agents 的 near-term entry point。
+  - `Future Vision: Three Generations of Multimodal Agents`
+    - 使用 AI 生成的三联图，资产在 `visiting/beamer/figures/current_future/real_world_multimodal_agents.png`。
+    - 三阶段：Desktop agents / Real-world agents / Embodied agents。
+    - 当前收束 slogan：`From desktops, to live real-world streams, to physical bodies: prediction becomes central.`
+- 当前 deck 主线内容已基本成型；不算 title / TOC / backup，主内容约 28 页。`backup.tex` 当前已可 input 作 appendix/预览，但后续需要处理 appendix progress bar / 页码。
+- 已新增 short deck 入口：
+  - `visiting/beamer/main_short.tex`
+  - 通过定义 `\ShortDeck` 并复用 `main.tex`，用 `\includeonlyframes` 抽取 14 页短版。
+  - 选中页覆盖：title、opening 三页、Paper 1 两页、Paper 2 两页、Paper 3 三页、current/future 三页。
 
 ## 下一步
 
-- 下一步优先进入 current / future work section，而不是继续扩展 past work：
-  - 从 past work under current observations 过渡到 long-horizon multimodal agents that require prediction。
-  - 设计 current project slide：
-    - `Video as a Scalable Foundation for Predictive Multimodal Learning`
-    - 项目标题候选：`The Curse of Conventional Wisdom: Which Video Curation Practices Matter for World Model Pretraining?`
-    - 科学问题：which video segmentation / filtering / annotation / organization practices affect what world models learn, which capabilities they affect, and how they affect predictive multimodal learning。
-  - 设计 future program slide：
-    - video data foundations 是近程切入点
-    - integrating prediction into multimodal agent systems 是长期目标
-  - 设计 final closing / visiting-fit slide：
-    - what I bring: RL/post-training empirical analysis, multimodal agent framing, video-data project execution
-    - what I seek: video/world-modeling/agent-system collaboration environment, experimental platform, data/model resources
+- 下一步不再优先扩展内容，而是进入 deck polishing：
+  - 用户自行编译后检查版面、overlap、最后两页的视觉密度和 progress bar / appendix 行为。
+  - 决定 Paper 3 主线是否压缩；当前 Paper 3 逻辑没问题，但页数和方法细节偏多，必要时可把 Diagnose I/II 或 MED detail 页移入 backup。
+  - 决定 `backup.tex` 是否保留在正式 PDF 中，以及如何隐藏/调整 backup 的 progress bar。
+  - 按目标时长排练完整讲稿，再压缩出 12-14 页和 8-10 页版本。
+  - 如确实需要 application-specific close，再加 visiting-fit slide；否则当前 `Future Vision` 页可作为 current/future section 收束。
 
 ## Current Scope
 
@@ -148,3 +162,6 @@ When editing research or application materials, preserve a direct academic tone 
   - multimodal foundation models
   - prediction / world modeling
   - RL / post-training
+- For professor-specific outreach folders under `visiting/email/`:
+  - `background.md` notes may be written primarily in Chinese, especially when recording user-provided soft information, fit judgments, and send strategy.
+  - actual email drafts should be written in English unless the user explicitly asks for a Chinese message, such as a Xiaohongshu DM.

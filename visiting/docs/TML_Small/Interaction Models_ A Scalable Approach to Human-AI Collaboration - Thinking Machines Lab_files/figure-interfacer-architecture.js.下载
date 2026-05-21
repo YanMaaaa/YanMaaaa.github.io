@@ -1,0 +1,118 @@
+(() => {
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const setRuntimeMode = (figure) => {
+    const nextMode = 'runtime';
+    const panel = figure.querySelector('.interfacer-architecture-panel');
+    figure.dataset.mode = nextMode;
+    if (panel) panel.dataset.mode = nextMode;
+  };
+
+  const parseModalities = (value) => {
+    const validModalities = new Set(['text', 'image', 'video', 'audio']);
+    return (value || '')
+      .trim()
+      .split(/\s+/)
+      .filter((modality) => validModalities.has(modality));
+  };
+
+  const setActiveModalities = (figure, modalities) => {
+    const activeModalities = new Set(modalities);
+
+    if (activeModalities.size > 0) {
+      const value = Array.from(activeModalities).join(' ');
+      figure.dataset.activeModalities = value;
+      figure.dataset.activeModality = Array.from(activeModalities)[0];
+    } else {
+      delete figure.dataset.activeModalities;
+      delete figure.dataset.activeModality;
+    }
+
+    figure.querySelectorAll('[data-ia-modality]').forEach((cell) => {
+      const cellModalities = parseModalities(cell.dataset.iaModality);
+      const isActive = cellModalities.some((modality) => activeModalities.has(modality));
+      cell.classList.toggle('is-active', isActive);
+    });
+
+    figure.querySelectorAll('[data-ia-route]').forEach((route) => {
+      route.classList.toggle('is-active', activeModalities.has(route.dataset.iaRoute));
+    });
+  };
+
+  const syncMotionPreference = (figure) => {
+    figure.classList.toggle('is-reduced-motion', motionQuery.matches);
+  };
+
+  const startSvgMotionOnView = (figure) => {
+    const svg = figure.querySelector('.interfacer-architecture-svg');
+    if (!svg || typeof svg.pauseAnimations !== 'function') return;
+
+    svg.pauseAnimations();
+    let hasStarted = false;
+
+    const startSequence = () => {
+      if (!hasStarted) {
+        svg.setCurrentTime(0);
+        hasStarted = true;
+      }
+      svg.unpauseAnimations();
+    };
+
+    const stopSequence = () => {
+      svg.pauseAnimations();
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startSequence();
+          } else {
+            stopSequence();
+          }
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.25 });
+
+      observer.observe(figure);
+    } else {
+      startSequence();
+    }
+  };
+
+  const initInterfacerArchitectureFigure = () => {
+    const figures = Array.from(document.querySelectorAll('.interfacer-architecture-figure'));
+    if (figures.length === 0) return;
+
+    figures.forEach((figure) => {
+      syncMotionPreference(figure);
+      setRuntimeMode(figure);
+      startSvgMotionOnView(figure);
+
+      figure.querySelectorAll('[data-ia-modality]').forEach((cell) => {
+        const modalities = parseModalities(cell.dataset.iaModality);
+        if (modalities.length === 0) return;
+
+        cell.addEventListener('pointerenter', () => setActiveModalities(figure, modalities));
+        cell.addEventListener('pointerleave', () => setActiveModalities(figure, []));
+        cell.addEventListener('focusin', () => setActiveModalities(figure, modalities));
+        cell.addEventListener('focusout', () => setActiveModalities(figure, []));
+      });
+    });
+
+    const handleMotionChange = () => {
+      figures.forEach(syncMotionPreference);
+    };
+
+    if (typeof motionQuery.addEventListener === 'function') {
+      motionQuery.addEventListener('change', handleMotionChange);
+    } else if (typeof motionQuery.addListener === 'function') {
+      motionQuery.addListener(handleMotionChange);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInterfacerArchitectureFigure, { once: true });
+  } else {
+    initInterfacerArchitectureFigure();
+  }
+})();

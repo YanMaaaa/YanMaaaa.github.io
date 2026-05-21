@@ -1,0 +1,100 @@
+(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const initInteractionModelGulps = () => {
+    document.querySelectorAll('.interaction-model-diagram').forEach((diagram) => {
+      const svg = diagram.querySelector('.interaction-model-arrows');
+      const sparks = Array.from(diagram.querySelectorAll('.interaction-model-spark'));
+      const nodes = Array.from(diagram.querySelectorAll('.interaction-model-node'));
+      if (!svg || sparks.length === 0 || nodes.length === 0) return;
+
+      svg.pauseAnimations();
+      const point = svg.createSVGPoint();
+      const insideState = new Map();
+      const gulpTimers = new WeakMap();
+      let isRunning = false;
+      let animationFrame = null;
+
+      const restartGulp = (spark, node) => {
+        if (gulpTimers.has(node)) return;
+        const sparkColor = getComputedStyle(spark).getPropertyValue('--interaction-model-spark').trim();
+        if (sparkColor) node.style.setProperty('--interaction-model-spark', sparkColor);
+        node.classList.remove('is-gulping');
+        void node.offsetWidth;
+        node.classList.add('is-gulping');
+        gulpTimers.set(node, window.setTimeout(() => {
+          node.classList.remove('is-gulping');
+          gulpTimers.delete(node);
+        }, 540));
+      };
+
+      const tick = () => {
+        if (!isRunning) return;
+
+        sparks.forEach((spark, sparkIndex) => {
+          const matrix = spark.getScreenCTM();
+          if (!matrix) return;
+          point.x = 0;
+          point.y = 0;
+          const position = point.matrixTransform(matrix);
+
+          nodes.forEach((node, nodeIndex) => {
+            const rect = node.getBoundingClientRect();
+            const inside =
+              position.x >= rect.left &&
+              position.x <= rect.right &&
+              position.y >= rect.top &&
+              position.y <= rect.bottom;
+            const key = `${sparkIndex}:${nodeIndex}`;
+            const wasInside = insideState.get(key) === true;
+            if (inside && !wasInside) restartGulp(spark, node);
+            insideState.set(key, inside);
+          });
+        });
+
+        animationFrame = window.requestAnimationFrame(tick);
+      };
+
+      const startSequence = () => {
+        if (isRunning) return;
+        isRunning = true;
+        svg.setCurrentTime(0);
+        svg.unpauseAnimations();
+        animationFrame = window.requestAnimationFrame(tick);
+      };
+
+      const stopSequence = () => {
+        if (!isRunning) return;
+        isRunning = false;
+        svg.pauseAnimations();
+        if (animationFrame !== null) {
+          window.cancelAnimationFrame(animationFrame);
+          animationFrame = null;
+        }
+      };
+
+      const figure = diagram.closest('.interaction-model-figure');
+      if (figure && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              startSequence();
+            } else {
+              stopSequence();
+            }
+          });
+        }, { rootMargin: '0px 0px -12% 0px', threshold: 0.25 });
+
+        observer.observe(figure);
+      } else {
+        startSequence();
+      }
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInteractionModelGulps, { once: true });
+  } else {
+    initInteractionModelGulps();
+  }
+})();
