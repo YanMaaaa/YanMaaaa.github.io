@@ -25,10 +25,6 @@
 \newcommand{\GhostPredictionOpacity}{0.10}
 \newcommand{\SpotlightFadeOpacity}{0.12}
 
-\ifdefined\ShortDeck
-\includeonlyframes{short-title,short-past-overview,short-current-to-prediction,short-research-agenda,short-paper1-start,short-paper1-dynamics,short-paper2-start,short-paper2-evidence,short-paper3-start,short-paper3-intrinsic,short-paper3-future-target,short-why-video,short-video-data-foundations,short-future-vision}
-\fi
-
 % \setbeamercolor{normal text}{fg=AgentInk}
 % \setbeamercolor{frametitle}{fg=AgentInk}
 \molochset{
@@ -151,18 +147,54 @@
 
 \begin{document}
 
-\ifdefined\ShortDeck
-\begin{frame}[plain,label=short-title]
-  \titlepage
-\end{frame}
-\else
-  \maketitle
+\maketitle
 
-  \begin{frame}
-    \frametitle{\LARGE Table of Contents}
-    \tableofcontents
-  \end{frame}
-\fi
+\begin{frame}{\LARGE Background of Yan Ma}
+  \vspace{0.10cm}
+  {\large\textbf{Education}}
+
+  \begin{itemize}
+    \footnotesize
+    \setlength\itemsep{0.08em}
+    \item B.Sc. @ DLUT $\rightarrow$ M.Sc. @ Fudan $\rightarrow$ Ph.D. @ Fudan {\scriptsize(expected graduation: 2027.06)}
+    \item Advised by Prof. Pengfei Liu and Prof. Yu Qiao
+  \end{itemize}
+
+  \vspace{0.30cm}
+  {\large\textbf{Research Focus}}
+
+  \begin{itemize}
+    \footnotesize
+    \setlength\itemsep{0.08em}
+    \item \textbf{Goal:} build multimodal agents in partially observed environments for long-horizon tasks.
+    \item \textbf{Past:} study how multimodal RL reshapes perception, reasoning, and tool use.
+    \item \textbf{Current:} video data cleaning / curation for predictive multimodal learning.
+  \end{itemize}
+
+  \vspace{0.30cm}
+  {\large\textbf{Internship}}
+
+  \begin{itemize}
+    \footnotesize
+    \setlength\itemsep{0.08em}
+    \item Shanghai AI Laboratory {\scriptsize(2023.07--2025.01)}
+    \item MiniMax / HailuoAI {\scriptsize(2025.01--2026.02)}
+  \end{itemize}
+
+  \vspace{0.30cm}
+  {\large\textbf{Publication}}
+
+  \begin{itemize}
+    \footnotesize
+    \setlength\itemsep{0.08em}
+    \item Publications at ICML, ACL, EMNLP, NeurIPS, etc.; 700+ citations; 1.3k+ GitHub stars.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\LARGE Table of Contents}
+  \tableofcontents
+\end{frame}
 
 \input{opening.tex}
 
@@ -170,8 +202,5 @@
 
 \input{current_future.tex}
 
-\ifdefined\ShortDeck
-\else
 \input{backup.tex}
-\fi
 \end{document}
