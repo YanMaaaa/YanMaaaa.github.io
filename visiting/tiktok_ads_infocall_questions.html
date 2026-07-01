@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TikTok 国际化广告团队 Info Call 问题</title>
+  <style>
+    :root {
+      --ink: #15181c;
+      --muted: #4d5863;
+      --line: #d8dee6;
+      --soft: #f7f9fc;
+      --blue: #2f6f8f;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--white);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      line-height: 1.5;
+    }
+
+    .page {
+      width: min(1040px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 44px 0 54px;
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--ink);
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .questions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      counter-reset: question;
+    }
+
+    .question {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 14px;
+      align-items: start;
+      min-height: 128px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: var(--soft);
+      counter-increment: question;
+    }
+
+    .question::before {
+      content: counter(question, decimal-leading-zero);
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: var(--white);
+      background: var(--blue);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .question p {
+      margin: 2px 0 0;
+      font-size: 20px;
+      font-weight: 650;
+      color: var(--ink);
+    }
+
+    @media (max-width: 800px) {
+      .page {
+        width: min(100% - 28px, 680px);
+        padding-top: 30px;
+      }
+
+      .questions {
+        grid-template-columns: 1fr;
+      }
+
+      .question {
+        min-height: 0;
+      }
+
+      .question p {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>想请教的几个问题</h1>
+
+    <section class="questions" aria-label="想请教的问题">
+      <article class="question">
+        <p>国际化广告当前最大的技术瓶颈是什么？</p>
+      </article>
+
+      <article class="question">
+        <p>多模态理解在 TikTok 广告里有多重要？</p>
+      </article>
+
+      <article class="question">
+        <p>团队如何判断广告系统真的变好了？</p>
+      </article>
+
+      <article class="question">
+        <p>一个 research idea 如何进入生产系统？</p>
+      </article>
+
+      <article class="question">
+        <p>LLM 或 agent 在广告产品中是否已经有实际价值？</p>
+      </article>
+
+      <article class="question">
+        <p>什么样的背景在这个团队最容易做出影响？</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
