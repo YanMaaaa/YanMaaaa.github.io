@@ -174,11 +174,12 @@
 %----------HEADING-----------------
 \begin{center}
 {\LARGE \scshape \bfseries Yan Ma} \\ \vspace{2pt}
-{\footnotesize 600+ citations, 1.3k+ GitHub stars across research projects} \\ \vspace{2pt}
+{\footnotesize 860+ citations, 1.3k+ GitHub stars across research projects} \\ \vspace{2pt}
 (+86) 152-6982-9096 $\bullet$ 
 \href{mailto:yanma23@m.fudan.edu.cn}{yanma23@m.fudan.edu.cn} $\bullet$
 \href{https://yanmaaaa.github.io}{Homepage} $\bullet$
 \href{https://scholar.google.com/citations?user=tnJyAAoAAAAJ\&hl=en}{Google Scholar} $\bullet$
+\href{https://github.com/mantle2048}{Github} $\bullet$
 \href{https://yanmaaaa.github.io/assets/research_statement.pdf}{Research Statement}
 \end{center}
 
@@ -199,7 +200,7 @@
 %-----------Experience-----------------
 \section{Experience}
   \ExperienceListStart
-    \Experience{Shanghai Innovation Institute}{2026.03 -- 2026.06}{leading a large-scale audio-video data processing pipeline}
+    % \Experience{Shanghai Innovation Institute}{2026.03 -- 2026.06}{leading a large-scale audio-video data processing pipeline}
     \Experience{MiniMax \& HailuoAI}{2025.01 -- 2026.02}{worked on multimodal foundation models for visual reasoning and vision tool use in the M-series, and image caption systems for Hailuo video generation}
     \Experience{Shanghai AI Laboratory}{2023.07 -- 2025.01}{worked on text generation and unified multimodal model training}
   \ExperienceListEnd
@@ -207,6 +208,11 @@
 %-----------Publications-----------------
 \section{Publications}
   \resumeSubHeadingListStart
+  \PaperTLDR
+  {VidaForge: Building a Video Foundation Model Pretraining Data Pipeline from Scratch in an Academic Lab \href{https://yanmaaaaaa.notion.site/vidaforge}{[\faGlobe]}\href{https://github.com/GAIR-NLP/VidaForge}{[\faGithub]}}
+  {\textit{Technical Blog}, July 4, 2026}
+  {\underline{Yan Ma}, Jiadi Su, Zhulin Hu, Ethan Chern, Linhao Zhang, TianTian Mi, Pengfei Liu}
+  {We document a practical pipeline for building video foundation model pretraining data from scratch.}
   \PaperTLDR
   {What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom \href{https://arxiv.org/abs/2602.01334}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/Med}{[\faGithub]}}
   {\textit{ICML 2026}}
@@ -221,7 +227,7 @@
   {Rethinking RL Scaling for Vision Language Models: A Transparent, From-Scratch Framework and Comprehensive Evaluation Scheme \href{https://arxiv.org/abs/2504.02587}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/MAYE}{[\faGithub]}}
   {\textit{arXiv:2504.02587}}
   {\underline{Yan Ma}, Steffi Chern, Xuyang Shen, Yiran Zhong, Pengfei Liu}
-  {We introduce a transparent, reproducible RL pipeline and evaluation scheme for VLMs, and show RL consistently improves generalization over SFT with key training-dynamics findings.}
+  {We introduce a transparent, from-scratch RL framework and trajectory-level evaluation for VLMs, showing stronger generalization than SFT and clearer training-dynamics insights.}
   \PaperTLDR
   {ANOLE: An Open, Autoregressive, Native Large Multimodal Models for Interleaved Image-Text Generation \href{https://arxiv.org/abs/2407.06135}{[\faFilePdf]}\href{https://iclr-blogposts.github.io/2025/blog/fine-tuning-token-based-large-multimodal-models/}{[\faGlobe]}\href{https://github.com/GAIR-NLP/Anole}{[\faGithub]}}
   {\textit{arXiv:2407.06135; extended version accepted to ICLR 2025 Blog Track}}
@@ -234,25 +240,22 @@
   {\underline{Yan Ma}, Yu Qiao, Pengfei Liu}
   {}
   % {We modularize story-premise synthesis into structured design and integration steps, producing more diverse and higher-quality premises for downstream story generation.}
-  \Paper
-  {Weak-to-Strong Reasoning \small \href{https://arxiv.org/abs/2407.13647}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/weak-to-strong-reasoning}{[\faGithub]}}
-  {\textit{EMNLP Findings 2024}}
-  {Yuqing Yang, \underline{Yan Ma}, Pengfei Liu}
-  \Paper
-  {OlympicArena: Benchmarking Multi-discipline Cognitive Reasoning for Superintelligent AI \href{https://arxiv.org/abs/2406.12753}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/OlympicArena}{[\faGithub]}}
-  {\textit{NeurIPS Dataset \& Benchmark Track 2024}}
-  {Zhen Huang, Zengzhi Wang, Shijie Xia, ..., \underline{Yan Ma}, ..., Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu}
+  % \Paper
+  % {Weak-to-Strong Reasoning \small \href{https://arxiv.org/abs/2407.13647}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/weak-to-strong-reasoning}{[\faGithub]}}
+  % {\textit{EMNLP Findings 2024}}
+  % {Yuqing Yang, \underline{Yan Ma}, Pengfei Liu}
+  % \Paper
+  % {OlympicArena: Benchmarking Multi-discipline Cognitive Reasoning for Superintelligent AI \href{https://arxiv.org/abs/2406.12753}{[\faFilePdf]}\href{https://github.com/GAIR-NLP/OlympicArena}{[\faGithub]}}
+  % {\textit{NeurIPS Dataset \& Benchmark Track 2024}}
+  % {Zhen Huang, Zengzhi Wang, Shijie Xia, ..., \underline{Yan Ma}, ..., Shaoting Zhang, Dahua Lin, Yu Qiao, Pengfei Liu}
   \resumeSubHeadingListEnd
 
-\section{Research Stack}
+\section{Technical Skills \& Academic Service}
     \compactListStart
     \item{
-      \small Verl, Transformers, Ray, FSDP, vLLM, SGLang, Jax, FFmpeg, Codex, Git, NeoVim, Tmux
+        \small Verl, Transformers, Ray, FSDP, vLLM, SGLang, \href{https://github.com/mantle2048/drq_jax}{Jax}, FFmpeg, Codex, Git, NeoVim, Tmux
     }
-    %\item{
-      %\small Reviewer for AAAI 2025, NeurIPS 2025, COLM 2025--2026, ICLR 2026, ICML 2026, and ACL ARR 2026
-    %}
+    \item{ \small Reviewer for AAAI 2025, NeurIPS 2025, COLM 2025--2026, ICLR 2026, ICML 2026, and ACL ARR 2026}
   \compactListEnd
-
 %-------------------------------------------
 \end{document}
